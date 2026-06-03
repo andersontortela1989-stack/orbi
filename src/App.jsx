@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Game } from './components/Game.jsx';
+import { HUD } from './components/HUD.jsx';
+import { WelcomeVoice } from './components/WelcomeVoice.jsx';
 
 export default function App() {
   return (
@@ -26,9 +28,12 @@ export default function App() {
         </Suspense>
       </Canvas>
 
+      {/* Overlays 2D — fora do Canvas, React puro */}
+      <HUD />
       <div className="controls-hint">
         SETAS = DIRIGIR &nbsp;·&nbsp; ESPAÇO = FREIO DE MÃO (DRIFT)
       </div>
+      <WelcomeVoice />
     </>
   );
 }
