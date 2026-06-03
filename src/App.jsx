@@ -4,6 +4,7 @@ import { Physics } from '@react-three/rapier';
 import { Game } from './components/Game.jsx';
 import { HUD } from './components/HUD.jsx';
 import { WelcomeVoice } from './components/WelcomeVoice.jsx';
+import { MissionController } from './components/MissionController.jsx';
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
         SETAS = DIRIGIR &nbsp;·&nbsp; ESPAÇO = FREIO DE MÃO (DRIFT)
       </div>
       <WelcomeVoice />
+      <MissionController />
     </>
   );
 }

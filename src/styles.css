@@ -87,3 +87,50 @@ canvas {
   background: linear-gradient(90deg, #5db66a, #82d490);
   transition: width 0.3s ease-out;
 }
+
+/* ===== Banner de missão ===== */
+/* Faixa superior central — UMA missão por vez, alto contraste, CAIXA ALTA. */
+.mission-banner {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 32px;
+  border-radius: 14px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  user-select: none;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.mission-banner--ativa {
+  background: rgba(20, 24, 32, 0.85);
+  border: 2px solid #fce97a;
+}
+
+.mission-banner--ok {
+  background: rgba(28, 60, 38, 0.92);
+  border: 2px solid #82d490;
+  animation: missionPop 0.4s ease-out;
+}
+
+@keyframes missionPop {
+  from { transform: translateX(-50%) scale(0.85); opacity: 0; }
+  to   { transform: translateX(-50%) scale(1);    opacity: 1; }
+}
+
+/* Guard-rail TEA+TDAH: respeita reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .mission-banner--ok { animation: none; }
+  .hud-bar-fill { transition: none; }
+}

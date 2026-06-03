@@ -3,6 +3,7 @@ import { Grid } from '@react-three/drei';
 import { Car } from './Car.jsx';
 import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
+import { MissionSensors } from './MissionSensors.jsx';
 import { CameraFollow } from './CameraFollow.jsx';
 
 export function Game() {
@@ -46,6 +47,9 @@ export function Game() {
 
       {/* Cidade mínima: 3 prédios colidíveis com letreiros 3D em CAIXA ALTA */}
       <City />
+
+      {/* Sensores invisíveis de chegada (um por prédio) — Fatia 4 */}
+      <MissionSensors />
 
       <Car rigidBodyRef={carRef} />
       <CameraFollow targetRef={carRef} />

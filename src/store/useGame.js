@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { DESTINOS_GPS } from '../missions/destinos.js';
 
 /**
  * Estado global da Cidade Turbo 3D — shape espelhando a §6 do handoff.
@@ -36,7 +37,7 @@ const ESTADO_INICIAL = {
 
 export const useGame = create(
   persist(
-    (set, _get) => ({
+    (set, get) => ({
       ...ESTADO_INICIAL,
 
       abastecer: (litros) =>
@@ -74,6 +75,31 @@ export const useGame = create(
             },
           };
         }),
+
+      // === Missão de GPS (Fatia 4) ===
+      // Sorteia um novo destino entre DESTINOS_GPS, evitando o destino atual
+      // pra não repetir consecutivamente. Marca concluida=false.
+      iniciarMissaoGPS: () =>
+        set((s) => {
+          const atual = s.missao?.destino;
+          const candidatos = DESTINOS_GPS.filter((d) => d !== atual);
+          const novo =
+            candidatos[Math.floor(Math.random() * candidatos.length)] ??
+            DESTINOS_GPS[0];
+          return { missao: { tipo: 'gps', destino: novo, concluida: false } };
+        }),
+
+      // Disparado pelo sensor de chegada do prédio. Se bate com o destino
+      // da missão ativa, completa + registra leituraGlobal. Se não bate ou
+      // já está concluída, retorna false (silêncio — sem punição).
+      processarChegada: (slug) => {
+        const m = get().missao;
+        if (!m || m.tipo !== 'gps' || m.concluida) return false;
+        if (m.destino !== slug) return false;
+        get().completarMissao();
+        get().registrarHabilidade('leituraGlobal', true);
+        return true;
+      },
 
       resetar: () => set(ESTADO_INICIAL),
     }),
