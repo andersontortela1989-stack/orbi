@@ -1,0 +1,30 @@
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #1a1a1a;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e6e6e6;
+}
+
+canvas {
+  display: block;
+  touch-action: none;
+  outline: none;
+}
+
+.controls-hint {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 8px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1.5;
+}
