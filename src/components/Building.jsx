@@ -26,7 +26,10 @@ export function Building({
   const [x, z] = floorPos;
   const [w, h, l] = size;
   const lotSize = Math.max(w, l) + 4;
-  const finalFontSize = fontSize ?? Math.min(w, l) * 0.22;
+  // Tamanho proporcional ao prédio, com um PISO de legibilidade: no zoom mais
+  // aberto (Fatia 7) os prédios pequenos (ex.: FAROL) teriam letreiro miúdo —
+  // o Math.max garante que "FAROL" continue legível sem estourar o telhado.
+  const finalFontSize = fontSize ?? Math.max(2.4, Math.min(w, l) * 0.22);
 
   return (
     <>
