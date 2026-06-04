@@ -85,7 +85,12 @@ canvas {
 .hud-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #5db66a, #82d490);
-  transition: width 0.3s ease-out;
+  transition: width 0.3s ease-out, background 0.4s ease-out;
+}
+
+/* Combustível baixo: âmbar calmo (NÃO vermelho de alarme — guard-rail TEA). */
+.hud-bar-fill--baixo {
+  background: linear-gradient(90deg, #d9a441, #f0c869);
 }
 
 /* ===== Banner de missão ===== */
@@ -124,13 +129,132 @@ canvas {
   animation: missionPop 0.4s ease-out;
 }
 
+/* Aviso calmo (combustível) — âmbar suave, sem alarme. */
+.mission-banner--aviso {
+  background: rgba(54, 44, 22, 0.92);
+  border: 2px solid #e0b257;
+}
+
 @keyframes missionPop {
   from { transform: translateX(-50%) scale(0.85); opacity: 0; }
   to   { transform: translateX(-50%) scale(1);    opacity: 1; }
+}
+
+/* ===== Painel de abastecer (Fatia 5) ===== */
+/* Ancorado embaixo, NÃO cobre a cena — não é modal que pausa. A criança pode
+   sair dirigindo a qualquer momento. Alto contraste, CAIXA ALTA, botão grande. */
+.posto-overlay {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none; /* só o painel recebe clique */
+  display: flex;
+  justify-content: center;
+}
+
+.posto-painel {
+  pointer-events: auto;
+  background: rgba(16, 35, 28, 0.94);
+  border: 2px solid #5fa890;
+  border-radius: 18px;
+  padding: 18px 28px 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 300px;
+  user-select: none;
+  animation: postoEntra 0.3s ease-out;
+}
+
+.posto-titulo {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #eaf6f1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.posto-n {
+  color: #fce97a;
+  font-size: 32px;
+}
+
+.posto-pips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 380px;
+}
+
+.posto-pip {
+  width: 26px;
+  height: 34px;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  transition: background 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.posto-pip--cheio {
+  background: linear-gradient(180deg, #f0c869, #d9a441);
+  border-color: #fce97a;
+  transform: scale(1.06);
+}
+
+.posto-conta {
+  font-size: 30px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #fce97a;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.posto-botao {
+  font: inherit;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0e231c;
+  background: linear-gradient(180deg, #82d490, #5db66a);
+  border: none;
+  border-radius: 14px;
+  padding: 14px 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #3f8a52, 0 6px 14px rgba(0, 0, 0, 0.4);
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+}
+
+.posto-botao:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #3f8a52, 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.posto-dica {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(234, 246, 241, 0.7);
+}
+
+@keyframes postoEntra {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 /* Guard-rail TEA+TDAH: respeita reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .mission-banner--ok { animation: none; }
   .hud-bar-fill { transition: none; }
+  .posto-painel { animation: none; }
+  .posto-pip { transition: none; }
 }

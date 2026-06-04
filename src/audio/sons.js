@@ -54,3 +54,8 @@ export function somSucesso() {
 export function somNeutro() {
   tom({ freq: 440, dur: 0.08, type: 'sine', gain: 0.10 });
 }
+
+/** Tique curto e suave — marca cada litro contado ao abastecer (Fatia 5). */
+export function somTique() {
+  tom({ freq: 660, dur: 0.07, type: 'sine', gain: 0.12 });
+}

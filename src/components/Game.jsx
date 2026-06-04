@@ -3,7 +3,9 @@ import { Grid } from '@react-three/drei';
 import { Car } from './Car.jsx';
 import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
+import { GasStation } from './GasStation.jsx';
 import { MissionSensors } from './MissionSensors.jsx';
+import { FuelController } from './FuelController.jsx';
 import { CameraFollow } from './CameraFollow.jsx';
 
 export function Game() {
@@ -48,10 +50,19 @@ export function Game() {
       {/* Cidade mínima: 3 prédios colidíveis com letreiros 3D em CAIXA ALTA */}
       <City />
 
+      {/* Posto de gasolina (Fatia 5) — mesma linguagem visual + sensor de zona */}
+      <GasStation />
+
       {/* Sensores invisíveis de chegada (um por prédio) — Fatia 4 */}
       <MissionSensors />
 
       <Car rigidBodyRef={carRef} />
+
+      {/* Combustível (Fatia 5) — DEPOIS do <Car> de propósito: seu useFrame roda
+          após o do carro, então o controle de "tanque vazio" tem a palavra final
+          sobre a velocidade sem precisar tocar na física do Car.jsx. */}
+      <FuelController targetRef={carRef} />
+
       <CameraFollow targetRef={carRef} />
     </>
   );

@@ -23,6 +23,9 @@ const ESTADO_INICIAL = {
   moedas: 0,
   combustivel: 100, // 0–100; chega a 0 → desacelera suave, sem game over
 
+  // proximidade do posto (transiente — setado pelos sensores, NÃO persistido)
+  postoPerto: false,
+
   // missão (uma por vez)
   missao: { tipo: 'nenhuma', destino: null, concluida: false },
 
@@ -44,6 +47,18 @@ export const useGame = create(
         set((s) => ({
           combustivel: Math.max(0, Math.min(100, s.combustivel + litros)),
         })),
+
+      // Consumo de combustível ao dirigir (Fatia 5). Nunca abaixo de 0.
+      gastarCombustivel: (qtd) =>
+        set((s) => ({
+          combustivel: Math.max(0, s.combustivel - qtd),
+        })),
+
+      // Tanque cheio — chamado quando a criança conta a quantidade exata no posto.
+      encherTanque: () => set({ combustivel: 100 }),
+
+      // Proximidade do posto — ligado/desligado pelos sensores de zona.
+      setPostoPerto: (perto) => set({ postoPerto: !!perto }),
 
       pagarPedagio: (valor) =>
         set((s) => ({
@@ -106,7 +121,17 @@ export const useGame = create(
     {
       name: 'cidade-turbo-3d',
       version: 1,
-      // persist serializa só state (funções são ignoradas automaticamente)
+      // persist serializa só state (funções são ignoradas automaticamente).
+      // partialize: só o progresso DURÁVEL é gravado — postoPerto é transiente
+      // (depende de onde o carro está agora) e não deve sobreviver a reload.
+      partialize: (s) => ({
+        veiculo: s.veiculo,
+        desbloqueados: s.desbloqueados,
+        moedas: s.moedas,
+        combustivel: s.combustivel,
+        missao: s.missao,
+        habilidades: s.habilidades,
+      }),
     }
   )
 );
