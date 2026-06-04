@@ -60,7 +60,16 @@ export function Game() {
 
       {/* Combustível (Fatia 5) — DEPOIS do <Car> de propósito: seu useFrame roda
           após o do carro, então o controle de "tanque vazio" tem a palavra final
-          sobre a velocidade sem precisar tocar na física do Car.jsx. */}
+          sobre a velocidade sem precisar tocar na física do Car.jsx.
+
+          ⚠️ ORDEM LOAD-BEARING — NÃO REORDENAR: o R3F roda os useFrame de mesma
+          prioridade na ordem de montagem. <Car> precisa montar ANTES de
+          <FuelController> pra que o controle de reserva/parada do tanque vazio
+          sobrescreva a velocidade que o Car acabou de escrever. Inverter os dois
+          faria o Car ter a palavra final e a desaceleração do vazio sumiria.
+          (Não dá pra usar renderPriority > 0 aqui: isso desliga o render
+          automático do R3F. E passar um flag pro Car violaria "não tocar na
+          física do carro". Então a ordem aqui é o mecanismo — mantenha-a.) */}
       <FuelController targetRef={carRef} />
 
       <CameraFollow targetRef={carRef} />

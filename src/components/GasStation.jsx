@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Building } from './Building.jsx';
 import { PostoSensor } from './PostoSensor.jsx';
 import { useGame } from '../store/useGame.js';
@@ -16,6 +17,11 @@ const POSTO_SIZE = [12, 5, 12]; // [w, h, l] — baixo e largo, cara de posto
 
 export function GasStation() {
   const setPostoPerto = useGame((s) => s.setPostoPerto);
+
+  // Rede de segurança: se o posto desmontar (HMR/remontagem) com o carro DENTRO
+  // da zona, o onIntersectionExit pode não disparar e `postoPerto` ficaria
+  // travado em true. Liberar no unmount evita o painel "fantasma".
+  useEffect(() => () => setPostoPerto(false), [setPostoPerto]);
 
   return (
     <>

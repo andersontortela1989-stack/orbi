@@ -42,3 +42,12 @@ export function litrosFaltando(combustivel) {
   const faltam = Math.ceil((100 - combustivel) / pctPorLitro);
   return Math.max(1, Math.min(TANQUE_LITROS, faltam));
 }
+
+/**
+ * "O painel de abastecer deve estar aberto?" — UMA fonte da verdade,
+ * consumida pelo HUD (pra esconder o banner do GPS) e pelo RefuelPanel
+ * (pra renderizar). Evita que as duas cópias da condição saiam de sincronia.
+ */
+export function postoAtivo(combustivel, postoPerto) {
+  return postoPerto && combustivel < LIMIAR_ABASTECER;
+}

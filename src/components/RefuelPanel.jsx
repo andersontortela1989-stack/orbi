@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGame } from '../store/useGame.js';
 import { somSucesso, somTique } from '../audio/sons.js';
 import { falar } from '../audio/voz.js';
-import { LIMIAR_ABASTECER, litrosFaltando } from '../economia.js';
+import { litrosFaltando, postoAtivo } from '../economia.js';
 
 /**
  * Painel de abastecimento (Fatia 5) — A MATEMÁTICA COMO MECÂNICA.
@@ -18,44 +18,52 @@ import { LIMIAR_ABASTECER, litrosFaltando } from '../economia.js';
  *
  * Overlay 2D fora do <Canvas>, ancorado embaixo pra NÃO cobrir a cena (não é
  * um modal que pausa o jogo — a criança pode sair dirigindo a qualquer hora).
+ *
+ * Detalhes de robustez (vindos do code-review):
+ *  - `meta` (o N) é CONGELADO ao abrir o painel. Se o carro entrar no posto
+ *    ainda rolando, o combustível continua caindo por um instante; recalcular
+ *    o N ao vivo faria o alvo subir embaixo do dedo da criança. Congelar = alvo
+ *    estável (guard-rail TEA: nada muda sozinho no meio da contagem).
+ *  - Os efeitos de conclusão ficam FORA do updater do setState e são protegidos
+ *    por `concluido` — senão o StrictMode (dev) os dispararia 2× (registrando
+ *    contagem em dobro no relatório de habilidades).
  */
 export function RefuelPanel() {
-  const postoPerto = useGame((s) => s.postoPerto);
-  const combustivel = useGame((s) => s.combustivel);
+  const aberto = useGame((s) => postoAtivo(s.combustivel, s.postoPerto));
   const encherTanque = useGame((s) => s.encherTanque);
   const registrarHabilidade = useGame((s) => s.registrarHabilidade);
 
-  const aberto = postoPerto && combustivel < LIMIAR_ABASTECER;
-  const N = litrosFaltando(combustivel);
-
   const [conta, setConta] = useState(0);
+  const [meta, setMeta] = useState(1); // N congelado no momento da abertura
   const concluido = useRef(false);
 
-  // Zera o contador toda vez que o painel abre.
+  // Ao abrir: zera o contador e CONGELA o alvo no que falta agora.
   useEffect(() => {
     if (aberto) {
       setConta(0);
+      setMeta(litrosFaltando(useGame.getState().combustivel));
       concluido.current = false;
     }
   }, [aberto]);
 
   const adicionar = useCallback(() => {
     if (concluido.current) return;
-    setConta((c) => {
-      const novo = c + 1;
-      if (novo >= N) {
-        // Acertou a quantidade exata → comemora.
-        concluido.current = true;
-        encherTanque();
-        registrarHabilidade('contagem', true);
-        somSucesso();
-        falar('Muito bem! Tanque cheio!', { interrupt: true });
-      } else {
-        somTique();
-      }
-      return novo;
-    });
-  }, [N, encherTanque, registrarHabilidade]);
+
+    const novo = conta + 1;
+    setConta(novo);
+
+    if (novo >= meta) {
+      // Acertou a quantidade exata → comemora. Efeitos FORA do updater e
+      // guardados por `concluido` pra rodarem exatamente uma vez.
+      concluido.current = true;
+      encherTanque();
+      registrarHabilidade('contagem', true);
+      somSucesso();
+      falar('Muito bem! Tanque cheio!', { interrupt: true });
+    } else {
+      somTique();
+    }
+  }, [conta, meta, encherTanque, registrarHabilidade]);
 
   // ENTER também conta — sem conflitar com setas/espaço (que dirigem).
   useEffect(() => {
@@ -76,11 +84,11 @@ export function RefuelPanel() {
     <div className="posto-overlay">
       <div className="posto-painel" role="dialog" aria-label="abastecer">
         <div className="posto-titulo">
-          FALTAM <span className="posto-n">{N}</span> LITROS
+          FALTAM <span className="posto-n">{meta}</span> LITROS
         </div>
 
         <div className="posto-pips" aria-hidden="true">
-          {Array.from({ length: N }).map((_, i) => (
+          {Array.from({ length: meta }).map((_, i) => (
             <span
               key={i}
               className={'posto-pip' + (i < conta ? ' posto-pip--cheio' : '')}
@@ -89,14 +97,26 @@ export function RefuelPanel() {
         </div>
 
         <div className="posto-conta" aria-live="polite">
-          {conta} / {N}
+          {conta} / {meta}
         </div>
 
-        <button type="button" className="posto-botao" onClick={adicionar}>
+        {/* tabIndex=-1 + blur(): impede que o botão, depois de clicado, fique
+            focado e seja reativado por ESPAÇO (a tecla do freio de mão/drift),
+            o que somaria um litro sem querer. ENTER continua contando pelo
+            listener de window acima. */}
+        <button
+          type="button"
+          className="posto-botao"
+          tabIndex={-1}
+          onClick={(e) => {
+            adicionar();
+            e.currentTarget.blur();
+          }}
+        >
           ⛽ +1 LITRO
         </button>
 
-        <div className="posto-dica">CLIQUE PARA CONTAR ATÉ {N}</div>
+        <div className="posto-dica">CLIQUE PARA CONTAR ATÉ {meta}</div>
       </div>
     </div>
   );

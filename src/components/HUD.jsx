@@ -1,5 +1,5 @@
 import { useGame } from '../store/useGame.js';
-import { LIMIAR_ABASTECER, LIMIAR_BAIXO } from '../economia.js';
+import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
@@ -20,12 +20,13 @@ import { LIMIAR_ABASTECER, LIMIAR_BAIXO } from '../economia.js';
 export function HUD() {
   const moedas = useGame((s) => s.moedas);
   const combustivel = useGame((s) => s.combustivel);
-  const postoPerto = useGame((s) => s.postoPerto);
   const missao = useGame((s) => s.missao);
   const pct = Math.max(0, Math.min(100, combustivel));
 
   // Estados da economia (Fatia 5)
-  const abastecendo = postoPerto && combustivel < LIMIAR_ABASTECER; // painel aberto
+  // `abastecendo` (painel aberto) vem do MESMO seletor que o RefuelPanel usa —
+  // fonte única da verdade, pra banner e painel nunca desincronizarem.
+  const abastecendo = useGame((s) => postoAtivo(s.combustivel, s.postoPerto));
   const vazio = combustivel <= 0;
   const baixo = combustivel <= LIMIAR_BAIXO;
 
