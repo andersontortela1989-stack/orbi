@@ -47,7 +47,8 @@ export function Game() {
         infiniteGrid
       />
 
-      {/* Cidade mínima: 3 prédios colidíveis com letreiros 3D em CAIXA ALTA */}
+      {/* Cidade em bairros temáticos contíguos (Fatia 7) — fonte única em
+          src/city/bairros.js; render e sensores do GPS derivam dos mesmos dados */}
       <City />
 
       {/* Posto de gasolina (Fatia 5) — mesma linguagem visual + sensor de zona */}

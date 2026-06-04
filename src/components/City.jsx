@@ -1,48 +1,52 @@
 import { Building } from './Building.jsx';
+import { BAIRROS } from '../city/bairros.js';
 
 /**
- * Cidade mínima — três prédios à frente do spawn do carro (z > 0),
- * espaçados para o jogador dirigir ENTRE eles e ler as placas enquanto anda.
- * Sem trânsito, sem outros objetos (guard-rail sensorial: TEA+TDAH).
+ * Cidade em BAIRROS temáticos contíguos (Fatia 7).
  *
- * Layout (visto de cima, com spawn do carro em (0,0)):
+ * Mundo contínuo, SEM menu e SEM teleporte: o carro dirige e entra na região.
+ * Cada bairro tem um CHÃO colorido próprio (identidade visual da região — o
+ * jogador sente que mudou de bairro pela cor, sem texto avisando) e seus
+ * prédios com letreiros 3D em CAIXA ALTA. As regiões ficam lado a lado,
+ * separadas por faixas do asfalto-base escuro (as "ruas"), o que dá uma
+ * transição suave sem costura dura entre cores.
  *
- *      [ESCOLA]        ← z = +38, longe, no eixo central
+ * Tudo vem de uma fonte única (src/city/bairros.js) — a mesma que alimenta os
+ * sensores do GPS, então render e missão nunca saem de sincronia.
  *
- *   [PIZZA]   [HOSPITAL]    ← z = +15, mais perto, esquerda e direita
- *
- *            🚗 spawn (0,0)
- *
- * Paleta calma, sem cores saturadas/agressivas. Cada prédio tem altura
- * diferente para reforçar identidade visual à parte da cor e da placa.
+ * Guard-rails: paleta calma e distinta por bairro, poucos prédios por região,
+ * geometria simples (performance > riqueza visual — roda liso no notebook).
  */
 export function City() {
   return (
     <>
-      <Building
-        floorPos={[-20, 15]}
-        size={[12, 6, 12]}
-        color="#c45c4c"
-        label="PIZZA"
-      />
+      {BAIRROS.map((bairro) => (
+        <group key={bairro.slug}>
+          {/* Chão do bairro — visual apenas (sem colisão; o Ground base já é o
+              piso físico). Levemente acima da base (y=0) e ABAIXO da grade
+              (y=0.01), pra grade continuar visível por cima da cor. */}
+          <mesh
+            position={[bairro.chao.centro[0], 0.005, bairro.chao.centro[1]]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            receiveShadow
+          >
+            <planeGeometry args={[bairro.chao.tamanho[0], bairro.chao.tamanho[1]]} />
+            <meshStandardMaterial color={bairro.corChao} roughness={0.96} metalness={0} />
+          </mesh>
 
-      <Building
-        floorPos={[20, 15]}
-        size={[14, 10, 14]}
-        color="#b6d3e3"
-        label="HOSPITAL"
-        labelColor="#1a2733"
-        labelOutline="#ffffff"
-      />
-
-      <Building
-        floorPos={[0, 38]}
-        size={[16, 7, 12]}
-        color="#d4b75c"
-        label="ESCOLA"
-        labelColor="#2a1f0a"
-        labelOutline="#ffffff"
-      />
+          {bairro.predios.map((p) => (
+            <Building
+              key={p.slug}
+              floorPos={p.pos}
+              size={p.size}
+              color={p.cor}
+              label={p.slug}
+              labelColor={p.rotuloCor}
+              labelOutline={p.rotuloContorno}
+            />
+          ))}
+        </group>
+      ))}
     </>
   );
 }

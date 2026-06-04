@@ -1,32 +1,34 @@
 /**
- * Constantes da missão de GPS (Fatia 4).
+ * API da missão de GPS (Fatias 4–7).
  *
- * IMPORTANTE: PREDIOS_GPS espelha as posições e dimensões definidas em
- * src/components/City.jsx. Se um prédio for movido/redimensionado lá, atualizar
- * aqui também — drift entre os dois resulta no sensor desalinhado com a porta
- * (jogador chega no prédio certo e nada acontece, ou aciona sem entrar).
+ * A partir da Fatia 7, TUDO é derivado de src/city/bairros.js — a fonte única
+ * de verdade da cidade. Não há mais espelhamento manual de posições com o
+ * City.jsx (que era o risco de drift avisado aqui antes): mover um prédio em
+ * bairros.js atualiza, de uma vez, o render E os sensores do GPS.
  *
- * Optou-se por NÃO importar de City pra manter City.jsx intacta nesta fatia.
+ * As exportações abaixo mantêm exatamente o mesmo formato de antes, então
+ * MissionController, MissionSensors e a store (useGame) continuam funcionando
+ * sem mudança — só que agora a missão sorteia destinos pela cidade INTEIRA
+ * (todos os bairros), não só os 3 prédios originais.
  */
+import { TODOS_PREDIOS } from '../city/bairros.js';
 
-export const DESTINOS_GPS = ['PIZZA', 'HOSPITAL', 'ESCOLA'];
+/** Slugs de todos os destinos possíveis (todos os prédios de todos os bairros). */
+export const DESTINOS_GPS = TODOS_PREDIOS.map((p) => p.slug);
 
-export const PREDIOS_GPS = [
-  { slug: 'PIZZA',    floorPos: [-20, 15], size: [12, 6, 12] },
-  { slug: 'HOSPITAL', floorPos: [20, 15],  size: [14, 10, 14] },
-  { slug: 'ESCOLA',   floorPos: [0, 38],   size: [16, 7, 12] },
-];
+/** Geometria de cada destino, para os sensores de chegada (um por prédio). */
+export const PREDIOS_GPS = TODOS_PREDIOS.map((p) => ({
+  slug: p.slug,
+  floorPos: p.pos,
+  size: p.size,
+}));
 
 /** Frases pedindo o destino (artigos pt-BR corretos). */
-export const FRASE_PEDIDO = {
-  PIZZA:    'Quero ir até a pizza',
-  HOSPITAL: 'Quero ir até o hospital',
-  ESCOLA:   'Quero ir até a escola',
-};
+export const FRASE_PEDIDO = Object.fromEntries(
+  TODOS_PREDIOS.map((p) => [p.slug, p.pedido])
+);
 
 /** Frases comemorando a chegada — feedback ASSIMÉTRICO: erro não fala nada. */
-export const FRASE_CHEGADA = {
-  PIZZA:    'Boa! Chegamos na pizza!',
-  HOSPITAL: 'Boa! Chegamos no hospital!',
-  ESCOLA:   'Boa! Chegamos na escola!',
-};
+export const FRASE_CHEGADA = Object.fromEntries(
+  TODOS_PREDIOS.map((p) => [p.slug, p.chegada])
+);
