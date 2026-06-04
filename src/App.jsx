@@ -18,7 +18,7 @@ export default function App() {
           // garantido pelo CameraFollow (o R3F só usa este prop na montagem;
           // mexer aqui sozinho não atualiza no HMR). Mantido em sincronia com o
           // ZOOM de lá. Para reenquadrar, ajuste ZOOM em CameraFollow.jsx.
-          zoom: 14,
+          zoom: 18,
           position: [0, 44, 24],
           near: 0.1,
           far: 500,

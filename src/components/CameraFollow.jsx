@@ -8,7 +8,9 @@ import * as THREE from 'three';
 // aquele prop na MONTAGEM inicial — mexer lá não atualiza a câmera viva e "some"
 // no HMR. Setar camera.zoom no loop garante que o enquadramento sempre vale.
 //   ↑ ZOOM = mais perto · ↓ ZOOM = vê mais cidade. Afinar pelo feel.
-const ZOOM = 14;
+//   18 = valor aprovado: POSTO+PIZZA+HOSPITAL+ESCOLA na mesma tela, placas
+//   inteiras e legíveis, carro num tamanho confortável.
+const ZOOM = 18;
 
 // OFFSET = posição da câmera relativa ao carro (câmera NÃO gira com o carro —
 // vista tática). Numa ortográfica define só o ÂNGULO (inclinação iso) e qual
