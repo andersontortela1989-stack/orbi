@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Orbi } from './Orbi.jsx';
+import { useGame } from '../store/useGame.js';
 
 /**
  * Tela de abertura do Órbi — fiel a "Órbi - Tela de Abertura.html".
@@ -61,7 +62,8 @@ function Raw({ html, className, style }) {
   return <div className={className} style={style} aria-hidden="true" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-export function StartScreen({ onPlay }) {
+export function StartScreen({ onPlay, onVerHistoria }) {
+  const introVista = useGame((s) => s.introVista);
   const [scale, setScale] = useState(1);
   const [pose, setPose] = useState('acenando');
   const [pressed, setPressed] = useState(false);
@@ -139,6 +141,13 @@ export function StartScreen({ onPlay }) {
             <span className="start-tri" aria-hidden="true" />
             JOGAR
           </button>
+
+          {/* discreto: só depois da intro vista (adendo de narrativa) */}
+          {introVista && onVerHistoria && (
+            <button className="start-historia" onClick={onVerHistoria}>
+              ver a história de novo
+            </button>
+          )}
         </div>
 
         {/* CANTINHOS (placeholders por ora) */}

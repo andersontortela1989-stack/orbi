@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
-import { falar } from '../audio/voz.js';
+import { falar, nomeParaVoz } from '../audio/voz.js';
 import { somSucesso } from '../audio/sons.js';
 import {
   DESTINOS_GPS,
@@ -12,6 +12,10 @@ import {
 const CELEBRACAO_MS         = 2200; // entre completar uma missão e sortear a próxima
 const PRIMEIRA_NARRACAO_MS  = 1900; // delay após 1ª interação (deixa a saudação tocar)
 const NOVA_MISSAO_NARRACAO_MS = 250; // pequeno respiro entre voz de chegada e nova
+
+// Comemoração ESPECIAL com o nome da criança a cada N chegadas — parcimônia
+// (adendo de narrativa: o nome em toda frase vira ruído).
+const CHEGADAS_POR_ESPECIAL = 4;
 
 /**
  * Orquestra o ciclo da missão de GPS:
@@ -33,6 +37,7 @@ export function MissionController() {
   const interagiu        = useRef(false);
   const proximaMissaoTO  = useRef(null);
   const narrarTO         = useRef(null);
+  const chegadas         = useRef(0); // conta chegadas da sessão (p/ especial c/ nome)
 
   // 1) BOOT — garante uma missão de GPS válida ao montar.
   useEffect(() => {
@@ -85,7 +90,17 @@ export function MissionController() {
     if (concluida && !ultimoConcluido.current) {
       somSucesso();
       const dest = useGame.getState().missao?.destino;
-      if (dest) falar(FRASE_CHEGADA[dest] || 'Boa!', { interrupt: true });
+      if (dest) {
+        chegadas.current += 1;
+        let frase = FRASE_CHEGADA[dest] || 'Uau! Chegamos!';
+        // de vez em quando a comemoração chama a criança pelo nome — ela é quem
+        // guia o Órbi (frase neutra: serve pra menino e menina)
+        const nome = useGame.getState().nome;
+        if (nome && chegadas.current % CHEGADAS_POR_ESPECIAL === 0) {
+          frase += ` Você guia muito bem, ${nomeParaVoz(nome)}!`;
+        }
+        falar(frase, { interrupt: true });
+      }
       clearTimeout(proximaMissaoTO.current);
       proximaMissaoTO.current = setTimeout(() => {
         useGame.getState().iniciarMissaoGPS();

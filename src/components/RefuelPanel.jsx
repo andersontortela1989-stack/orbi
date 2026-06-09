@@ -38,11 +38,15 @@ export function RefuelPanel() {
   const concluido = useRef(false);
 
   // Ao abrir: zera o contador e CONGELA o alvo no que falta agora.
+  // A voz convida pra contagem (tabela de tom do adendo: "Me ajuda a contar?
+  // FALTAM 5!") — o painel mantém o texto curto; a voz carrega a personalidade.
   useEffect(() => {
     if (aberto) {
       setConta(0);
-      setMeta(litrosFaltando(useGame.getState().combustivel));
+      const n = litrosFaltando(useGame.getState().combustivel);
+      setMeta(n);
       concluido.current = false;
+      falar(`Me ajuda a contar? Faltam ${n}!`, { interrupt: true });
     }
   }, [aberto]);
 
@@ -59,7 +63,7 @@ export function RefuelPanel() {
       encherTanque();
       registrarHabilidade('contagem', true);
       somSucesso();
-      falar('Muito bem! Tanque cheio!', { interrupt: true });
+      falar('Conseguimos! Tanque cheio! Você conta muito bem!', { interrupt: true });
     } else {
       somTique();
     }

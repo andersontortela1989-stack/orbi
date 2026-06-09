@@ -8,16 +8,30 @@ import { WelcomeVoice } from './components/WelcomeVoice.jsx';
 import { MissionController } from './components/MissionController.jsx';
 import { StartScreen } from './components/StartScreen.jsx';
 import { OrbiCompanion } from './components/OrbiCompanion.jsx';
+import { IntroChegada } from './components/IntroChegada.jsx';
+import { useGame } from './store/useGame.js';
 
 export default function App() {
-  // A tela de abertura aparece ANTES do jogo. Só montamos o <Canvas>/Physics
-  // ao clicar JOGAR — assim nada da simulação (física, combustível, voz, missão)
-  // roda atrás da abertura, e a saudação "Bem-vindo ao Órbi" toca quando a
-  // criança entra na cidade (na primeira tecla), preservando a lógica de voz.
-  const [jogando, setJogando] = useState(false);
+  // Fluxo "A Chegada" (adendo de narrativa): abertura → intro → jogo.
+  //  - abertura (StartScreen) é o hub. JOGAR: 1ª vez (intro ainda não vista)
+  //    toca a intro; depois vai direto ao jogo. Link "ver a história de novo"
+  //    força a intro (e é por onde se corrige o nome — Parte 2).
+  //  - O <Canvas>/Physics só monta na fase 'jogo'; nada da simulação roda atrás
+  //    da abertura/intro, e o teclado do jogo não conflita com a captura do nome.
+  const introVista = useGame((s) => s.introVista);
+  const [fase, setFase] = useState('abertura'); // 'abertura' | 'intro' | 'jogo'
 
-  if (!jogando) {
-    return <StartScreen onPlay={() => setJogando(true)} />;
+  if (fase === 'abertura') {
+    return (
+      <StartScreen
+        onPlay={() => setFase(introVista ? 'jogo' : 'intro')}
+        onVerHistoria={() => setFase('intro')}
+      />
+    );
+  }
+
+  if (fase === 'intro') {
+    return <IntroChegada onConcluir={() => setFase('jogo')} />;
   }
 
   return (

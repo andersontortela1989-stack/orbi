@@ -15,6 +15,10 @@ import { DESTINOS_GPS } from '../missions/destinos.js';
  */
 
 const ESTADO_INICIAL = {
+  // narrativa "A Chegada" (adendo de narrativa)
+  nome: '',           // nome da criança (capturado na intro; primeiro ato de letramento)
+  introVista: false,  // a intro já foi vista/pulada? (não auto-toca de novo)
+
   // veículo
   veiculo: 'carro',
   desbloqueados: ['carro'],
@@ -42,6 +46,14 @@ export const useGame = create(
   persist(
     (set, get) => ({
       ...ESTADO_INICIAL,
+
+      // === Narrativa "A Chegada" ===
+      // Nome da criança — capturado na intro, persiste. `trim()` evita espaços
+      // soltos; sem validação punitiva (aceita o que vier; dá pra corrigir depois).
+      setNome: (nome) => set({ nome: String(nome ?? '').trim() }),
+
+      // Marca a intro como vista (após concluir OU pular) — não auto-toca de novo.
+      marcarIntroVista: () => set({ introVista: true }),
 
       abastecer: (litros) =>
         set((s) => ({
@@ -125,6 +137,8 @@ export const useGame = create(
       // partialize: só o progresso DURÁVEL é gravado — postoPerto é transiente
       // (depende de onde o carro está agora) e não deve sobreviver a reload.
       partialize: (s) => ({
+        nome: s.nome,
+        introVista: s.introVista,
         veiculo: s.veiculo,
         desbloqueados: s.desbloqueados,
         moedas: s.moedas,

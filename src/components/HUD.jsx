@@ -9,10 +9,13 @@ import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
  *    (a barra fica âmbar quando o combustível está baixo — aviso calmo, sem
  *    vermelho de alarme).
  *  - Faixa superior-central: UMA instrução por vez, com prioridade:
- *      1) tanque vazio (e fora do posto) → "ACABOU A GASOLINA. VAMOS AO POSTO."
- *      2) pedido da missão de GPS ("QUERO HOSPITAL")
+ *      1) tanque vazio (e fora do posto) → "ACABOU! ME LEVA NO POSTO?"
+ *      2) pedido da missão de GPS ("HOSPITAL?")
  *      3) confirmação de chegada ("CHEGAMOS!")
  *    Quando o painel de abastecer está aberto, a faixa some — o foco é abastecer.
+ *    Tom (adendo de narrativa): o banner fica CURTO pela legibilidade; quem
+ *    carrega a personalidade do Órbi-curioso é a VOZ ("O que é hospital?
+ *    Vamos ver?"). "HOSPITAL?" é a curiosidade dele em forma de palavra única.
  *
  * Guard-rail TEA: poucas informações, alto contraste, CAIXA ALTA, sem botões,
  * sempre UMA instrução prioritária por vez.
@@ -45,13 +48,13 @@ export function HUD() {
       {/* Prioridade 1: tanque vazio fora do posto — aviso calmo pra ir ao posto */}
       {vazio && !abastecendo && (
         <div className="mission-banner mission-banner--aviso" role="status">
-          ⛽ ACABOU A GASOLINA — VAMOS AO POSTO
+          ⛽ ACABOU! ME LEVA NO POSTO?
         </div>
       )}
 
       {gpsAtiva && (
         <div className="mission-banner mission-banner--ativa" role="status">
-          QUERO {missao.destino}
+          {missao.destino}?
         </div>
       )}
       {gpsAcabou && (

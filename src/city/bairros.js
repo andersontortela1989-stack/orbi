@@ -30,7 +30,11 @@
  *   size   — [w, h, l]
  *   cor    — cor do prédio
  *   rotuloCor / rotuloContorno — (opcional) contraste do letreiro
- *   pedido / chegada — frases pt-BR (artigos corretos) narradas pelo GPS
+ *   pedido / chegada — frases pt-BR narradas pelo GPS, no tom do adendo de
+ *     narrativa: o PEDIDO é curiosidade do Órbi (ele não conhece nada da
+ *     Terra), e a CHEGADA sempre ENSINA de volta — o Órbi "aprende" e repete
+ *     o que o lugar é ("então PADARIA é onde faz PÃO!"). Estrutura previsível
+ *     ("Uau! Então…") de propósito: previsibilidade acalma (guard-rail TEA).
  */
 
 export const BAIRROS = [
@@ -44,8 +48,8 @@ export const BAIRROS = [
         pos: [-20, 15],
         size: [12, 6, 12],
         cor: '#c45c4c',
-        pedido: 'Quero ir até a pizza',
-        chegada: 'Boa! Chegamos na pizza!',
+        pedido: 'Que cheiro bom! O que é pizza? Me leva lá?',
+        chegada: 'Uau! Então isso é pizza! Comida redonda e gostosa!',
       },
       {
         slug: 'HOSPITAL',
@@ -54,8 +58,8 @@ export const BAIRROS = [
         cor: '#b6d3e3',
         rotuloCor: '#1a2733',
         rotuloContorno: '#ffffff',
-        pedido: 'Quero ir até o hospital',
-        chegada: 'Boa! Chegamos no hospital!',
+        pedido: 'O que é hospital? Vamos ver?',
+        chegada: 'Uau! Então isso é um hospital! Aqui cuida das pessoas!',
       },
       {
         slug: 'ESCOLA',
@@ -64,8 +68,8 @@ export const BAIRROS = [
         cor: '#d4b75c',
         rotuloCor: '#2a1f0a',
         rotuloContorno: '#ffffff',
-        pedido: 'Quero ir até a escola',
-        chegada: 'Boa! Chegamos na escola!',
+        pedido: 'O que é escola? Me mostra?',
+        chegada: 'Uau! Então isso é uma escola! Aqui a gente aprende!',
       },
     ],
   },
@@ -82,8 +86,8 @@ export const BAIRROS = [
         cor: '#cf923f',
         rotuloCor: '#2a1c08',
         rotuloContorno: '#ffffff',
-        pedido: 'Quero ir até o mercado',
-        chegada: 'Boa! Chegamos no mercado!',
+        pedido: 'O que é mercado? Me leva lá?',
+        chegada: 'Uau! Então isso é um mercado! Aqui a gente compra comida!',
       },
       {
         slug: 'PADARIA',
@@ -92,8 +96,8 @@ export const BAIRROS = [
         cor: '#dcc06f',
         rotuloCor: '#2a1f0a',
         rotuloContorno: '#ffffff',
-        pedido: 'Quero ir até a padaria',
-        chegada: 'Boa! Chegamos na padaria!',
+        pedido: 'Que cheirinho! O que é padaria? Vamos ver?',
+        chegada: 'Uau! Então padaria é onde faz pão!',
       },
     ],
   },
@@ -110,8 +114,8 @@ export const BAIRROS = [
         cor: '#79a7bd',
         rotuloCor: '#10242e',
         rotuloContorno: '#ffffff',
-        pedido: 'Quero ir até o porto',
-        chegada: 'Boa! Chegamos no porto!',
+        pedido: 'O que é porto? Me mostra?',
+        chegada: 'Uau! Então isso é um porto! Aqui os barcos param!',
       },
       {
         slug: 'FAROL',
@@ -120,8 +124,8 @@ export const BAIRROS = [
         cor: '#d96a5a',
         rotuloCor: '#ffffff',
         rotuloContorno: '#10242e',
-        pedido: 'Quero ir até o farol',
-        chegada: 'Boa! Chegamos no farol!',
+        pedido: 'O que é farol? Vamos ver?',
+        chegada: 'Uau! Então isso é um farol! Ele acende pra guiar os barcos!',
       },
     ],
   },
@@ -138,8 +142,8 @@ export const BAIRROS = [
         cor: '#6aa45c',
         rotuloCor: '#10240c',
         rotuloContorno: '#ffffff',
-        pedido: 'Quero ir até o parque',
-        chegada: 'Boa! Chegamos no parque!',
+        pedido: 'O que é parque? Me leva lá?',
+        chegada: 'Uau! Então isso é um parque! Aqui brinca no meio das árvores!',
       },
       {
         slug: 'ZOO',
@@ -148,8 +152,8 @@ export const BAIRROS = [
         cor: '#8cbf6c',
         rotuloCor: '#10240c',
         rotuloContorno: '#ffffff',
-        pedido: 'Quero ir até o zoo',
-        chegada: 'Boa! Chegamos no zoo!',
+        pedido: 'O que é zoo? Me mostra?',
+        chegada: 'Uau! Então isso é um zoo! Aqui moram os bichos!',
       },
     ],
   },

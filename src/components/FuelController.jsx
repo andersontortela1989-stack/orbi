@@ -68,7 +68,8 @@ export function FuelController({ targetRef }) {
         avisouBaixo.current = false;
       } else if (!avisouBaixo.current) {
         avisouBaixo.current = true;
-        falar('A gasolina está baixa. Vamos ao posto.');
+        // tom do Órbi (adendo de narrativa): ele pede ajuda, não dá ordem
+        falar('Ih, a gasolina está baixa! Me leva no posto?');
       }
     } else {
       // --- TANQUE VAZIO: desacelera suave até parar, com modo reserva ---
@@ -97,7 +98,7 @@ export function FuelController({ targetRef }) {
       if (!avisouVazio.current) {
         avisouVazio.current = true;
         avisouBaixo.current = true; // não repetir o aviso de "baixo" logo em seguida
-        falar('Acabou a gasolina. Vamos abastecer.', { interrupt: true });
+        falar('Ih, acabou! Me leva no posto?', { interrupt: true });
       }
     }
   });
