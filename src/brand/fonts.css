@@ -1,0 +1,9 @@
+/* ÓRBI · FONTS
+   ----------------------------------------------------------------
+   Fredoka + Atkinson Hyperlegible via Google Fonts.
+   NOTA: para produção, recomenda-se auto-hospedar os .woff2 e
+   declarar @font-face local. Por ora, importação do Google Fonts
+   garante render fiel em todos os cards. (Flag ao usuário.)
+   ---------------------------------------------------------------- */
+
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap");

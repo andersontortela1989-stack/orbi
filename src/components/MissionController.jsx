@@ -17,7 +17,7 @@ const NOVA_MISSAO_NARRACAO_MS = 250; // pequeno respiro entre voz de chegada e n
  * Orquestra o ciclo da missão de GPS:
  *  1) Boot: garante uma missão de GPS válida ativa.
  *  2) Primeira interação: destrava o speechSynthesis (autoplay policy) e narra
- *     a missão atual depois da saudação ("Bem-vindo à Cidade Turbo").
+ *     a missão atual depois da saudação ("Bem-vindo ao Órbi").
  *  3) Quando o destino muda (nova missão), narra o novo pedido.
  *  4) Quando a missão é concluída: somSucesso + voz comemorando, e depois
  *     de CELEBRACAO_MS sorteia o próximo destino.

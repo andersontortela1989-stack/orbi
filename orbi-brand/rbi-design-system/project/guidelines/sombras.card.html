@@ -1,0 +1,24 @@
+<!-- @dsCard group="Spacing" viewport="700x170" name="Sombra sólida + suave" subtitle="O degrau navy do adesivo, e elevação sutil" -->
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"/>
+<link rel="stylesheet" href="../styles.css"/>
+<style>
+  body{margin:0;font-family:var(--font-body);background:var(--orbi-sky);padding:26px 24px;color:var(--orbi-ink);}
+  .row{display:flex;gap:26px;flex-wrap:wrap;align-items:center;}
+  .box{width:96px;height:60px;background:var(--orbi-white);border-radius:var(--radius-md);
+       display:flex;align-items:center;justify-content:center;font-family:var(--font-display);
+       font-weight:700;font-size:13px;color:var(--orbi-ink-soft);}
+  .solid{border:var(--outline) solid var(--ink);color:var(--orbi-ink);}
+  .div{width:2px;height:60px;background:var(--orbi-line);}
+</style></head>
+<body>
+  <div class="row">
+    <div class="box solid" style="box-shadow:var(--solid-1)">solid-1</div>
+    <div class="box solid" style="box-shadow:var(--solid-2)">solid-2</div>
+    <div class="box solid" style="box-shadow:var(--solid-3)">solid-3</div>
+    <div class="div"></div>
+    <div class="box" style="box-shadow:var(--shadow-sm)">sm</div>
+    <div class="box" style="box-shadow:var(--shadow-md)">md</div>
+    <div class="box" style="box-shadow:var(--shadow-lg)">lg</div>
+  </div>
+</body></html>

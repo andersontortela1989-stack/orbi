@@ -1,0 +1,50 @@
+/* ÓRBI · SPACING, RADII, OUTLINE, SHADOW, MOTION
+   ----------------------------------------------------------------
+   CLIMA OFICIAL: "Mundo Adesivo". Respiro generoso, cantos macios,
+   CONTORNO navy grosso e SOMBRA SÓLIDA navy (a assinatura sticker).
+   Movimento contido. Vibrante ≠ estridente.
+   ---------------------------------------------------------------- */
+
+:root {
+  /* ---- Espaçamento (base 4) ---------------------------------- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+
+  /* ---- Raios (macios, amistosos) ----------------------------- */
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --radius-xl:   32px;
+  --radius-pill: 999px;
+
+  /* ---- Contorno adesivo (a assinatura do clima) -------------- */
+  /* Tudo "recortável" ganha traço navy. Espessura por escala. */
+  --outline-thin:    2px;   /* divisórias, inputs em repouso */
+  --outline:         3px;   /* botões, cartões, chips — padrão */
+  --outline-bold:    4px;   /* destaques, títulos-sticker */
+  --outline-color:   var(--orbi-ink);
+
+  /* ---- Sombra sólida (o "adesivo descolando") --------------- */
+  /* Offset navy sólido, sem blur. Profundidade = altura do degrau. */
+  --solid-1:   0 3px 0 var(--orbi-ink);   /* chips, tags */
+  --solid-2:   0 4px 0 var(--orbi-ink);   /* botões padrão */
+  --solid-3:   0 6px 0 var(--orbi-ink);   /* CTA, cartões */
+  --solid-press: 0 2px 0 var(--orbi-ink); /* press: degrau encolhe */
+
+  /* ---- Sombras suaves (elevação sutil, complementam o sólido) - */
+  --shadow-sm:  0 2px 8px rgba(28, 39, 70, 0.10);
+  --shadow-md:  0 8px 24px rgba(28, 39, 70, 0.14);
+  --shadow-lg:  0 18px 48px rgba(28, 39, 70, 0.20);
+
+  /* ---- Movimento (contido; respeita prefers-reduced-motion) -- */
+  --ease-soft:  cubic-bezier(0.33, 0.01, 0.25, 1); /* @kind other */
+  --dur-quick:  160ms; /* @kind other */
+  --dur-calm:   320ms; /* @kind other */
+}

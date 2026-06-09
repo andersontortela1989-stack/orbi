@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Game } from './components/Game.jsx';
@@ -6,8 +6,20 @@ import { HUD } from './components/HUD.jsx';
 import { RefuelPanel } from './components/RefuelPanel.jsx';
 import { WelcomeVoice } from './components/WelcomeVoice.jsx';
 import { MissionController } from './components/MissionController.jsx';
+import { StartScreen } from './components/StartScreen.jsx';
+import { OrbiCompanion } from './components/OrbiCompanion.jsx';
 
 export default function App() {
+  // A tela de abertura aparece ANTES do jogo. Só montamos o <Canvas>/Physics
+  // ao clicar JOGAR — assim nada da simulação (física, combustível, voz, missão)
+  // roda atrás da abertura, e a saudação "Bem-vindo ao Órbi" toca quando a
+  // criança entra na cidade (na primeira tecla), preservando a lógica de voz.
+  const [jogando, setJogando] = useState(false);
+
+  if (!jogando) {
+    return <StartScreen onPlay={() => setJogando(true)} />;
+  }
+
   return (
     <>
       <Canvas
@@ -42,6 +54,7 @@ export default function App() {
       </div>
       <WelcomeVoice />
       <MissionController />
+      <OrbiCompanion />
     </>
   );
 }

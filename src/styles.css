@@ -1,12 +1,29 @@
+/* ÓRBI · UI DO JOGO — clima "Mundo Adesivo"
+   ----------------------------------------------------------------
+   Overlay 2D sobre o <Canvas> 3D. Tudo "recortável" (HUD, banners,
+   painel, dica) ganha a assinatura da marca: contorno navy grosso,
+   sombra sólida navy (degrau de adesivo), cores de brincar sobre
+   branco/céu, Fredoka nos títulos/botões + Atkinson no corpo.
+
+   Guard-rails TEA+TDAH mantidos: alto contraste navy-sobre-claro,
+   CAIXA ALTA legível, UMA instrução por vez, movimento contido
+   (gated em prefers-reduced-motion).
+
+   Tokens: src/brand/ (cores, tipografia, espaçamento, fontes). */
+
+@import "./brand/index.css";
+
 html, body, #root {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #1a1a1a;
-  font-family: system-ui, -apple-system, sans-serif;
-  color: #e6e6e6;
+  /* fundo do app = céu claro (fica atrás do canvas; a cena 3D tem o
+     próprio fundo). Tipografia de corpo = Atkinson Hyperlegible. */
+  background: var(--surface-base);
+  font-family: var(--font-body);
+  color: var(--text-strong);
 }
 
 canvas {
@@ -15,138 +32,144 @@ canvas {
   outline: none;
 }
 
+/* ===== Dica de controles ===== */
+/* Chip-adesivo discreto: branco, contorno navy, sombra sólida pequena. */
 .controls-hint {
   position: fixed;
-  bottom: 16px;
-  left: 16px;
-  padding: 10px 14px;
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 8px;
-  font-size: 13px;
-  letter-spacing: 0.04em;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-card);
+  color: var(--text-soft);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--solid-1);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
   pointer-events: none;
   user-select: none;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 /* ===== HUD ===== */
-/* Overlay calmo, alto contraste, CAIXA ALTA. Poucas informações por vez. */
+/* Cartão-adesivo: branco, contorno navy, sombra sólida. Poucas infos. */
 .hud {
   position: fixed;
-  top: 16px;
-  left: 16px;
-  padding: 14px 18px;
-  background: rgba(20, 24, 32, 0.72);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  top: var(--space-4);
+  left: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--solid-3);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
   min-width: 220px;
   pointer-events: none;
   user-select: none;
-  text-transform: uppercase;
   z-index: 10;
 }
 
 .hud-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .hud-icon {
   font-size: 28px;
   line-height: 1;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
 }
 
+/* Valor (moedas): navy de alto contraste sobre branco, Fredoka. */
 .hud-value {
+  font-family: var(--font-display);
   font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #fce97a;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  color: var(--text-strong);
   font-variant-numeric: tabular-nums;
   min-width: 2ch;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
+/* Barra de combustível: trilho céu com contorno navy fino. */
 .hud-bar {
   flex: 1;
-  height: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 7px;
+  height: 16px;
+  background: var(--surface-base);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 
 .hud-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #5db66a, #82d490);
-  transition: width 0.3s ease-out, background 0.4s ease-out;
+  background: var(--orbi-grass);
+  transition: width 0.3s var(--ease-soft), background 0.4s var(--ease-soft);
 }
 
-/* Combustível baixo: âmbar calmo (NÃO vermelho de alarme — guard-rail TEA). */
+/* Combustível baixo: SOL (âmbar calmo da marca), nunca vermelho de alarme. */
 .hud-bar-fill--baixo {
-  background: linear-gradient(90deg, #d9a441, #f0c869);
+  background: var(--orbi-sun);
 }
 
 /* ===== Banner de missão ===== */
-/* Faixa superior central — UMA missão por vez, alto contraste, CAIXA ALTA. */
+/* Etiqueta-adesivo superior central — UMA missão por vez. Texto navy
+   sobre cor de brincar, contorno navy grosso, sombra sólida. */
 .mission-banner {
   position: fixed;
-  top: 16px;
+  top: var(--space-4);
   left: 50%;
   transform: translateX(-50%);
-  padding: 16px 32px;
-  border-radius: 14px;
+  padding: var(--space-4) var(--space-6);
+  border: var(--outline-bold) solid var(--outline-color);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--solid-3);
+  font-family: var(--font-display);
   font-size: 28px;
-  font-weight: 800;
-  letter-spacing: 0.10em;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  color: var(--text-strong);
   pointer-events: none;
   user-select: none;
   text-align: center;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   z-index: 10;
   white-space: nowrap;
 }
 
+/* Missão ativa = Sol (o astro / CTA da marca). */
 .mission-banner--ativa {
-  background: rgba(20, 24, 32, 0.85);
-  border: 2px solid #fce97a;
+  background: var(--orbi-sun);
 }
 
+/* Chegamos = Capim (sucesso). */
 .mission-banner--ok {
-  background: rgba(28, 60, 38, 0.92);
-  border: 2px solid #82d490;
-  animation: missionPop 0.4s ease-out;
+  background: var(--orbi-grass);
+  animation: missionPop var(--dur-calm) var(--ease-soft);
 }
 
-/* Aviso calmo (combustível) — âmbar suave, sem alarme. */
+/* Aviso calmo (combustível) = Sol suave — energia amistosa, sem alarme. */
 .mission-banner--aviso {
-  background: rgba(54, 44, 22, 0.92);
-  border: 2px solid #e0b257;
+  background: var(--orbi-sun-soft);
 }
 
 @keyframes missionPop {
-  from { transform: translateX(-50%) scale(0.85); opacity: 0; }
-  to   { transform: translateX(-50%) scale(1);    opacity: 1; }
+  from { transform: translateX(-50%) scale(0.9); opacity: 0; }
+  to   { transform: translateX(-50%) scale(1);   opacity: 1; }
 }
 
 /* ===== Painel de abastecer (Fatia 5) ===== */
-/* Ancorado embaixo, NÃO cobre a cena — não é modal que pausa. A criança pode
-   sair dirigindo a qualquer momento. Alto contraste, CAIXA ALTA, botão grande. */
+/* Cartão-adesivo branco ancorado embaixo — NÃO cobre a cena, não pausa
+   o jogo. Contorno navy, sombra sólida, botão-adesivo de Capim. */
 .posto-overlay {
   position: fixed;
   left: 50%;
-  bottom: 24px;
+  bottom: var(--space-5);
   transform: translateX(-50%);
   z-index: 20;
   pointer-events: none; /* só o painel recebe clique */
@@ -156,33 +179,32 @@ canvas {
 
 .posto-painel {
   pointer-events: auto;
-  background: rgba(16, 35, 28, 0.94);
-  border: 2px solid #5fa890;
-  border-radius: 18px;
-  padding: 18px 28px 22px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  box-shadow: var(--solid-3);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   min-width: 300px;
   user-select: none;
-  animation: postoEntra 0.3s ease-out;
+  animation: postoEntra var(--dur-calm) var(--ease-soft);
 }
 
 .posto-titulo {
+  font-family: var(--font-display);
   font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #eaf6f1;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  color: var(--text-strong);
 }
 
+/* O número (N litros): Sol-deep pra destacar sobre branco com contraste. */
 .posto-n {
-  color: #fce97a;
+  color: var(--orbi-sun-deep);
   font-size: 32px;
 }
 
@@ -190,60 +212,72 @@ canvas {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   max-width: 380px;
 }
 
+/* Caixinha (litro) vazia: trilho céu com contorno navy fino. */
 .posto-pip {
   width: 26px;
   height: 34px;
-  border-radius: 6px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.06);
-  transition: background 0.15s ease-out, transform 0.15s ease-out;
+  border-radius: var(--radius-sm);
+  border: var(--outline-thin) solid var(--outline-color);
+  background: var(--surface-base);
+  transition: background 0.15s var(--ease-soft), transform 0.15s var(--ease-soft);
 }
 
+/* Caixinha cheia: Sol (conta enchendo). */
 .posto-pip--cheio {
-  background: linear-gradient(180deg, #f0c869, #d9a441);
-  border-color: #fce97a;
+  background: var(--orbi-sun);
   transform: scale(1.06);
 }
 
 .posto-conta {
+  font-family: var(--font-display);
   font-size: 30px;
-  font-weight: 800;
+  font-weight: var(--weight-display-bold);
   font-variant-numeric: tabular-nums;
-  color: #fce97a;
-  letter-spacing: 0.08em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  color: var(--text-strong);
+  letter-spacing: 0.04em;
 }
 
+/* Botão-adesivo de Capim: texto navy, contorno navy, degrau sólido.
+   Press = o degrau encolhe e o botão afunda (gesto da marca). */
 .posto-botao {
-  font: inherit;
+  font-family: var(--font-display);
   font-size: 24px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #0e231c;
-  background: linear-gradient(180deg, #82d490, #5db66a);
-  border: none;
-  border-radius: 14px;
-  padding: 14px 30px;
+  color: var(--text-strong);
+  background: var(--orbi-grass);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-6);
   cursor: pointer;
-  box-shadow: 0 4px 0 #3f8a52, 0 6px 14px rgba(0, 0, 0, 0.4);
-  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+  box-shadow: var(--solid-3);
+  transition: transform var(--dur-quick) var(--ease-soft),
+              box-shadow var(--dur-quick) var(--ease-soft),
+              background var(--dur-quick) var(--ease-soft);
+}
+
+.posto-botao:hover {
+  background: var(--orbi-grass-soft);
 }
 
 .posto-botao:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 #3f8a52, 0 3px 8px rgba(0, 0, 0, 0.4);
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+  background: var(--orbi-grass-deep);
 }
 
 .posto-dica {
-  font-size: 13px;
-  letter-spacing: 0.06em;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: rgba(234, 246, 241, 0.7);
+  color: var(--text-soft);
 }
 
 @keyframes postoEntra {
@@ -257,4 +291,309 @@ canvas {
   .hud-bar-fill { transition: none; }
   .posto-painel { animation: none; }
   .posto-pip { transition: none; }
+  .posto-botao { transition: none; }
+  .orbi-companion { transition: opacity var(--dur-quick) var(--ease-soft); transform: none; }
+  .orbi-companion.is-visible { transform: none; }
+  .orbi-companion.is-visible.is-celebrating { animation: none; }
+}
+
+/* ============================================================
+   PERSONAGEM ÓRBI — base (Orbi.jsx)
+   ============================================================ */
+.orbi-char svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ============================================================
+   ÓRBI COMPANHEIRO (OrbiCompanion.jsx) — momentos do jogo.
+   Canto inferior-direito, discreto, entra e sai. Decorativo.
+   ============================================================ */
+.orbi-companion {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-4);
+  width: 124px;
+  z-index: 12;
+  pointer-events: none;
+  user-select: none;
+  /* escondido: recolhido pra baixo + transparente */
+  opacity: 0;
+  transform: translateY(16px) scale(0.96);
+  transition: opacity var(--dur-calm) var(--ease-soft),
+              transform var(--dur-calm) var(--ease-soft);
+}
+
+.orbi-companion .orbi-char svg {
+  filter: drop-shadow(0 10px 0 rgba(28, 39, 70, 0.12));
+}
+
+.orbi-companion.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* comemoração: um pulinho contido (gated em reduced-motion abaixo) */
+.orbi-companion.is-visible.is-celebrating {
+  animation: orbiCelebra 0.9s var(--ease-soft);
+}
+@keyframes orbiCelebra {
+  0%   { transform: translateY(0) scale(1); }
+  35%  { transform: translateY(-10px) scale(1.04); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* ============================================================
+   TELA DE ABERTURA (StartScreen.jsx) — fiel ao mock da marca.
+   Canvas fixo 1280×800 escalado pra caber (start-screen).
+   ============================================================ */
+.orbi-start {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--orbi-sky-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+
+.start-screen {
+  width: 1280px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  transform-origin: center center;
+  background: radial-gradient(
+    120% 95% at 50% 8%,
+    var(--orbi-sky-hi) 0%,
+    var(--orbi-sky) 45%,
+    var(--orbi-sky-deep) 100%
+  );
+}
+
+/* ---- decor ---- */
+.start-decor { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+
+.start-sun-planet { position: absolute; top: 54px; left: 70px; }
+
+.start-cloud {
+  position: absolute;
+  background: #fff;
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--solid-1);
+}
+.start-cloud::before,
+.start-cloud::after {
+  content: "";
+  position: absolute;
+  background: #fff;
+  border: var(--outline) solid var(--ink);
+  border-radius: 50%;
+}
+/* máscara branca que esconde o contorno navy onde os caroços encontram a barra */
+.start-cloud i {
+  position: absolute;
+  left: 6px; right: 6px; top: 3px; bottom: 3px;
+  background: #fff;
+  border-radius: var(--radius-pill);
+  z-index: 1;
+}
+.start-cloud--a { width: 150px; height: 46px; left: 150px; top: 150px; }
+.start-cloud--a::before { width: 60px; height: 60px; left: 24px; top: -30px; }
+.start-cloud--a::after  { width: 46px; height: 46px; left: 80px; top: -20px; }
+.start-cloud--b { width: 120px; height: 40px; right: 190px; top: 120px; opacity: .96; }
+.start-cloud--b::before { width: 52px; height: 52px; left: 20px; top: -26px; }
+.start-cloud--b::after  { width: 40px; height: 40px; left: 64px; top: -16px; }
+.start-cloud--c { width: 96px; height: 32px; left: 60px; top: 330px; opacity: .9; }
+.start-cloud--c::before { width: 40px; height: 40px; left: 16px; top: -20px; }
+.start-cloud--c::after  { width: 30px; height: 30px; left: 50px; top: -12px; }
+
+.start-spark { position: absolute; }
+
+/* ---- colina + cidade ---- */
+.start-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; z-index: 2; }
+.start-ground svg { width: 100%; height: 100%; display: block; }
+
+/* ---- conteúdo ---- */
+.start-content {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 54px 40px 40px;
+}
+.start-logo { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+
+/* wordmark adesivo: preenchimento branco, contorno navy grosso, sombra sólida */
+.start-wm {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  line-height: 1;
+  font-size: 112px;
+  color: #fff;
+  -webkit-text-stroke: 8px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 8px 0 var(--ink);
+  display: inline-block;
+  white-space: nowrap;
+}
+.start-o-unit { position: relative; display: inline-block; }
+/* o acento do "Ó" é o planeta-sticker */
+.start-acc {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -.46em;
+  width: .74em;
+  height: .74em;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+
+.start-tagline {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  font-size: 27px;
+  color: var(--orbi-ink);
+  background: var(--orbi-sun);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 9px 28px;
+  box-shadow: var(--solid-2);
+  white-space: nowrap;
+}
+
+/* ---- personagem ---- */
+.start-orbi-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  position: relative;
+}
+.start-orbi { width: 300px; animation: orbiBob 4.2s var(--ease-soft) infinite; }
+.start-orbi svg { filter: drop-shadow(0 14px 0 rgba(28, 39, 70, .14)); }
+@keyframes orbiBob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50%      { transform: translateY(-14px) rotate(1.5deg); }
+}
+
+/* balãozinho de fala ao jogar */
+.start-bubble {
+  position: absolute;
+  top: 6px;
+  left: calc(50% + 120px);
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  font-size: 22px;
+  color: var(--orbi-ink);
+  background: #fff;
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--radius-lg);
+  padding: 10px 18px;
+  box-shadow: var(--solid-2);
+  opacity: 0;
+  transform: scale(.6) translateY(8px);
+  transition: opacity var(--dur-quick) var(--ease-soft), transform var(--dur-quick) var(--ease-soft);
+  pointer-events: none;
+}
+.start-bubble::after {
+  content: "";
+  position: absolute;
+  left: -12px;
+  bottom: 14px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-left: var(--outline) solid var(--ink);
+  border-bottom: var(--outline) solid var(--ink);
+  transform: rotate(45deg);
+}
+.start-bubble.show { opacity: 1; transform: scale(1) translateY(0); }
+
+/* botão JOGAR — adesivo grande de Sol, degrau alto */
+.start-play {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  font-size: 42px;
+  letter-spacing: .02em;
+  color: var(--orbi-ink);
+  background: var(--orbi-sun);
+  border: var(--outline-bold) solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 20px 68px;
+  cursor: pointer;
+  box-shadow: 0 9px 0 var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 14px;
+  transition: transform var(--dur-quick) var(--ease-soft),
+              box-shadow var(--dur-quick) var(--ease-soft),
+              background var(--dur-quick) var(--ease-soft);
+  animation: startInvite 2.4s var(--ease-soft) infinite;
+}
+.start-play:hover { background: var(--orbi-sun-soft); }
+.start-play:active,
+.start-play.press { transform: translateY(6px); box-shadow: 0 3px 0 var(--ink); animation: none; }
+.start-tri {
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 18px 0 18px 30px;
+  border-color: transparent transparent transparent var(--orbi-ink);
+}
+@keyframes startInvite {
+  0%, 88%, 100% { transform: translateY(0) scale(1); }
+  94%           { transform: translateY(-2px) scale(1.03); }
+}
+
+/* ---- cantinhos ---- */
+.start-controls { position: absolute; top: 30px; right: 34px; z-index: 4; display: flex; gap: 16px; }
+.start-rbtn {
+  width: 66px; height: 66px;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  border: var(--outline) solid var(--ink);
+  box-shadow: var(--solid-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--dur-quick) var(--ease-soft), box-shadow var(--dur-quick) var(--ease-soft);
+}
+.start-rbtn:active { transform: translateY(4px); box-shadow: var(--solid-press); }
+.start-rbtn svg { display: block; }
+
+.start-parents {
+  position: absolute;
+  bottom: 26px;
+  right: 34px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  font-size: 16px;
+  color: var(--orbi-ink-soft);
+  background: rgba(255, 255, 255, .7);
+  border: var(--outline-thin) solid var(--orbi-ink-soft);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.start-parents:hover { color: var(--orbi-ink); border-color: var(--orbi-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .start-orbi, .start-play { animation: none !important; }
+  .start-bubble { transition: none; }
 }

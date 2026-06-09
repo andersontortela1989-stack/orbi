@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Órbi · Climas Visuais</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--text-strong);
+    background: #ECE4D6;
+    -webkit-font-smoothing: antialiased;
+    line-height: var(--leading-body);
+  }
+
+  .page { max-width: 1640px; margin: 0 auto; padding: var(--space-7) var(--space-6) var(--space-9); }
+
+  /* ---------- Intro ---------- */
+  .intro { max-width: 880px; margin-bottom: var(--space-7); }
+  .intro .kicker {
+    font-weight: var(--weight-body-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    font-size: var(--text-xs);
+    color: #D9982F;
+  }
+  .intro h1 {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display-bold);
+    font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+    line-height: var(--leading-tight);
+    margin: var(--space-3) 0 var(--space-3);
+    color: #221E33;
+  }
+  .intro p { font-size: var(--text-lg); color: var(--text-soft); max-width: 70ch; }
+  .intro .new-tag {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    white-space: nowrap;
+    margin-top: var(--space-4);
+    background: #221E33; color: #F6EFE2;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm); font-weight: var(--weight-body-bold);
+  }
+  .intro .new-tag b { color: #F8CE83; }
+
+  /* ---------- Round-1 reference strip ---------- */
+  .ref {
+    display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap;
+    background:
+      radial-gradient(360px 160px at 80% -10%, rgba(244,182,78,0.10), transparent 65%),
+      linear-gradient(160deg, #151D34, #1F2A48);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5) var(--space-6);
+    margin-bottom: var(--space-8);
+    color: #F6EFE2;
+  }
+  .ref .ref-label {
+    font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-caps);
+    font-weight: var(--weight-body-bold); color: #B9C2DC;
+    min-width: 132px;
+  }
+  .ref .ref-note { font-size: var(--text-sm); color: #B9C2DC; max-width: 46ch; }
+  .ref .ref-note s { color: #8E98B8; }
+
+  /* ---------- Climates grid ---------- */
+  .climates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+  @media (max-width: 1080px) { .climates { grid-template-columns: 1fr; max-width: 560px; } }
+
+  .climate {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* climate header (label band) */
+  .cl-head { padding: var(--space-5) var(--space-5) var(--space-4); }
+  .cl-num {
+    font-family: var(--font-display); font-weight: var(--weight-display-bold);
+    font-size: var(--text-sm); letter-spacing: 0.04em;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: var(--radius-pill);
+    margin-bottom: var(--space-3);
+  }
+  .cl-name {
+    font-family: var(--font-display); font-weight: var(--weight-display-bold);
+    font-size: var(--text-h3); line-height: 1.05;
+  }
+  .cl-tagline-label { font-size: var(--text-sm); margin-top: var(--space-2); opacity: 0.85; }
+
+  /* hero stage where the logo lives */
+  .cl-stage {
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-8) var(--space-5) var(--space-7);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: var(--space-5);
+    text-align: center;
+    min-height: 300px;
+  }
+  .stage-deco { position: absolute; inset: 0; pointer-events: none; }
+
+  /* wordmark base */
+  .wm {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    position: relative;
+    display: inline-block;
+    user-select: none;
+  }
+  .wm .o-unit { position: relative; display: inline-block; }
+  .wm .o-unit .acc {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .tagline {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: var(--text-lg);
+    letter-spacing: 0.01em;
+  }
+
+  /* palette row */
+  .cl-pal { display: flex; padding: 0; }
+  .pal-cell { flex: 1; height: 64px; position: relative; }
+  .pal-cell span {
+    position: absolute; left: 6px; bottom: 5px;
+    font-size: 9.5px; letter-spacing: 0.03em; font-weight: 700;
+    font-family: var(--font-body);
+  }
+
+  /* body of climate card (notes + sample) */
+  .cl-body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+  .cl-desc { font-size: var(--text-sm); line-height: var(--leading-snug); }
+  .feel {
+    font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-caps);
+    font-weight: var(--weight-body-bold);
+  }
+  .feel-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .feel-chip {
+    font-size: var(--text-xs); font-weight: var(--weight-body-bold);
+    padding: 4px 10px; border-radius: var(--radius-pill);
+  }
+  .sample-row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-1); }
+
+  /* ===================================================================
+     CLIMATE 1 — DIA DE FESTA (vibrante, alegre, dia)
+     =================================================================== */
+  .c1 { background: #FBF4E6; --ink: #2A2440; --ink-soft:#6A6080; }
+  .c1 .cl-head { background: #FBF4E6; }
+  .c1 .cl-num { background: #F0714B; color: #fff; }
+  .c1 .cl-name { color: var(--ink); }
+  .c1 .cl-tagline-label { color: var(--ink-soft); }
+  .c1 .cl-stage { background: radial-gradient(120% 120% at 50% 0%, #FFFBF2, #FBEFD9); }
+  .c1 .wm { color: var(--ink); }
+  .c1 .tagline { color: #E0633D; }
+  .c1 .cl-desc { color: var(--ink-soft); }
+  .c1 .feel { color: #2BA597; }
+  .c1 .feel-chip { background: #FCE7D9; color: #C9532F; }
+  .c1 .confetti { position: absolute; border-radius: 2px; }
+
+  /* sticker-ish soft button */
+  .c1 .btn-play {
+    font-family: var(--font-display); font-weight: 700; font-size: 1.05rem;
+    color: #fff; background: #F0714B;
+    border: none; border-radius: var(--radius-pill);
+    padding: 12px 26px; cursor: pointer;
+    box-shadow: 0 5px 0 #C9532F;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .c1 .pill-2 {
+    font-family: var(--font-display); font-weight: 600; font-size: 0.95rem;
+    color: #2BA597; background: #DAF1EE; border: none;
+    border-radius: var(--radius-pill); padding: 11px 20px;
+  }
+
+  /* ===================================================================
+     CLIMATE 2 — EXPEDIÇÃO ESPACIAL (aventura, foguetes, estrelas)
+     =================================================================== */
+  .c2 { background: #161B3C; --cream:#F4ECDD; --cream-soft:#B9C0E0; }
+  .c2 .cl-head { background: #11152F; }
+  .c2 .cl-num { background: #FF7A4D; color: #fff; }
+  .c2 .cl-name { color: var(--cream); }
+  .c2 .cl-tagline-label { color: var(--cream-soft); }
+  .c2 .cl-stage {
+    background:
+      radial-gradient(520px 240px at 50% -6%, rgba(91,210,224,0.16), transparent 60%),
+      radial-gradient(420px 300px at 78% 110%, rgba(255,122,77,0.16), transparent 60%),
+      linear-gradient(165deg, #11152F, #1E2350);
+  }
+  .c2 .wm { color: var(--cream); }
+  .c2 .tagline { color: #5BD2E0; }
+  .c2 .cl-body { background: #161B3C; }
+  .c2 .cl-desc { color: var(--cream-soft); }
+  .c2 .feel { color: #F6B53F; }
+  .c2 .feel-chip { background: rgba(255,255,255,0.08); color: #9FE4EC; }
+  .c2 .star { position:absolute; border-radius:50%; background:#F4ECDD; }
+
+  .c2 .btn-play {
+    font-family: var(--font-display); font-weight: 700; font-size: 1.05rem;
+    color: #161B3C; background: #F6B53F;
+    border: none; border-radius: var(--radius-pill);
+    padding: 12px 26px; cursor: pointer;
+    box-shadow: 0 5px 0 #C98A24, 0 0 32px rgba(244,182,78,0.45);
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .c2 .pill-2 {
+    font-family: var(--font-display); font-weight: 600; font-size: 0.95rem;
+    color: #5BD2E0; background: rgba(91,210,224,0.14);
+    border: 1.5px solid rgba(91,210,224,0.45);
+    border-radius: var(--radius-pill); padding: 10px 18px;
+  }
+
+  /* ===================================================================
+     CLIMATE 3 — MUNDO ADESIVO (sticker / cara de jogo de verdade)
+     =================================================================== */
+  .c3 { background: #CDEBF6; --navy:#1C2746; --navy-soft:#46557E; }
+  .c3 .cl-head { background: #BCE3F4; }
+  .c3 .cl-num { background: #1C2746; color: #FFC53D; }
+  .c3 .cl-name { color: var(--navy); }
+  .c3 .cl-tagline-label { color: var(--navy-soft); }
+  .c3 .cl-stage {
+    background:
+      radial-gradient(150% 120% at 50% 120%, #A7DCF0 0%, #CDEBF6 55%);
+  }
+  .c3 .cl-body { background: #DDF1FA; }
+  .c3 .cl-desc { color: var(--navy-soft); }
+  .c3 .feel { color: #2C8C4E; }
+  .c3 .feel-chip { background: #fff; color: #1C2746; border: 2px solid #1C2746; }
+  .c3 .cloud { position:absolute; background:#fff; border-radius: var(--radius-pill); opacity:0.6; }
+
+  /* sticker wordmark: white fill + thick navy outline + drop sticker shadow */
+  .c3 .wm.sticker {
+    color: #fff;
+    -webkit-text-stroke: 7px #1C2746;
+    paint-order: stroke fill;
+    text-shadow: 0 6px 0 #1C2746;
+  }
+  .c3 .tagline {
+    color: #1C2746;
+    background: #FFC53D;
+    border: 3px solid #1C2746;
+    border-radius: var(--radius-pill);
+    padding: 6px 18px;
+    box-shadow: 0 4px 0 #1C2746;
+    display: inline-block;
+  }
+  .c3 .btn-play {
+    font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;
+    color: #1C2746; background: #FFC53D;
+    border: 3px solid #1C2746; border-radius: var(--radius-pill);
+    padding: 12px 28px; cursor: pointer;
+    box-shadow: 0 6px 0 #1C2746;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .c3 .pill-2 {
+    font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+    color: #1C2746; background: #5BBE6E;
+    border: 3px solid #1C2746; border-radius: var(--radius-pill);
+    padding: 10px 18px; box-shadow: 0 4px 0 #1C2746;
+  }
+
+  /* ---------- closer ---------- */
+  .closer { margin-top: var(--space-8); background: #221E33; color: #F6EFE2; border-radius: var(--radius-lg); padding: var(--space-7) var(--space-6); }
+  .closer h2 { font-family: var(--font-display); font-weight: var(--weight-display); font-size: var(--text-h2); margin-bottom: var(--space-3); }
+  .closer p { color: #C6CBE0; font-size: var(--text-lg); max-width: 66ch; }
+  .closer .opts { margin-top: var(--space-5); display:flex; gap: var(--space-3); flex-wrap: wrap; }
+  .closer .opt { border:1px solid rgba(244,182,78,0.4); color: #F8CE83; padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); font-weight: var(--weight-body-bold); font-size: var(--text-sm); }
+</style>
+</head>
+<body>
+
+<template id="__bundler_thumbnail" data-bg-color="#161B3C">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#161B3C"/>
+    <circle cx="300" cy="250" r="60" fill="#F0714B"/>
+    <circle cx="600" cy="250" r="60" fill="#F6B53F"/>
+    <circle cx="900" cy="250" r="60" fill="#5BD2E0"/>
+    <text x="600" y="560" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="150" fill="#F4ECDD">Órbi</text>
+    <text x="600" y="650" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="500" font-size="52" fill="#5BD2E0">um mundo pra descobrir</text>
+  </svg>
+</template>
+
+<div class="page">
+
+  <!-- INTRO -->
+  <div class="intro">
+    <div class="kicker">Órbi · identidade visual — segunda rodada · climas</div>
+    <h1>Três climas pro Órbi — qual dá mais vontade de jogar?</h1>
+    <p>A nova direção: menos institucional, mais <b>jogo de verdade</b> — alegre e convidativo no primeiro olhar, sem nunca perder a régua de acessibilidade (legível, alto contraste, calmo, nada que canse). Cada clima mostra a paleta, o logotipo <b>Órbi</b> e a nova tagline aplicados. Lado a lado pra você comparar.</p>
+    <span class="new-tag">Nova tagline · <b>“um mundo pra descobrir”</b></span>
+  </div>
+
+  <!-- ROUND 1 REFERENCE -->
+  <div class="ref">
+    <div class="ref-label">De onde viemos<br/>1ª rodada</div>
+    <span class="wm" style="font-size: 58px; color:#F6EFE2;">
+      <span class="o-unit">O<span class="acc" style="top:-0.42em;width:1.05em;height:0.62em;">
+        <svg viewBox="0 0 110 64" width="100%" height="100%" fill="none">
+          <ellipse cx="55" cy="34" rx="48" ry="17" transform="rotate(-18 55 34)" stroke="#F8CE83" stroke-width="4" opacity="0.85"/>
+          <circle cx="86" cy="17" r="9" fill="#F4B64E"/>
+        </svg>
+      </span></span>rbi
+    </span>
+    <div class="ref-note">Azul-noite + dourado, tom mais sério e “com propósito”. Tagline antiga <s>“cada criança no seu tempo”</s> agora é descrição pra pais — não é mais o slogan. Os 3 climas abaixo empurram a marca pro lado divertido.</div>
+  </div>
+
+  <!-- CLIMATES -->
+  <div class="climates">
+
+    <!-- ============ CLIMATE 1 — DIA DE FESTA ============ -->
+    <section class="climate c1">
+      <div class="cl-head">
+        <span class="cl-num">1</span>
+        <div class="cl-name">Dia de Festa</div>
+        <div class="cl-tagline-label">Vibrante &amp; alegre — confete de cores, luz de dia.</div>
+      </div>
+
+      <div class="cl-stage" id="c1stage">
+        <div class="stage-deco" id="c1confetti"></div>
+        <span class="wm" style="font-size: 84px; position:relative; z-index:2;">
+          <span class="o-unit">O<span class="acc" style="top:-0.44em;width:1.08em;height:0.64em;">
+            <svg viewBox="0 0 110 64" width="100%" height="100%" fill="none">
+              <ellipse cx="55" cy="34" rx="48" ry="17" transform="rotate(-18 55 34)" stroke="#F0714B" stroke-width="4.5"/>
+              <circle cx="86" cy="16" r="10" fill="#F7B32B"/>
+              <circle cx="86" cy="16" r="16" fill="#F7B32B" opacity="0.25"/>
+            </svg>
+          </span></span>rbi
+        </span>
+        <div class="tagline" style="position:relative; z-index:2;">um mundo pra descobrir</div>
+      </div>
+
+      <div class="cl-pal">
+        <div class="pal-cell" style="background:#F7B32B;"><span style="color:#5A3A00;">#F7B32B</span></div>
+        <div class="pal-cell" style="background:#F0714B;"><span style="color:#fff;">#F0714B</span></div>
+        <div class="pal-cell" style="background:#2BB3A3;"><span style="color:#fff;">#2BB3A3</span></div>
+        <div class="pal-cell" style="background:#7C6BD1;"><span style="color:#fff;">#7C6BD1</span></div>
+        <div class="pal-cell" style="background:#2A2440;"><span style="color:#fff;">#2A2440</span></div>
+        <div class="pal-cell" style="background:#FBF4E6;"><span style="color:#8A7E63;">#FBF4E6</span></div>
+      </div>
+
+      <div class="cl-body">
+        <p class="cl-desc">Base creme bem clara e luminosa com um leque de cores alegres usadas com confiança — sol, coral, turquesa, uva. Festa, mas equilibrada: o texto fica no roxo-tinta de alto contraste, as cores entram como confete e destaque. A cara de “app querido e colorido”.</p>
+        <div>
+          <div class="feel" style="margin-bottom:8px;">A sensação</div>
+          <div class="feel-row">
+            <span class="feel-chip">Alegre</span>
+            <span class="feel-chip">Luminoso</span>
+            <span class="feel-chip">Acolhedor</span>
+          </div>
+        </div>
+        <div class="sample-row">
+          <button class="btn-play">▶ Jogar</button>
+          <button class="pill-2">Continuar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CLIMATE 2 — EXPEDIÇÃO ESPACIAL ============ -->
+    <section class="climate c2">
+      <div class="cl-head">
+        <span class="cl-num">2</span>
+        <div class="cl-name">Expedição Espacial</div>
+        <div class="cl-tagline-label">Aventura divertida — foguetes, estrelas, jornada.</div>
+      </div>
+
+      <div class="cl-stage" id="c2stage">
+        <div class="stage-deco" id="c2stars"></div>
+        <!-- little rocket -->
+        <svg class="stage-deco" viewBox="0 0 460 280" preserveAspectRatio="xMidYMid meet" style="z-index:1;">
+          <g transform="translate(360 196) rotate(32)">
+            <path d="M0 -26 C 11 -26 16 -10 16 4 L 16 18 L -16 18 L -16 4 C -16 -10 -11 -26 0 -26 Z" fill="#F4ECDD"/>
+            <circle cx="0" cy="-4" r="6.5" fill="#5BD2E0"/>
+            <path d="M-16 8 L -27 24 L -16 19 Z" fill="#FF7A4D"/>
+            <path d="M16 8 L 27 24 L 16 19 Z" fill="#FF7A4D"/>
+            <path d="M-8 18 L 0 38 L 8 18 Z" fill="#F6B53F"/>
+          </g>
+        </svg>
+        <span class="wm" style="font-size: 84px; position:relative; z-index:2;">
+          <span class="o-unit">O<span class="acc" style="top:-0.5em;width:1.2em;height:0.78em;">
+            <svg viewBox="0 0 130 84" width="100%" height="100%" fill="none">
+              <ellipse cx="62" cy="46" rx="50" ry="16" transform="rotate(-18 62 46)" stroke="#5BD2E0" stroke-width="4" opacity="0.85"/>
+              <path d="M96 6 l3.2 9.6 10.1 .2 -8.1 6.1 3 9.7 -8.2-5.9 -8.2 5.9 3-9.7 -8.1-6.1 10.1-.2 z" fill="#F6B53F"/>
+            </svg>
+          </span></span>rbi
+        </span>
+        <div class="tagline" style="position:relative; z-index:2;">um mundo pra descobrir</div>
+      </div>
+
+      <div class="cl-pal">
+        <div class="pal-cell" style="background:#11152F;"><span style="color:#9aa3c8;">#11152F</span></div>
+        <div class="pal-cell" style="background:#1E2350;"><span style="color:#cfd4ee;">#1E2350</span></div>
+        <div class="pal-cell" style="background:#F6B53F;"><span style="color:#5A3A00;">#F6B53F</span></div>
+        <div class="pal-cell" style="background:#FF7A4D;"><span style="color:#fff;">#FF7A4D</span></div>
+        <div class="pal-cell" style="background:#5BD2E0;"><span style="color:#0A3438;">#5BD2E0</span></div>
+        <div class="pal-cell" style="background:#F4ECDD;"><span style="color:#8A7E63;">#F4ECDD</span></div>
+      </div>
+
+      <div class="cl-body">
+        <p class="cl-desc">O céu-noite da 1ª rodada, mas com energia de decolagem: turquesa cósmico, laranja-foguete e dourado-estrela acendem o escuro. O acento do “Ó” vira estrela com órbita; um foguetinho cruza o céu. Contraste alto e dramático — “bora explorar!” — mas o fundo escuro descansa a vista.</p>
+        <div>
+          <div class="feel" style="margin-bottom:8px;">A sensação</div>
+          <div class="feel-row">
+            <span class="feel-chip">Aventura</span>
+            <span class="feel-chip">Energia</span>
+            <span class="feel-chip">Descoberta</span>
+          </div>
+        </div>
+        <div class="sample-row">
+          <button class="btn-play">▶ Decolar</button>
+          <button class="pill-2">Continuar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CLIMATE 3 — MUNDO ADESIVO ============ -->
+    <section class="climate c3">
+      <div class="cl-head">
+        <span class="cl-num">3</span>
+        <div class="cl-name">Mundo Adesivo</div>
+        <div class="cl-tagline-label">Lúdico de verdade — contorno grosso, cara de jogo.</div>
+      </div>
+
+      <div class="cl-stage" id="c3stage">
+        <div class="cloud" style="width:90px;height:30px;left:24px;top:36px;"></div>
+        <div class="cloud" style="width:64px;height:24px;right:30px;top:64px;"></div>
+        <div class="cloud" style="width:70px;height:24px;left:40%;bottom:30px;opacity:0.5;"></div>
+        <span class="wm sticker" style="font-size: 82px; position:relative; z-index:2;">
+          <span class="o-unit">O<span class="acc" style="top:-0.46em;width:0.74em;height:0.74em; -webkit-text-stroke:0;">
+            <svg viewBox="0 0 60 60" width="100%" height="100%">
+              <circle cx="30" cy="30" r="20" fill="#FFC53D" stroke="#1C2746" stroke-width="6"/>
+              <ellipse cx="30" cy="30" rx="29" ry="9" transform="rotate(-20 30 30)" fill="none" stroke="#1C2746" stroke-width="5"/>
+            </svg>
+          </span></span>rbi
+        </span>
+        <div class="tagline" style="position:relative; z-index:2; font-size: 1rem; margin-top: var(--space-5);">um mundo pra descobrir</div>
+      </div>
+
+      <div class="cl-pal">
+        <div class="pal-cell" style="background:#FFC53D;"><span style="color:#5A3A00;">#FFC53D</span></div>
+        <div class="pal-cell" style="background:#5BBE6E;"><span style="color:#0A3A18;">#5BBE6E</span></div>
+        <div class="pal-cell" style="background:#F0623E;"><span style="color:#fff;">#F0623E</span></div>
+        <div class="pal-cell" style="background:#58B6E8;"><span style="color:#093146;">#58B6E8</span></div>
+        <div class="pal-cell" style="background:#1C2746;"><span style="color:#FFC53D;">#1C2746</span></div>
+        <div class="pal-cell" style="background:#DDF1FA;"><span style="color:#46557E;">#DDF1FA</span></div>
+      </div>
+
+      <div class="cl-body">
+        <p class="cl-desc">O mais “jogo” dos três: tudo vira adesivo — contorno navy grosso, sombrinha sólida, botões que pedem pra apertar. Céu claro, planeta-sticker, cores de brincar. A criança bate o olho e já sabe que dá pra tocar. Contraste altíssimo (navy sobre claro) mantém tudo legível e firme.</p>
+        <div>
+          <div class="feel" style="margin-bottom:8px;">A sensação</div>
+          <div class="feel-row">
+            <span class="feel-chip">Brincável</span>
+            <span class="feel-chip">Firme</span>
+            <span class="feel-chip">Divertido</span>
+          </div>
+        </div>
+        <div class="sample-row">
+          <button class="btn-play">▶ Jogar</button>
+          <button class="pill-2">Continuar</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- CLOSER -->
+  <div class="closer">
+    <h2>Qual clima é o Órbi?</h2>
+    <p>Me diz qual te pegou — <b>1 Dia de Festa</b>, <b>2 Expedição Espacial</b> ou <b>3 Mundo Adesivo</b> — ou se quer um cruzamento (ex.: a paleta do 1 com a cara de adesivo do 3). Posso também misturar elementos. Escolhido o clima, eu fixo a paleta nos tokens e parto pro astronautinha (o Órbi) e a tela de abertura nesse clima.</p>
+    <div class="opts">
+      <span class="opt">Próximo · O personagem Órbi</span>
+      <span class="opt">Próximo · Tela de abertura</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    // Confetti (climate 1) — static, calm.
+    const conf = document.getElementById('c1confetti');
+    if (conf) {
+      const cols = ['#F7B32B', '#F0714B', '#2BB3A3', '#7C6BD1'];
+      const pts = [[8,22,0],[16,68,30],[26,14,18],[80,20,12],[90,60,40],[84,80,8],[50,12,24],[70,86,18],[12,46,6],[92,38,30],[36,84,15],[60,78,36]];
+      pts.forEach(function (p) {
+        const d = document.createElement('span');
+        d.className = 'confetti';
+        const sz = 6 + Math.round(Math.random()*5);
+        d.style.width = sz + 'px'; d.style.height = sz + 'px';
+        d.style.left = p[0] + '%'; d.style.top = p[1] + '%';
+        d.style.background = cols[Math.floor(Math.random()*cols.length)];
+        d.style.transform = 'rotate(' + p[2] + 'deg)';
+        d.style.opacity = '0.9';
+        conf.appendChild(d);
+      });
+    }
+    // Starfield (climate 2) — static, sparse.
+    const stars = document.getElementById('c2stars');
+    if (stars) {
+      for (let i = 0; i < 46; i++) {
+        const s = document.createElement('span');
+        s.className = 'star';
+        const sz = Math.random() < 0.18 ? 3 : Math.random() < 0.6 ? 2 : 1.5;
+        s.style.width = sz + 'px'; s.style.height = sz + 'px';
+        s.style.left = Math.random()*100 + '%';
+        s.style.top = Math.random()*100 + '%';
+        s.style.opacity = (0.25 + Math.random()*0.5).toFixed(2);
+        stars.appendChild(s);
+      }
+    }
+  })();
+</script>
+
+</body>
+</html>

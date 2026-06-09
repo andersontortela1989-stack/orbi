@@ -13,7 +13,7 @@ export function WelcomeVoice() {
     const trigger = () => {
       if (spoken) return;
       spoken = true;
-      falar('Bem-vindo à Cidade Turbo');
+      falar('Bem-vindo ao Órbi');
     };
     window.addEventListener('keydown', trigger, { once: true });
     window.addEventListener('pointerdown', trigger, { once: true });

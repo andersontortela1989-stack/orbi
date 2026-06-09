@@ -1,0 +1,24 @@
+<!-- @dsCard group="Colors" viewport="700x210" name="Tinta & contorno" subtitle="Navy: contorno, texto e sombra sólida" -->
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"/>
+<link rel="stylesheet" href="../styles.css"/>
+<style>
+  body{margin:0;font-family:var(--font-body);background:var(--orbi-sky);padding:22px 20px;}
+  .wrap{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:16px;align-items:stretch;}
+  .sig{border-radius:var(--radius-md);background:var(--orbi-white);border:var(--outline-bold) solid var(--ink);
+       box-shadow:var(--solid-3);display:flex;align-items:center;justify-content:center;}
+  .sig b{font-family:var(--font-display);font-weight:700;font-size:30px;color:#fff;-webkit-text-stroke:4px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink);}
+  .sw{border-radius:var(--radius-md);overflow:hidden;background:var(--orbi-white);
+      border:var(--outline) solid var(--ink);box-shadow:var(--solid-2);}
+  .chip{height:64px;border-bottom:var(--outline) solid var(--ink);}
+  .m{padding:7px 10px 9px;}
+  .nm{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--orbi-ink);}
+  .hx{font-size:11px;letter-spacing:.04em;color:var(--orbi-ink-soft);text-transform:uppercase;margin-top:1px;}
+</style></head>
+<body>
+  <div class="wrap">
+    <div class="sig"><b>Órbi</b></div>
+    <div class="sw"><div class="chip" style="background:var(--orbi-ink)"></div><div class="m"><div class="nm">Tinta</div><div class="hx">#1C2746</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--orbi-ink-soft)"></div><div class="m"><div class="nm">Tinta suave</div><div class="hx">#46557E</div></div></div>
+  </div>
+</body></html>

@@ -1,0 +1,27 @@
+<!-- @dsCard group="Spacing" viewport="700x180" name="Raios & contorno" subtitle="Cantos macios + traço navy por escala" -->
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"/>
+<link rel="stylesheet" href="../styles.css"/>
+<style>
+  body{margin:0;font-family:var(--font-body);background:var(--orbi-sky);padding:22px 24px;color:var(--orbi-ink);}
+  .row{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;}
+  .box{width:84px;height:58px;background:var(--orbi-sun);border:var(--outline) solid var(--ink);
+       box-shadow:var(--solid-2);}
+  .l{font-family:var(--font-display);font-weight:700;font-size:12px;color:var(--orbi-ink-soft);margin-top:10px;text-align:center;}
+  .c{display:flex;flex-direction:column;align-items:center;}
+  .div{width:2px;height:58px;background:var(--orbi-line);margin:0 4px;}
+  .b{width:84px;height:58px;background:var(--orbi-white);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:11px;color:var(--orbi-ink);}
+</style></head>
+<body>
+  <div class="row">
+    <div class="c"><div class="box" style="border-radius:8px"></div><div class="l">sm · 8</div></div>
+    <div class="c"><div class="box" style="border-radius:14px"></div><div class="l">md · 14</div></div>
+    <div class="c"><div class="box" style="border-radius:22px"></div><div class="l">lg · 22</div></div>
+    <div class="c"><div class="box" style="border-radius:32px"></div><div class="l">xl · 32</div></div>
+    <div class="c"><div class="box" style="border-radius:999px"></div><div class="l">pill</div></div>
+    <div class="div"></div>
+    <div class="c"><div class="b" style="border-width:var(--outline-thin)">2px</div><div class="l">thin</div></div>
+    <div class="c"><div class="b" style="border-width:var(--outline)">3px</div><div class="l">padrão</div></div>
+    <div class="c"><div class="b" style="border-width:var(--outline-bold)">4px</div><div class="l">bold</div></div>
+  </div>
+</body></html>

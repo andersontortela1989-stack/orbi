@@ -1,0 +1,95 @@
+/* ÓRBI · COLOR SYSTEM — CLIMA OFICIAL: "MUNDO ADESIVO"
+   ----------------------------------------------------------------
+   Direção escolhida (2ª rodada). Estética de adesivo/sticker:
+   contorno NAVY grosso, sombra sólida navy, cores de brincar sobre
+   CÉU CLARO. Contraste altíssimo navy-sobre-claro = legibilidade.
+
+   Mudança de papel vinda da 1ª rodada:
+     · navy DEIXA de ser superfície escura → vira CONTORNO + TINTA.
+     · superfície DEIXA de ser creme escuro/noite → vira CÉU CLARO.
+     · dourado PERMANECE como o "astro" da marca (agora sol-sticker).
+
+   Régua mantida: calmo, alto contraste, nada que canse.
+   Vibrante ≠ estridente: cores saturadas mas usadas com respiro,
+   sempre amarradas pelo navy e por bastante céu claro.
+   ---------------------------------------------------------------- */
+
+:root {
+  /* ================================================================
+     TINTA — a assinatura do Mundo Adesivo
+     O navy é contorno, texto e sombra sólida. Nunca é fundo amplo.
+     ================================================================ */
+  --orbi-ink:          #1C2746;   /* contorno, texto, sombra sólida */
+  --orbi-ink-soft:     #46557E;   /* texto secundário sobre claro */
+  --orbi-ink-faint:    #8C96B4;   /* texto terciário / placeholder */
+
+  /* ================================================================
+     CORES DE BRINCAR
+     Saturadas mas equilibradas. Cada uma tem um tom -deep para
+     PRESS e detalhes (a sombra sólida em si é sempre navy).
+     ================================================================ */
+  /* Sol — o astro do "Ó". Primária, CTA, conquista, foco. */
+  --orbi-sun:          #FFC53D;
+  --orbi-sun-deep:     #E5A91F;
+  --orbi-sun-soft:     #FFE0A0;   /* halos, fundos suaves */
+
+  /* Capim — verde de brincar. Sucesso, "continuar", natureza. */
+  --orbi-grass:        #5BBE6E;
+  --orbi-grass-deep:   #3F9E52;
+  --orbi-grass-soft:   #BDE8C5;
+
+  /* Coral — energia, alerta amistoso, destaque quente. */
+  --orbi-coral:        #F0623E;
+  --orbi-coral-deep:   #D14828;
+  --orbi-coral-soft:   #FBC4B5;
+
+  /* Céu-forte — azul de brincar, informação, links, frescor. */
+  --orbi-blue:         #58B6E8;
+  --orbi-blue-deep:    #3997CC;
+  --orbi-blue-soft:    #BEE5F8;
+
+  /* ================================================================
+     SUPERFÍCIES — céu claro
+     O fundo é claro e arejado. Branco é o "recheio" do adesivo.
+     ================================================================ */
+  --orbi-sky:          #DDF1FA;   /* superfície principal (céu claro) */
+  --orbi-sky-deep:     #A7DCF0;   /* base de gradiente / profundidade */
+  --orbi-sky-hi:       #F0FAFE;   /* topo de gradiente, áreas amplas */
+  --orbi-paper:        #FBF7EF;   /* superfície quente p/ leitura longa */
+  --orbi-white:        #FFFFFF;   /* recheio do adesivo, cartões */
+  --orbi-line:         #C2DEEC;   /* divisórias suaves sobre céu */
+
+  /* ================================================================
+     ALIASES SEMÂNTICOS — use estes nos componentes
+     ================================================================ */
+  /* superfícies */
+  --surface-base:      var(--orbi-sky);     /* fundo padrão do app */
+  --surface-deep:      var(--orbi-sky-deep);
+  --surface-card:      var(--orbi-white);   /* recheio de adesivo/cartão */
+  --surface-paper:     var(--orbi-paper);   /* leitura longa */
+
+  /* texto */
+  --text-strong:       var(--orbi-ink);
+  --text-soft:         var(--orbi-ink-soft);
+  --text-faint:        var(--orbi-ink-faint);
+  --text-on-ink:       var(--orbi-white);   /* texto sobre navy */
+  --text-on-sun:       var(--orbi-ink);     /* texto sobre amarelo */
+
+  /* o traço/sombra que define a marca */
+  --ink:               var(--orbi-ink);     /* cor universal de contorno */
+
+  /* acento primário = sol */
+  --accent:            var(--orbi-sun);
+  --accent-hover:      var(--orbi-sun-soft);
+  --accent-press:      var(--orbi-sun-deep);
+
+  /* semânticos de estado */
+  --success:           var(--orbi-grass);
+  --success-press:     var(--orbi-grass-deep);
+  --info:              var(--orbi-blue);
+  --info-press:        var(--orbi-blue-deep);
+  --warm:              var(--orbi-coral);
+  --warm-press:        var(--orbi-coral-deep);
+
+  --focus-ring:        var(--orbi-ink);     /* foco = contorno navy nítido */
+}

@@ -1,0 +1,306 @@
+<!-- @dsCard group="Brand" viewport="1100x760" name="Direção oficial — Mundo Adesivo" subtitle="Fonte de verdade · paleta, entra/sai, mecânica, tipo" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Órbi · Direção Oficial — Mundo Adesivo</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:var(--font-body);
+    color:var(--text-strong);
+    background:
+      radial-gradient(140% 120% at 50% 120%, var(--orbi-sky-deep) 0%, var(--orbi-sky) 52%);
+    -webkit-font-smoothing:antialiased;
+    line-height:var(--leading-body);
+    min-height:100vh;
+  }
+  .page{max-width:1180px;margin:0 auto;padding:var(--space-7) var(--space-6) var(--space-9);}
+
+  /* clouds backdrop */
+  .cloud{position:fixed;background:#fff;border-radius:var(--radius-pill);opacity:.45;pointer-events:none;z-index:0;}
+
+  .page>*{position:relative;z-index:1;}
+
+  /* ---------- masthead ---------- */
+  .mast{display:flex;align-items:center;justify-content:space-between;gap:var(--space-6);flex-wrap:wrap;margin-bottom:var(--space-7);}
+  .lockup{display:flex;flex-direction:column;gap:var(--space-4);}
+  .wm{font-family:var(--font-display);font-weight:700;line-height:1;font-size:88px;color:#fff;
+      -webkit-text-stroke:7px var(--ink);paint-order:stroke fill;text-shadow:0 7px 0 var(--ink);
+      display:inline-block;white-space:nowrap;}
+  .o-unit{position:relative;display:inline-block;}
+  .acc{position:absolute;left:50%;transform:translateX(-50%);top:-.46em;width:.74em;height:.74em;
+       -webkit-text-stroke:0;text-shadow:none;}
+  .tag{align-self:flex-start;white-space:nowrap;font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--orbi-ink);
+       background:var(--orbi-sun);border:var(--outline) solid var(--ink);border-radius:var(--radius-pill);
+       padding:8px 22px;box-shadow:var(--solid-2);}
+  .badge{font-family:var(--font-display);font-weight:700;text-align:right;}
+  .badge .k{font-size:13px;text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--orbi-ink-soft);}
+  .badge .v{font-size:30px;color:var(--orbi-ink);line-height:1.05;margin-top:4px;}
+  .badge .v b{color:var(--orbi-coral-deep);}
+
+  /* ---------- section ---------- */
+  .sec{margin-top:var(--space-7);}
+  .sec-h{font-family:var(--font-display);font-weight:700;font-size:14px;text-transform:uppercase;
+         letter-spacing:var(--tracking-caps);color:var(--orbi-ink-soft);margin-bottom:var(--space-4);
+         display:flex;align-items:center;gap:10px;}
+  .sec-h::before{content:"";width:14px;height:14px;border-radius:4px;background:var(--orbi-sun);
+                 border:var(--outline-thin) solid var(--ink);}
+
+  /* ---------- palette ---------- */
+  .pal-group{margin-bottom:var(--space-5);}
+  .pal-label{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--orbi-ink);margin-bottom:var(--space-3);}
+  .pal-label span{font-weight:400;font-family:var(--font-body);font-size:13px;color:var(--orbi-ink-soft);}
+  .sw-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4);}
+  .sw-row.three{grid-template-columns:repeat(4,1fr);}
+  .sw{background:#fff;border:var(--outline) solid var(--ink);border-radius:var(--radius-md);
+      box-shadow:var(--solid-2);overflow:hidden;}
+  .sw .chip{height:58px;border-bottom:var(--outline) solid var(--ink);}
+  .sw .m{padding:8px 12px 10px;}
+  .sw .nm{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--orbi-ink);}
+  .sw .hx{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--orbi-ink-soft);margin-top:1px;}
+  .sw .ro{font-size:11.5px;color:var(--orbi-ink-soft);margin-top:5px;line-height:1.35;}
+
+  /* ---------- in/out ---------- */
+  .io{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);}
+  .io-card{background:#fff;border:var(--outline) solid var(--ink);border-radius:var(--radius-lg);
+           box-shadow:var(--solid-2);padding:var(--space-5);}
+  .io-card.stay{background:var(--orbi-grass-soft);}
+  .io-card.gone{background:var(--orbi-coral-soft);}
+  .io-h{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--orbi-ink);
+        display:flex;align-items:center;gap:10px;margin-bottom:var(--space-3);}
+  .io-pill{font-family:var(--font-display);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+           padding:3px 10px;border-radius:var(--radius-pill);border:var(--outline-thin) solid var(--ink);}
+  .stay .io-pill{background:var(--orbi-grass);color:var(--orbi-ink);}
+  .gone .io-pill{background:var(--orbi-coral);color:#fff;}
+  .io-card ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
+  .io-card li{font-size:14px;color:var(--orbi-ink);display:flex;gap:9px;align-items:flex-start;line-height:1.4;}
+  .io-card li .mk{font-family:var(--font-display);font-weight:700;flex-shrink:0;}
+  .stay li .mk{color:var(--orbi-grass-deep);}
+  .gone li .mk{color:var(--orbi-coral-deep);}
+  .io-card li b{font-weight:700;}
+  .io-card li s{color:var(--orbi-ink-soft);}
+
+  /* ---------- mechanics ---------- */
+  .mech{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5);}
+  .mech-card{background:#fff;border:var(--outline) solid var(--ink);border-radius:var(--radius-lg);
+             box-shadow:var(--solid-2);padding:var(--space-5);}
+  .mech-card h4{font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--orbi-ink);margin-bottom:4px;}
+  .mech-card p{font-size:13px;color:var(--orbi-ink-soft);line-height:1.45;margin-bottom:var(--space-4);}
+  .mech-demo{display:flex;align-items:center;justify-content:center;gap:14px;padding:var(--space-4) 0 var(--space-2);min-height:96px;flex-wrap:wrap;}
+  .demo-box{width:62px;height:46px;background:var(--orbi-sun);border-radius:var(--radius-sm);}
+  .ob-2{border:var(--outline-thin) solid var(--ink);}
+  .ob-3{border:var(--outline) solid var(--ink);}
+  .ob-4{border:var(--outline-bold) solid var(--ink);}
+  .ss-1{background:var(--orbi-blue);border:var(--outline) solid var(--ink);box-shadow:var(--solid-1);}
+  .ss-2{background:var(--orbi-blue);border:var(--outline) solid var(--ink);box-shadow:var(--solid-2);}
+  .ss-3{background:var(--orbi-blue);border:var(--outline) solid var(--ink);box-shadow:var(--solid-3);}
+  .lab{font-family:var(--font-display);font-weight:700;font-size:11px;color:var(--orbi-ink-soft);margin-top:8px;text-align:center;}
+  .cc{display:flex;flex-direction:column;align-items:center;}
+
+  /* press demo button */
+  .pbtn{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--orbi-ink);
+        background:var(--orbi-sun);border:var(--outline) solid var(--ink);border-radius:var(--radius-pill);
+        padding:11px 26px;cursor:pointer;box-shadow:var(--solid-3);transition:transform var(--dur-quick) var(--ease-soft),box-shadow var(--dur-quick) var(--ease-soft);}
+  .pbtn:hover{background:var(--orbi-sun-soft);}
+  .pbtn:active{transform:translateY(4px);box-shadow:var(--solid-press);}
+
+  /* ---------- type + components strip ---------- */
+  .bottom{display:grid;grid-template-columns:1.1fr 1fr;gap:var(--space-5);margin-top:var(--space-5);}
+  .panel{background:#fff;border:var(--outline) solid var(--ink);border-radius:var(--radius-lg);box-shadow:var(--solid-2);padding:var(--space-5);}
+  .panel h4{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--orbi-ink-soft);margin-bottom:var(--space-4);}
+  .ty-display{font-family:var(--font-display);font-weight:700;font-size:40px;line-height:1;color:var(--orbi-ink);}
+  .ty-sub{font-family:var(--font-display);font-weight:500;font-size:18px;color:var(--orbi-ink-soft);margin-top:6px;}
+  .ty-body{font-size:15px;color:var(--orbi-ink);margin-top:var(--space-4);max-width:46ch;line-height:1.55;}
+  .ty-meta{font-size:12px;color:var(--orbi-ink-soft);margin-top:var(--space-3);}
+  .ty-caps{display:inline-block;white-space:nowrap;font-family:var(--font-display);font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--orbi-sun);background:var(--orbi-ink);border-radius:var(--radius-pill);padding:6px 16px;margin-top:var(--space-4);}
+
+  .comp-grid{display:flex;flex-direction:column;gap:var(--space-4);}
+  .btn-row{display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;}
+  .b{font-family:var(--font-display);font-weight:700;font-size:15px;border:var(--outline) solid var(--ink);border-radius:var(--radius-pill);padding:10px 22px;cursor:pointer;box-shadow:var(--solid-2);display:inline-flex;align-items:center;gap:8px;}
+  .b-sun{background:var(--orbi-sun);color:var(--orbi-ink);}
+  .b-grass{background:var(--orbi-grass);color:var(--orbi-ink);}
+  .b-coral{background:var(--orbi-coral);color:#fff;}
+  .b-blue{background:var(--orbi-blue);color:var(--orbi-ink);}
+  .b-ghost{background:#fff;color:var(--orbi-ink);}
+  .chip-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .chip2{font-family:var(--font-display);font-weight:700;font-size:13px;padding:5px 14px;border-radius:var(--radius-pill);border:var(--outline-thin) solid var(--ink);box-shadow:var(--solid-1);}
+  .chip2{background:#fff;color:var(--orbi-ink);}
+  .minicard{background:var(--orbi-sky);border:var(--outline) solid var(--ink);border-radius:var(--radius-md);box-shadow:var(--solid-2);padding:var(--space-4);display:flex;align-items:center;gap:var(--space-4);}
+  .mc-ic{width:48px;height:48px;border-radius:var(--radius-sm);background:var(--orbi-coral);border:var(--outline) solid var(--ink);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .mc-t{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--orbi-ink);white-space:nowrap;}
+  .mc-s{font-size:13px;color:var(--orbi-ink-soft);}
+
+  .foot{margin-top:var(--space-7);font-size:13px;color:var(--orbi-ink-soft);text-align:center;}
+</style>
+</head>
+<body>
+
+<template id="__bundler_thumbnail" data-bg-color="#DDF1FA">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#DDF1FA"/>
+    <text x="600" y="440" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="200" fill="#fff" stroke="#1C2746" stroke-width="16" paint-order="stroke" style="paint-order:stroke">Órbi</text>
+    <rect x="430" y="520" width="340" height="74" rx="37" fill="#FFC53D" stroke="#1C2746" stroke-width="7"/>
+    <text x="600" y="570" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="34" fill="#1C2746">um mundo pra descobrir</text>
+  </svg>
+</template>
+
+<div class="cloud" style="width:150px;height:46px;left:5%;top:120px;"></div>
+<div class="cloud" style="width:110px;height:38px;right:8%;top:200px;opacity:.35;"></div>
+<div class="cloud" style="width:130px;height:42px;left:14%;bottom:8%;opacity:.3;"></div>
+
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="mast">
+    <div class="lockup">
+      <span class="wm"><span class="o-unit">O<span class="acc">
+        <svg viewBox="0 0 60 60" width="100%" height="100%"><circle cx="30" cy="30" r="20" fill="#FFC53D" stroke="#1C2746" stroke-width="6"/><ellipse cx="30" cy="30" rx="29" ry="9" transform="rotate(-20 30 30)" fill="none" stroke="#1C2746" stroke-width="5"/></svg>
+      </span></span>rbi</span>
+      <span class="tag">um mundo pra descobrir</span>
+    </div>
+    <div class="badge">
+      <div class="k">Direção oficial</div>
+      <div class="v">Clima <b>Mundo Adesivo</b></div>
+    </div>
+  </div>
+
+  <!-- PALETTE -->
+  <div class="sec">
+    <div class="sec-h">Paleta oficial · fonte de verdade</div>
+
+    <div class="pal-group">
+      <div class="pal-label">Tinta &amp; contorno <span>— navy: contorno, texto e sombra sólida (a assinatura)</span></div>
+      <div class="sw-row">
+        <div class="sw"><div class="chip" style="background:var(--orbi-ink)"></div><div class="m"><div class="nm">Tinta</div><div class="hx">#1C2746 · --ink</div><div class="ro">Contorno, texto, sombra sólida</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-ink-soft)"></div><div class="m"><div class="nm">Tinta suave</div><div class="hx">#46557E</div><div class="ro">Texto secundário</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-ink-faint)"></div><div class="m"><div class="nm">Tinta fraca</div><div class="hx">#8C96B4</div><div class="ro">Terciário / placeholder</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-line)"></div><div class="m"><div class="nm">Linha</div><div class="hx">#C2DEEC</div><div class="ro">Divisórias sobre céu</div></div></div>
+      </div>
+    </div>
+
+    <div class="pal-group">
+      <div class="pal-label">Cores de brincar <span>— saturadas, amarradas pelo navy. Cada uma tem variante -deep p/ press</span></div>
+      <div class="sw-row">
+        <div class="sw"><div class="chip" style="background:var(--orbi-sun)"></div><div class="m"><div class="nm">Sol</div><div class="hx">#FFC53D</div><div class="ro">Astro · primária · CTA · foco</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-grass)"></div><div class="m"><div class="nm">Capim</div><div class="hx">#5BBE6E</div><div class="ro">Sucesso · continuar</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-coral)"></div><div class="m"><div class="nm">Coral</div><div class="hx">#F0623E</div><div class="ro">Energia · alerta amistoso</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-blue)"></div><div class="m"><div class="nm">Céu-forte</div><div class="hx">#58B6E8</div><div class="ro">Info · links · frescor</div></div></div>
+      </div>
+    </div>
+
+    <div class="pal-group">
+      <div class="pal-label">Superfícies <span>— céu claro arejado; branco é o recheio do adesivo</span></div>
+      <div class="sw-row">
+        <div class="sw"><div class="chip" style="background:var(--orbi-sky)"></div><div class="m"><div class="nm">Céu claro</div><div class="hx">#DDF1FA</div><div class="ro">Fundo padrão do app</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-sky-deep)"></div><div class="m"><div class="nm">Céu fundo</div><div class="hx">#A7DCF0</div><div class="ro">Base de gradiente</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-white)"></div><div class="m"><div class="nm">Branco-recheio</div><div class="hx">#FFFFFF</div><div class="ro">Cartões / adesivos</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--orbi-paper)"></div><div class="m"><div class="nm">Papel</div><div class="hx">#FBF7EF</div><div class="ro">Leitura longa</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IN / OUT -->
+  <div class="sec">
+    <div class="sec-h">O que entra e o que sai da 1ª rodada</div>
+    <div class="io">
+      <div class="io-card stay">
+        <div class="io-h"><span class="io-pill">Fica</span> Herança que permanece</div>
+        <ul>
+          <li><span class="mk">✓</span><span><b>Navy &amp; Sol (dourado)</b> continuam o coração da marca — mas o navy <b>muda de papel</b>: de superfície escura → para contorno/tinta.</span></li>
+          <li><span class="mk">✓</span><span><b>Fredoka</b> (display) + <b>Atkinson Hyperlegible</b> (corpo) — tipografia inalterada.</span></li>
+          <li><span class="mk">✓</span><span><b>Régua de acessibilidade:</b> calmo, alto contraste, respiro, movimento contido.</span></li>
+          <li><span class="mk">✓</span><span><b>Acento do "Ó" como astro</b> — agora resolvido como planeta-sticker.</span></li>
+          <li><span class="mk">✓</span><span><b>Papel quente</b> (#FBF7EF) sobrevive como superfície de leitura longa.</span></li>
+        </ul>
+      </div>
+      <div class="io-card gone">
+        <div class="io-h"><span class="io-pill">Sai</span> O que foi aposentado</div>
+        <ul>
+          <li><span class="mk">✕</span><span><b>Fundo escuro amplo</b> (azul-noite como base/superfície) — <s>--orbi-night / -deep / -soft</s>.</span></li>
+          <li><span class="mk">✕</span><span><b>Tons de bairro terrosos</b> <s>terracota, sálvia, lavanda</s> — trocados por cores de brincar saturadas.</span></li>
+          <li><span class="mk">✕</span><span><b>Creme/areia como superfície primária</b> <s>--orbi-cream / -sand</s> — superfície agora é céu claro.</span></li>
+          <li><span class="mk">✕</span><span><b>Halo dourado</b> <s>--glow-gold</s> — o adesivo não brilha, tem degrau (sombra sólida).</span></li>
+          <li><span class="mk">✕</span><span><b>Tagline antiga</b> <s>"cada criança no seu tempo"</s> → virou descrição p/ pais.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- MECHANICS -->
+  <div class="sec">
+    <div class="sec-h">A mecânica do adesivo</div>
+    <div class="mech">
+      <div class="mech-card">
+        <h4>Contorno por escala</h4>
+        <p>Todo elemento "recortável" ganha traço navy. A espessura indica a hierarquia.</p>
+        <div class="mech-demo">
+          <div class="cc"><div class="demo-box ob-2"></div><div class="lab">2px · thin</div></div>
+          <div class="cc"><div class="demo-box ob-3"></div><div class="lab">3px · padrão</div></div>
+          <div class="cc"><div class="demo-box ob-4"></div><div class="lab">4px · bold</div></div>
+        </div>
+      </div>
+      <div class="mech-card">
+        <h4>Sombra sólida</h4>
+        <p>Degrau navy sem blur — o adesivo "descolando" da tela. Mais degrau = mais destaque.</p>
+        <div class="mech-demo">
+          <div class="cc"><div class="demo-box ss-1"></div><div class="lab">solid-1</div></div>
+          <div class="cc"><div class="demo-box ss-2"></div><div class="lab">solid-2</div></div>
+          <div class="cc"><div class="demo-box ss-3"></div><div class="lab">solid-3</div></div>
+        </div>
+      </div>
+      <div class="mech-card">
+        <h4>Press = afunda</h4>
+        <p>Ao apertar, o degrau encolhe e o elemento desce. Aperte o botão pra sentir.</p>
+        <div class="mech-demo">
+          <button class="pbtn">▶ Jogar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TYPE + COMPONENTS -->
+  <div class="bottom">
+    <div class="panel">
+      <h4>Tipografia</h4>
+      <div class="ty-display">Vamos explorar</div>
+      <div class="ty-sub">Fredoka · display · 400–700</div>
+      <div class="ty-body">O Órbi acompanha a criança no ritmo dela — Atkinson Hyperlegible mantém cada caractere bem distinto (I l 1 · O 0 o · b d p q).</div>
+      <div class="ty-meta">Atkinson Hyperlegible · corpo &amp; interface</div>
+      <div class="ty-caps">Muito bem!</div>
+    </div>
+    <div class="panel">
+      <h4>Componentes no clima</h4>
+      <div class="comp-grid">
+        <div class="btn-row">
+          <button class="b b-sun">▶ Jogar</button>
+          <button class="b b-grass">Continuar</button>
+          <button class="b b-ghost">Voltar</button>
+        </div>
+        <div class="chip-row">
+          <span class="chip2" style="background:var(--orbi-sun)">Letras</span>
+          <span class="chip2" style="background:var(--orbi-blue)">Números</span>
+          <span class="chip2" style="background:var(--orbi-coral);color:#fff">Cidade</span>
+          <span class="chip2">+ novo</span>
+        </div>
+        <div class="minicard">
+          <div class="mc-ic">
+            <svg viewBox="0 0 60 60" width="30" height="30"><circle cx="30" cy="30" r="18" fill="#FFC53D" stroke="#1C2746" stroke-width="6"/><ellipse cx="30" cy="30" rx="28" ry="9" transform="rotate(-20 30 30)" fill="none" stroke="#1C2746" stroke-width="5"/></svg>
+          </div>
+          <div>
+            <div class="mc-t">Bairro das Letras</div>
+            <div class="mc-s">3 de 8 descobertas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Fonte de verdade nos tokens · <b>tokens/colors.css</b> + <b>tokens/spacing.css</b> · clima Mundo Adesivo</div>
+
+</div>
+
+</body>
+</html>

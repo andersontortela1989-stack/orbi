@@ -1,0 +1,176 @@
+<!-- @dsCard group="Personagem" viewport="1100x740" name="Órbi — o astronautinha" subtitle="Folha de personagem · poses + expressões no clima adesivo" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Órbi · Personagem</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:var(--font-body);color:var(--text-strong);
+    background:radial-gradient(140% 120% at 50% 120%, var(--orbi-sky-deep) 0%, var(--orbi-sky) 52%);
+    -webkit-font-smoothing:antialiased;line-height:var(--leading-body);min-height:100vh;
+  }
+  .cloud{position:fixed;background:#fff;border-radius:var(--radius-pill);opacity:.4;pointer-events:none;z-index:0;}
+  .page{max-width:1180px;margin:0 auto;padding:var(--space-7) var(--space-6) var(--space-9);position:relative;z-index:1;}
+
+  .head{margin-bottom:var(--space-7);}
+  .kicker{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--orbi-ink-soft);}
+  .head h1{font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,4vw,3rem);color:var(--orbi-ink);line-height:1.02;margin:var(--space-3) 0;}
+  .head p{font-size:var(--text-lg);color:var(--orbi-ink-soft);max-width:62ch;}
+
+  .meet{display:grid;grid-template-columns:auto 1fr;gap:var(--space-6);align-items:center;
+        background:#fff;border:var(--outline-bold) solid var(--ink);border-radius:var(--radius-xl);
+        box-shadow:var(--solid-3);padding:var(--space-6);margin-bottom:var(--space-7);}
+  .meet .stage{width:236px;height:286px;background:var(--orbi-sky);border:var(--outline) solid var(--ink);
+        border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+  .meet .stage .floaty{width:190px;animation:bob 4.2s var(--ease-soft) infinite;}
+  .meet .stage .floaty svg{width:100%;height:auto;display:block;}
+  .meet .copy h2{font-family:var(--font-display);font-weight:700;font-size:2rem;color:var(--orbi-ink);margin-bottom:var(--space-2);}
+  .meet .copy .who{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--orbi-coral-deep);text-transform:uppercase;letter-spacing:.06em;margin-bottom:var(--space-3);}
+  .meet .copy p{font-size:15.5px;color:var(--orbi-ink-soft);max-width:54ch;margin-bottom:var(--space-3);line-height:1.55;}
+  .traits{display:flex;gap:10px;flex-wrap:wrap;margin-top:var(--space-4);}
+  .trait{font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--orbi-ink);background:var(--orbi-sun);
+         border:var(--outline-thin) solid var(--ink);border-radius:var(--radius-pill);padding:5px 14px;box-shadow:var(--solid-1);}
+
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg);}50%{transform:translateY(-12px) rotate(1.5deg);}}
+  @media (prefers-reduced-motion: reduce){.floaty{animation:none!important;}}
+
+  .sec-h{font-family:var(--font-display);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--orbi-ink-soft);margin:var(--space-7) 0 var(--space-4);display:flex;align-items:center;gap:10px;}
+  .sec-h::before{content:"";width:14px;height:14px;border-radius:4px;background:var(--orbi-sun);border:var(--outline-thin) solid var(--ink);}
+
+  .poses{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4);}
+  .pose{background:#fff;border:var(--outline) solid var(--ink);border-radius:var(--radius-lg);box-shadow:var(--solid-2);padding:var(--space-4) var(--space-4) var(--space-5);display:flex;flex-direction:column;align-items:center;}
+  .pose .frame{width:100%;height:222px;background:var(--orbi-sky);border:var(--outline-thin) solid var(--ink);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .pose .frame svg{height:194px;width:auto;display:block;}
+  .pose .name{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--orbi-ink);margin-top:var(--space-4);}
+  .pose .use{font-size:12.5px;color:var(--orbi-ink-soft);text-align:center;margin-top:4px;line-height:1.4;}
+
+  .exprs{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-5);}
+  .expr{background:#fff;border:var(--outline) solid var(--ink);border-radius:var(--radius-lg);box-shadow:var(--solid-2);padding:var(--space-4);display:flex;flex-direction:column;align-items:center;}
+  .expr .frame{width:130px;height:130px;background:var(--orbi-sky);border:var(--outline-thin) solid var(--ink);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .expr .frame svg{width:104px;height:104px;display:block;}
+  .expr .name{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--orbi-ink);margin-top:var(--space-3);}
+
+  .bottom{display:grid;grid-template-columns:1fr 1.4fr;gap:var(--space-5);margin-top:var(--space-5);}
+  .panel{background:#fff;border:var(--outline) solid var(--ink);border-radius:var(--radius-lg);box-shadow:var(--solid-2);padding:var(--space-5);}
+  .panel h4{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--orbi-ink-soft);margin-bottom:var(--space-4);}
+  .icons{display:flex;gap:var(--space-4);align-items:flex-end;flex-wrap:wrap;}
+  .appicon{border:var(--outline-bold) solid var(--ink);border-radius:26px;box-shadow:var(--solid-3);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .ai-lg{width:104px;height:104px;background:var(--orbi-blue);}
+  .ai-lg svg{width:96px;height:96px;}
+  .ai-sm{width:60px;height:60px;border-radius:16px;background:var(--orbi-sun);box-shadow:var(--solid-2);border-width:var(--outline);}
+  .ai-sm svg{width:54px;height:54px;}
+  .ic-cap{font-family:var(--font-display);font-weight:700;font-size:12px;color:var(--orbi-ink-soft);text-align:center;margin-top:8px;}
+  .cc{display:flex;flex-direction:column;align-items:center;}
+
+  .rules{list-style:none;display:flex;flex-direction:column;gap:11px;}
+  .rules li{font-size:14px;color:var(--orbi-ink);display:flex;gap:10px;align-items:flex-start;line-height:1.45;}
+  .rules li .mk{font-family:var(--font-display);font-weight:700;color:var(--orbi-grass-deep);flex-shrink:0;}
+  .rules li b{font-weight:700;}
+</style>
+</head>
+<body>
+
+<template id="__bundler_thumbnail" data-bg-color="#DDF1FA">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#DDF1FA"/>
+    <circle cx="600" cy="380" r="240" fill="#fff" stroke="#1C2746" stroke-width="22"/>
+    <rect x="430" y="300" width="340" height="240" rx="120" fill="#BEE5F8" stroke="#1C2746" stroke-width="18"/>
+    <circle cx="540" cy="400" r="26" fill="#1C2746"/><circle cx="660" cy="400" r="26" fill="#1C2746"/>
+  </svg>
+</template>
+
+<div class="cloud" style="width:150px;height:46px;left:5%;top:130px;"></div>
+<div class="cloud" style="width:110px;height:38px;right:8%;top:230px;opacity:.3;"></div>
+<div class="cloud" style="width:130px;height:42px;left:12%;bottom:7%;opacity:.28;"></div>
+
+<div class="page">
+
+  <div class="head">
+    <div class="kicker">Órbi · personagem — clima Mundo Adesivo</div>
+    <h1>Conheça o Órbi</h1>
+    <p>O amiguinho astronauta que acompanha a criança pela cidade — feito do mesmo material da marca: contorno navy, sombra sólida, cores de brincar. No peito, o planeta-emblema repete o astro do logotipo. Escolha a pose e eu refino.</p>
+  </div>
+
+  <!-- MEET -->
+  <div class="meet">
+    <div class="stage"><div class="floaty" id="hero"></div></div>
+    <div class="copy">
+      <div class="who">O guia da cidade</div>
+      <h2>Oi, eu sou o Órbi!</h2>
+      <p>Forma simples e redonda — fácil de reconhecer e de redesenhar em qualquer tamanho. Capacete grande pra caber muita expressão; viseira azul que mostra o rostinho; antena com o planetinha que ecoa o acento do “Ó”; e o planeta-emblema no peito amarrando tudo à marca.</p>
+      <p>Ele <b>acompanha, comemora e nunca apressa</b> — a personalidade da marca em forma de bichinho.</p>
+      <div class="traits">
+        <span class="trait">Curioso</span>
+        <span class="trait">Gentil</span>
+        <span class="trait">Companheiro</span>
+        <span class="trait">Brincalhão</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- POSES -->
+  <div class="sec-h">Quatro poses — qual é o Órbi?</div>
+  <div class="poses" id="poses"></div>
+
+  <!-- EXPRESSIONS -->
+  <div class="sec-h">Expressões — a mesma viseira, muitos humores</div>
+  <div class="exprs" id="exprs"></div>
+
+  <!-- BOTTOM -->
+  <div class="bottom">
+    <div class="panel">
+      <h4>Ícone do app</h4>
+      <div class="icons">
+        <div class="cc"><div class="appicon ai-lg" id="ic-lg"></div><div class="ic-cap">app · 1024</div></div>
+        <div class="cc"><div class="appicon ai-sm" id="ic-sm"></div><div class="ic-cap">favicon</div></div>
+      </div>
+      <p style="font-size:13px;color:var(--orbi-ink-soft);margin-top:var(--space-4);line-height:1.5;">Só o capacete já é o Órbi — funciona pequenininho. Fundo céu-forte ou sol, sempre com contorno navy.</p>
+    </div>
+    <div class="panel">
+      <h4>Como usar o Órbi</h4>
+      <ul class="rules">
+        <li><span class="mk">✓</span><span>Mantenha sempre o <b>contorno navy</b> e a <b>forma redonda</b> — é o que o faz “adesivo”.</span></li>
+        <li><span class="mk">✓</span><span>A <b>viseira é o palco</b> da emoção: troque só o rosto pra mudar o humor.</span></li>
+        <li><span class="mk">✓</span><span>O <b>planeta no peito</b> é fixo — é o elo com o logotipo. Não troque por outro símbolo.</span></li>
+        <li><span class="mk">✓</span><span>Use sobre <b>céu claro ou branco</b>, com respiro ao redor (área de proteção ≥ ½ capacete).</span></li>
+        <li><span class="mk">✓</span><span>Movimento contido: um <b>flutuar leve</b> basta. Sem giros nem piscadas rápidas.</span></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script src="assets/orbi.js"></script>
+<script>
+  (function () {
+    var O = window.OrbiChar;
+    document.getElementById('hero').innerHTML = O.svg('acenando');
+
+    var poses = [
+      ['acenando',     'Acenando',     'Boas-vindas, abertura, “oi!”'],
+      ['comemorando',  'Comemorando',  'Acerto, conquista, “muito bem!”'],
+      ['curioso',      'Curioso',      'Pergunta, dica, “vamos pensar?”'],
+      ['parado',       'Parado',       'Repouso, espera, base neutra']
+    ];
+    document.getElementById('poses').innerHTML = poses.map(function (p) {
+      return '<div class="pose"><div class="frame">' + O.svg(p[0]) + '</div>'
+           + '<div class="name">' + p[1] + '</div><div class="use">' + p[2] + '</div></div>';
+    }).join('');
+
+    var moods = [['feliz','Feliz'],['uau','Uau!'],['curioso','Curioso'],['calmo','Calminho']];
+    document.getElementById('exprs').innerHTML = moods.map(function (m) {
+      return '<div class="expr"><div class="frame">' + O.faceSvg(m[0]) + '</div>'
+           + '<div class="name">' + m[1] + '</div></div>';
+    }).join('');
+
+    document.getElementById('ic-lg').innerHTML = O.faceSvg('feliz');
+    document.getElementById('ic-sm').innerHTML = O.faceSvg('feliz');
+  })();
+</script>
+
+</body>
+</html>

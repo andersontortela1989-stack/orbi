@@ -1,0 +1,31 @@
+<!-- @dsCard group="Brand" viewport="700x330" name="Personagem — Órbi astronauta" subtitle="Sticker · acenando · comemorando · curioso" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-body);
+       background:radial-gradient(140% 130% at 50% 120%, var(--orbi-sky-deep) 0%, var(--orbi-sky) 55%);
+       padding:22px;}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:end;}
+  .cc{display:flex;flex-direction:column;align-items:center;gap:12px;}
+  .cc svg{width:165px;height:188px;display:block;filter:drop-shadow(0 7px 0 rgba(28,39,70,.14));}
+  .lab{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;
+       letter-spacing:.07em;color:var(--orbi-ink);background:var(--orbi-sun);
+       border:var(--outline-thin) solid var(--ink);border-radius:var(--radius-pill);
+       padding:4px 14px;box-shadow:var(--solid-1);}
+</style>
+</head>
+<body>
+  <div class="row" id="row"></div>
+  <script src="../assets/orbi.js"></script>
+  <script>
+    var poses=[['acenando','Acenando'],['comemorando','Comemorando'],['curioso','Curioso']];
+    document.getElementById('row').innerHTML = poses.map(function(p){
+      return '<div class="cc">'+OrbiChar.svg(p[0])+'<span class="lab">'+p[1]+'</span></div>';
+    }).join('');
+  </script>
+</body>
+</html>

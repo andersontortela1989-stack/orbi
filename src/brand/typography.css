@@ -1,0 +1,39 @@
+/* ÓRBI · TYPOGRAPHY
+   ----------------------------------------------------------------
+   Régua do brief: muito legível, boa distinção entre caracteres.
+   O jogo usa CAIXA ALTA para legibilidade infantil.
+
+   Display  → Fredoka          (arredondada, amistosa, sólida; o astro
+                                cabe nela). Para o logotipo e títulos.
+   Apoio    → Atkinson Hyperlegible (desenhada pelo Braille Institute
+                                para máxima distinção de caracteres —
+                                alinha direto com o foco em acessibilidade).
+   ---------------------------------------------------------------- */
+
+:root {
+  --font-display: "Fredoka", system-ui, sans-serif;
+  --font-body:    "Atkinson Hyperlegible", system-ui, sans-serif;
+
+  /* ---- Pesos -------------------------------------------------- */
+  --weight-display:        600;  /* Fredoka SemiBold — títulos */
+  --weight-display-bold:   700;  /* Fredoka Bold — logo, destaques */
+  --weight-body:           400;
+  --weight-body-bold:      700;
+
+  /* ---- Escala tipográfica (fluida, generosa) ------------------ */
+  --text-display:  clamp(2.75rem, 6vw, 4.5rem);  /* heróis, tela de abertura */
+  --text-h1:       clamp(2rem, 4vw, 3rem);
+  --text-h2:       clamp(1.5rem, 3vw, 2.125rem);
+  --text-h3:       1.5rem;
+  --text-lg:       1.25rem;
+  --text-body:     1.0625rem;   /* 17px — corpo confortável p/ leitura */
+  --text-sm:       0.9375rem;
+  --text-xs:       0.8125rem;
+
+  /* ---- Métricas legíveis ------------------------------------- */
+  --leading-tight:  1.1;    /* títulos display */
+  --leading-snug:   1.3;    /* subtítulos */
+  --leading-body:   1.6;    /* corpo — respiro generoso */
+  --tracking-caps:  0.08em; /* caixa alta espaçada (rótulos do jogo) */
+  --tracking-tight: -0.01em;
+}

@@ -1,0 +1,13 @@
+/* ÓRBI · BRAND TOKENS — ponto de entrada (vendorizado do design system)
+   ----------------------------------------------------------------
+   Fonte de verdade: orbi-brand/rbi-design-system/project/tokens/.
+   Copiado para src/ pra o build do jogo ser autossuficiente. Quando a
+   marca evoluir, re-sincronizar estes 4 arquivos.
+
+   Ordem importa: fonts (@import Google) PRIMEIRO — @import CSS precisa
+   vir antes de qualquer regra. Depois cor, tipografia, espaçamento. */
+
+@import "./fonts.css";
+@import "./colors.css";
+@import "./typography.css";
+@import "./spacing.css";

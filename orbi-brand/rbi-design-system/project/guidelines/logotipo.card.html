@@ -1,0 +1,42 @@
+<!-- @dsCard group="Brand" viewport="700x260" name="Logotipo Órbi — oficial" subtitle="Wordmark adesivo · Ó planeta · tagline" -->
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"/>
+<link rel="stylesheet" href="../styles.css"/>
+<style>
+  body{margin:0;font-family:var(--font-body);
+       background:radial-gradient(150% 130% at 50% 120%, var(--orbi-sky-deep) 0%, var(--orbi-sky) 55%);
+       padding:30px 28px;}
+  .wrap{display:flex;align-items:center;gap:40px;flex-wrap:wrap;}
+  .lockup{display:flex;flex-direction:column;align-items:flex-start;gap:16px;}
+  .wm{font-family:var(--font-display);font-weight:700;line-height:1;font-size:78px;color:#fff;
+      -webkit-text-stroke:7px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink);
+      display:inline-block;white-space:nowrap;}
+  .o-unit{position:relative;display:inline-block;}
+  .acc{position:absolute;left:50%;transform:translateX(-50%);top:-.46em;width:.74em;height:.74em;
+       -webkit-text-stroke:0;text-shadow:none;pointer-events:none;}
+  .tag{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--orbi-ink);
+       background:var(--orbi-sun);border:var(--outline) solid var(--ink);border-radius:var(--radius-pill);
+       padding:7px 20px;box-shadow:var(--solid-2);}
+  .icon{display:flex;flex-direction:column;align-items:center;gap:12px;}
+  .app{width:108px;height:108px;border-radius:26px;background:var(--orbi-blue);
+       border:var(--outline-bold) solid var(--ink);box-shadow:var(--solid-3);
+       display:flex;align-items:center;justify-content:center;}
+  .ilab{font-family:var(--font-display);font-weight:700;font-size:11px;text-transform:uppercase;
+        letter-spacing:.08em;color:var(--orbi-ink-soft);}
+</style></head>
+<body>
+  <div class="wrap">
+    <div class="lockup">
+      <span class="wm"><span class="o-unit">O<span class="acc">
+        <svg viewBox="0 0 60 60" width="100%" height="100%"><circle cx="30" cy="30" r="20" fill="var(--orbi-sun)" stroke="var(--orbi-ink)" stroke-width="6"/><ellipse cx="30" cy="30" rx="29" ry="9" transform="rotate(-20 30 30)" fill="none" stroke="var(--orbi-ink)" stroke-width="5"/></svg>
+      </span></span>rbi</span>
+      <span class="tag">um mundo pra descobrir</span>
+    </div>
+    <div class="icon">
+      <div class="app">
+        <svg viewBox="0 0 60 60" width="58" height="58"><circle cx="30" cy="30" r="18" fill="var(--orbi-sun)" stroke="var(--orbi-ink)" stroke-width="6"/><ellipse cx="30" cy="30" rx="28" ry="9" transform="rotate(-20 30 30)" fill="none" stroke="var(--orbi-ink)" stroke-width="5"/></svg>
+      </div>
+      <span class="ilab">ícone do app</span>
+    </div>
+  </div>
+</body></html>
