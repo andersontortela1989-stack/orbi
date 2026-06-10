@@ -100,4 +100,32 @@ export const PALETA3D = {
     farol:  TINTAS.sunSoft,
     roda:   TINTAS.ink,
   },
+
+  // props do cenário (Fatia C — decoração pura, ver Cenario.jsx)
+  tronco:     TINTAS.inkSoft,
+  copa:       TINTAS.grass,
+  copaEscura: TINTAS.grassDeep,
+  poste:      TINTAS.white,
+  luminaria:  TINTAS.sun,
+  faixa:      TINTAS.white,
+};
+
+/**
+ * SOMBRA SÓLIDA (Fatia C) — o gesto --solid do 2D aplicado ao mundo 3D.
+ *
+ * CONSTANTE ÚNICA: toda sombra do mundo (prédios, árvores, postes, blob do
+ * carro) usa este offset — uma direção só, como os cards do 2D sobreposto.
+ *
+ * Direção CONFERIDA contra a câmera (não assumida): a câmera fica em
+ * alvo + (0, 44, 24) olhando o alvo, com up (0,1,0). Pelo lookAt:
+ * eixo-X da câmera (direita da tela) = +x do mundo; eixo-Y da câmera
+ * (cima da tela) ≈ (0, 0.48, -0.88), ou seja, "baixo na tela" ≈ +z do
+ * mundo. Logo offset (+dx, +dz) = BAIXO-DIREITA NA TELA. Se a câmera
+ * mudar de quadrante um dia, recalcular aqui.
+ */
+export const SOMBRA_SOLIDA = {
+  dx: 0.6,
+  dz: 0.6,
+  opacidade: 0.16,
+  cor: TINTAS.ink,
 };

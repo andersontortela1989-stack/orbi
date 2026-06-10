@@ -40,8 +40,11 @@ export default function App() {
 
   return (
     <>
+      {/* Fatia C: sem `shadows` (sombra é SÓLIDA, estilo sticker — ver
+          Cenario.jsx/Building.jsx); teto de dpr e powerPreference =
+          higiene preventiva pra telas grandes/notebooks. */}
       <Canvas
-        shadows
+        dpr={[1, 2]}
         orthographic
         camera={{
           // Zoom INICIAL da câmera ortográfica. O valor que vale ao vivo é
@@ -53,7 +56,7 @@ export default function App() {
           near: 0.1,
           far: 500,
         }}
-        gl={{ antialias: true }}
+        gl={{ antialias: true, powerPreference: 'high-performance' }}
       >
         {/* DIA ADESIVO (frente Mundo Adesivo 3D): céu claro da marca; o fog
             desvanece a distância pro céu-profundo — sem parede preta. */}

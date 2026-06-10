@@ -28,7 +28,6 @@ export function City() {
           <mesh
             position={[bairro.chao.centro[0], 0.005, bairro.chao.centro[1]]}
             rotation={[-Math.PI / 2, 0, 0]}
-            receiveShadow
           >
             <planeGeometry args={[bairro.chao.tamanho[0], bairro.chao.tamanho[1]]} />
             <meshStandardMaterial color={bairro.corChao} roughness={0.96} metalness={0} />

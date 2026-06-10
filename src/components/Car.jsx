@@ -108,13 +108,13 @@ export function Car({ rigidBodyRef }) {
 
       {/* Chassi — coral OFICIAL da marca (Fatia B: evolução do avatar, era
           o vizinho #d94d3a). Edição VISUAL apenas: a física acima não muda. */}
-      <mesh castShadow>
+      <mesh>
         <boxGeometry args={[CAR_W, CAR_H, CAR_L]} />
         <meshStandardMaterial color={PALETA3D.carro.corpo} roughness={0.55} />
       </mesh>
 
       {/* Cabine (visual, deslocada para trás → indica "frente") */}
-      <mesh castShadow position={[0, CAR_H * 0.6, -0.25]}>
+      <mesh position={[0, CAR_H * 0.6, -0.25]}>
         <boxGeometry args={[CAR_W * 0.85, CAR_H * 0.55, CAR_L * 0.45]} />
         <meshStandardMaterial color={PALETA3D.carro.cabine} roughness={0.4} />
       </mesh>
@@ -136,7 +136,7 @@ export function Car({ rigidBodyRef }) {
         [+CAR_W / 2 + WHEEL_T / 2, -CAR_H / 2 + WHEEL_R * 0.5, -CAR_L / 3],
         [-CAR_W / 2 - WHEEL_T / 2, -CAR_H / 2 + WHEEL_R * 0.5, -CAR_L / 3],
       ].map((pos, i) => (
-        <mesh key={i} position={pos} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <mesh key={i} position={pos} rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[WHEEL_R, WHEEL_R, WHEEL_T, 16]} />
           <meshStandardMaterial color={PALETA3D.carro.roda} roughness={0.8} />
         </mesh>

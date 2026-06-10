@@ -1,7 +1,7 @@
 import { RigidBody } from '@react-three/rapier';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
-import { PALETA3D } from '../brand/paleta3d.js';
+import { PALETA3D, SOMBRA_SOLIDA } from '../brand/paleta3d.js';
 
 /**
  * Prédio ADESIVO (Fatia B da frente Mundo Adesivo 3D) = caixa com colisão
@@ -49,21 +49,35 @@ export function Building({ floorPos, size, color, label, fontSize }) {
   return (
     <>
       {/* Calçada / lote — visual apenas, sem colisão */}
-      <mesh
-        position={[x, 0.02, z]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-      >
+      <mesh position={[x, 0.02, z]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[lotSize, lotSize]} />
         {/* Calçada branca = "recheio de adesivo": o prédio fica colado num
             sticker. (Watch-point CENTRO: branco sobre chão paper.) */}
         <meshStandardMaterial color={PALETA3D.calcada} roughness={0.95} />
       </mesh>
 
+      {/* Sombra SÓLIDA do prédio (Fatia C) — o gesto --solid da marca:
+          plano navy translúcido do footprint, offset único do mundo
+          (baixo-direita na tela). y=0.034 acima da calçada (0.02) e
+          depthWrite:false — camadas documentadas no Cenario.jsx
+          (z-fighting = guard-rail "nada pisca"). */}
+      <mesh
+        position={[x + SOMBRA_SOLIDA.dx, 0.034, z + SOMBRA_SOLIDA.dz]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <planeGeometry args={[w, l]} />
+        <meshBasicMaterial
+          color={SOMBRA_SOLIDA.cor}
+          transparent
+          opacity={SOMBRA_SOLIDA.opacidade}
+          depthWrite={false}
+        />
+      </mesh>
+
       {/* Prédio: colisão real + contorno + placa de letreiro */}
       <RigidBody type="fixed" colliders="cuboid" position={[x, h / 2, z]}>
-        {/* Contorno sticker — sem castShadow (não engorda a sombra).
-            A base desce TRACO abaixo de y=0 e some dentro do chão. */}
+        {/* Contorno sticker — a base desce TRACO abaixo de y=0 e some
+            dentro do chão. */}
         <mesh
           scale={[(w + 2 * TRACO) / w, (h + 2 * TRACO) / h, (l + 2 * TRACO) / l]}
         >
@@ -72,7 +86,7 @@ export function Building({ floorPos, size, color, label, fontSize }) {
         </mesh>
 
         {/* Corpo */}
-        <mesh castShadow receiveShadow>
+        <mesh>
           <boxGeometry args={[w, h, l]} />
           <meshLambertMaterial color={color} />
         </mesh>

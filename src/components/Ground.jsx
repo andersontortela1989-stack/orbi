@@ -7,7 +7,7 @@ const THICKNESS = 1;
 export function Ground() {
   return (
     <RigidBody type="fixed" colliders="cuboid" friction={0.6}>
-      <mesh position={[0, -THICKNESS / 2, 0]} receiveShadow>
+      <mesh position={[0, -THICKNESS / 2, 0]}>
         <boxGeometry args={[SIZE, THICKNESS, SIZE]} />
         {/* Chão-base = as RUAS (o negativo entre os chãos dos bairros):
             asfalto claro do dia adesivo. */}

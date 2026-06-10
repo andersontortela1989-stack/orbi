@@ -4,6 +4,7 @@ import { PALETA3D } from '../brand/paleta3d.js';
 import { Car } from './Car.jsx';
 import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
+import { Cenario, BlobShadow } from './Cenario.jsx';
 import { GasStation } from './GasStation.jsx';
 import { MissionSensors } from './MissionSensors.jsx';
 import { FuelController } from './FuelController.jsx';
@@ -15,24 +16,12 @@ export function Game() {
   return (
     <>
       {/* Iluminação DIA ADESIVO: ambiente alto (mundo chapado e claro,
-          estilo sticker) + direcional suave só pra definir formas. A sombra
-          dinâmica PERMANECE nesta fatia (watch-point: decisão de trocar por
-          sombra chapada é do Anderson, na Fatia C). */}
+          estilo sticker) + direcional suave só pra definir formas.
+          Fatia C: shadow map dinâmico SAIU (decisão estética) — a sombra
+          do mundo é SÓLIDA, offset único da marca (SOMBRA_SOLIDA em
+          paleta3d.js; planos em Building.jsx e Cenario.jsx). */}
       <ambientLight intensity={0.9} />
-      <directionalLight
-        position={[30, 50, 20]}
-        intensity={0.65}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-left={-60}
-        shadow-camera-right={60}
-        shadow-camera-top={60}
-        shadow-camera-bottom={-60}
-        shadow-camera-near={0.5}
-        shadow-camera-far={200}
-        shadow-bias={-0.0005}
-      />
+      <directionalLight position={[30, 50, 20]} intensity={0.65} />
 
       <Ground />
 
@@ -60,6 +49,10 @@ export function Game() {
       {/* Posto de gasolina (Fatia 5) — mesma linguagem visual + sensor de zona */}
       <GasStation />
 
+      {/* Decoração pura (Fatia C): árvores/postes/faixas/sombras — NADA
+          jogável deriva daqui (fronteira documentada no Cenario.jsx) */}
+      <Cenario />
+
       {/* Sensores invisíveis de chegada (um por prédio) — Fatia 4 */}
       <MissionSensors />
 
@@ -78,6 +71,10 @@ export function Game() {
           automático do R3F. E passar um flag pro Car violaria "não tocar na
           física do carro". Então a ordem aqui é o mecanismo — mantenha-a.) */}
       <FuelController targetRef={carRef} />
+
+      {/* Sombra sólida do carro (depois do FuelController de propósito —
+          só LÊ a posição; não entra na cadeia Car→FuelController) */}
+      <BlobShadow targetRef={carRef} />
 
       <CameraFollow targetRef={carRef} />
     </>
