@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Grid } from '@react-three/drei';
+import { PALETA3D } from '../brand/paleta3d.js';
 import { Car } from './Car.jsx';
 import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
@@ -13,11 +14,14 @@ export function Game() {
 
   return (
     <>
-      {/* Iluminação: ambiente baixo + direcional única para definir formas */}
-      <ambientLight intensity={0.55} />
+      {/* Iluminação DIA ADESIVO: ambiente alto (mundo chapado e claro,
+          estilo sticker) + direcional suave só pra definir formas. A sombra
+          dinâmica PERMANECE nesta fatia (watch-point: decisão de trocar por
+          sombra chapada é do Anderson, na Fatia C). */}
+      <ambientLight intensity={0.9} />
       <directionalLight
         position={[30, 50, 20]}
-        intensity={1.3}
+        intensity={0.65}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -32,16 +36,18 @@ export function Game() {
 
       <Ground />
 
-      {/* Grade de referência: torna velocidade e derrapagem perceptíveis no plano vazio */}
+      {/* Grade de referência: torna velocidade e derrapagem perceptíveis.
+          Recolorida pro dia (sutil, não gritante); fica até as faixas de rua
+          da Fatia C herdarem o papel. */}
       <Grid
         position={[0, 0.01, 0]}
         args={[200, 200]}
         cellSize={2}
         cellThickness={0.5}
-        cellColor="#3f4248"
+        cellColor={PALETA3D.gradeLinha}
         sectionSize={10}
         sectionThickness={1}
-        sectionColor="#5a5d65"
+        sectionColor={PALETA3D.gradeSecao}
         fadeDistance={120}
         fadeStrength={1}
         infiniteGrid

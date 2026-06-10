@@ -1,5 +1,6 @@
 import { RigidBody } from '@react-three/rapier';
 import { Text } from '@react-three/drei';
+import { PALETA3D } from '../brand/paleta3d.js';
 
 /**
  * Prédio = caixa com colisão real (RigidBody fixo, collider cuboid).
@@ -40,7 +41,9 @@ export function Building({
         receiveShadow
       >
         <planeGeometry args={[lotSize, lotSize]} />
-        <meshStandardMaterial color="#4a4d54" roughness={0.95} />
+        {/* Calçada branca = "recheio de adesivo": o prédio fica colado num
+            sticker. (Watch-point CENTRO: branco sobre chão paper.) */}
+        <meshStandardMaterial color={PALETA3D.calcada} roughness={0.95} />
       </mesh>
 
       {/* Prédio: colisão real + letreiro 3D */}

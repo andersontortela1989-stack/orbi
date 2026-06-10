@@ -42,10 +42,12 @@
  *     chegada e letreiro normalmente.
  */
 
+import { PALETA3D } from '../brand/paleta3d.js';
+
 export const BAIRROS = [
   {
     slug: 'CENTRO',
-    corChao: '#363b43', // asfalto neutro
+    corChao: PALETA3D.chaoCentro, // paper — centro quente (dia adesivo)
     chao: { centro: [0, 24], tamanho: [70, 60] },
     predios: [
       {
@@ -81,7 +83,7 @@ export const BAIRROS = [
 
   {
     slug: 'MERCADO',
-    corChao: '#5b4a2e', // marrom quente (feira/mercado)
+    corChao: PALETA3D.chaoMercado, // sol-soft (feira/mercado)
     chao: { centro: [57, 28], tamanho: [42, 58] },
     predios: [
       {
@@ -109,7 +111,7 @@ export const BAIRROS = [
 
   {
     slug: 'PORTO',
-    corChao: '#2c4753', // azul-petróleo (água/porto)
+    corChao: PALETA3D.chaoPorto, // céu-soft (água/porto)
     chao: { centro: [-61, 29], tamanho: [42, 58] },
     predios: [
       {
@@ -137,7 +139,7 @@ export const BAIRROS = [
 
   {
     slug: 'PARQUE',
-    corChao: '#3b5a36', // verde (parque/natureza)
+    corChao: PALETA3D.chaoParque, // capim-soft (parque/natureza)
     chao: { centro: [0, 74], tamanho: [58, 40] },
     predios: [
       {
