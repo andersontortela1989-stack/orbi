@@ -57,6 +57,13 @@ export function ChegadaVivaPanel() {
 
   if (!pergunta) return null;
 
+  // Adesivo do Caderninho — registrado tanto no acerto quanto na revelação
+  // (idempotente na store; pergunta antiga sem o campo é no-op).
+  const registrarDescoberta = () => {
+    const d = pergunta.descoberta;
+    if (d) useGame.getState().registrarDescoberta(d.categoria, d.id);
+  };
+
   // Fecha o painel e segue o fluxo normal — só o painel sorteia a próxima
   // missão quando há chegada viva (o MissionController delega pra cá).
   const finalizar = () => {
@@ -74,6 +81,7 @@ export function ChegadaVivaPanel() {
       resolvido.current = true;
       setAcertou(true);
       registrarHabilidade(pergunta.habilidade, true);
+      registrarDescoberta();
       somSucesso();
       falar(pergunta.fraseAcerto, { interrupt: true });
       finalizar();
@@ -88,6 +96,10 @@ export function ChegadaVivaPanel() {
     if (n >= MAX_TENTATIVAS) {
       resolvido.current = true;
       setRevelada(true);
+      // A revelação NÃO conta acerto (régua honesta), mas o item FOI
+      // descoberto: o Órbi ensinou de qualquer jeito — o adesivo entra no
+      // Caderninho sem rastro de falha.
+      registrarDescoberta();
       falar(pergunta.fraseRevela, { interrupt: true });
       finalizar();
     } else {

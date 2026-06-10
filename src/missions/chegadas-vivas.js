@@ -22,6 +22,10 @@
  *   opcoes          — 3 cartas { valor, emoji|null, rotulo } embaralhadas
  *                     (sem emoji, o rótulo vira número grande)
  *   dica            — instrução curta embaixo das cartas
+ *   descoberta      — { categoria, id } do item pro Caderninho do Órbi
+ *                     (registrado no acerto E na revelação: o Órbi aprendeu
+ *                     o fato de qualquer jeito — narrativa generosa; a régua
+ *                     honesta continua sendo `habilidades`)
  *   frasePergunta / fraseAcerto / fraseTenteDeNovo / fraseRevela — as 4
  *     falas do Órbi, em minúsculas (lição do TTS — CAIXA ALTA é soletrada)
  */
@@ -89,6 +93,7 @@ function sortearPerguntaAnimal(lugar) {
     mostra: null,
     opcoes,
     dica: 'TOQUE NO BICHO CERTO',
+    descoberta: { categoria: 'animais', id: certo.slug },
     frasePergunta: `Qual desses faz ${som}?`,
     fraseAcerto: `Isso! ${capitalizar(artigo)} ${nome} faz ${som}! Você sabe demais!`,
     fraseTenteDeNovo: `Hmm, vamos ouvir de novo? ${capitalizar(som)}!`,
@@ -99,9 +104,10 @@ function sortearPerguntaAnimal(lugar) {
 // ============================ MERCADO ==================================
 // Cores das frutas (artes). Banco próprio da mecânica — cores todas
 // DISTINTAS de propósito: quaisquer 2 distratoras já têm cor diferente
-// da certa (nunca há duas respostas plausíveis).
+// da certa (nunca há duas respostas plausíveis). Exportado: o Caderninho
+// do Órbi (descobertas.js) deriva os adesivos daqui, sem duplicar banco.
 
-const FRUTAS = [
+export const FRUTAS = [
   { slug: 'MAÇÃ',    emoji: '🍎', artigo: 'a', cor: 'vermelha' },
   { slug: 'BANANA',  emoji: '🍌', artigo: 'a', cor: 'amarela' },
   { slug: 'UVA',     emoji: '🍇', artigo: 'a', cor: 'roxa' },
@@ -139,6 +145,7 @@ function sortearPerguntaCorFruta(lugar) {
     mostra: null,
     opcoes,
     dica: 'TOQUE NA FRUTA CERTA',
+    descoberta: { categoria: 'frutas', id: certa.slug },
     frasePergunta: `Qual fruta é ${cor}?`,
     fraseAcerto: `Isso! ${capitalizar(artigo)} ${nome} é ${cor}! Você sabe as cores!`,
     fraseTenteDeNovo: `Hmm, vamos ver de novo? ${capitalizar(cor)}!`,
@@ -150,7 +157,8 @@ function sortearPerguntaCorFruta(lugar) {
 // Contagem de pães (matemática). Sem banco: o conteúdo é o N sorteado.
 
 // N pequeno (2–5): cabe na tela em pães grandes, contáveis no dedo.
-const QUANTIDADES = [2, 3, 4, 5];
+// Exportado: o Caderninho deriva os slots de números daqui.
+export const QUANTIDADES = [2, 3, 4, 5];
 
 let ultimaQuantidade = null;
 
@@ -175,6 +183,7 @@ function sortearPerguntaPaes(lugar) {
     mostra: { emoji: '🍞', quantidade: n },
     opcoes,
     dica: 'TOQUE NO NÚMERO CERTO',
+    descoberta: { categoria: 'contagens', id: String(n) },
     frasePergunta: 'Quantos pães tem aqui?',
     fraseAcerto: `Isso! São ${n} pães! Você conta muito bem!`,
     // não vaza a resposta: a dica é contar de novo, não a cor/som do alvo

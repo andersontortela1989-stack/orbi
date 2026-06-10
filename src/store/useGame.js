@@ -40,6 +40,24 @@ const ESTADO_INICIAL = {
   // (transiente como postoPerto: NÃO persistido; reload = sem pergunta presa)
   chegadaViva: null,
 
+  // Caderninho do Órbi aberto? (transiente — NÃO persistido)
+  caderninhoAberto: false,
+
+  // Descobertas item-a-item — a matéria-prima do Caderninho do Órbi (e a
+  // futura interface infantil do relatório BNCC da Fatia 13, que lerá
+  // `habilidades`; dois consumidores, zero acoplamento). Diferente de
+  // `habilidades` (régua HONESTA de desempenho), aqui é a NARRATIVA: o que
+  // o Órbi já conheceu graças à criança — acerto E revelação registram
+  // (quem errou 2x ainda ganha o adesivo; zero rastro de falha). Arrays em
+  // ordem de descoberta (a ordem conta a história), sem duplicata.
+  // Categoria nova aqui exige bump da version (migrate injeta — ver abaixo).
+  descobertas: {
+    lugares:   [],
+    animais:   [],
+    frutas:    [],
+    contagens: [],
+  },
+
   // missão (uma por vez)
   missao: { tipo: 'nenhuma', destino: null, concluida: false },
 
@@ -95,6 +113,21 @@ export const useGame = create(
         if (pergunta) set({ chegadaViva: pergunta });
       },
       fecharChegadaViva: () => set({ chegadaViva: null }),
+
+      // === Caderninho do Órbi ===
+      abrirCaderninho: () => set({ caderninhoAberto: true }),
+      fecharCaderninho: () => set({ caderninhoAberto: false }),
+
+      // Registra um item descoberto. IDEMPOTENTE: já registrado = no-op —
+      // naturalmente StrictMode-safe, e a ordem de descoberta fica honesta.
+      registrarDescoberta: (categoria, id) =>
+        set((s) => {
+          const lista = s.descobertas?.[categoria];
+          if (!lista || lista.includes(id)) return {};
+          return {
+            descobertas: { ...s.descobertas, [categoria]: [...lista, id] },
+          };
+        }),
 
       pagarPedagio: (valor) =>
         set((s) => ({
@@ -188,6 +221,12 @@ export const useGame = create(
         if (!habilidade) return false;
         get().completarMissao();
         get().registrarHabilidade(habilidade, true);
+        // Caderninho: todo lugar alcançado vira adesivo; na missão de
+        // Ciências, o bichinho levado ao VET também foi conhecido.
+        get().registrarDescoberta('lugares', slug);
+        if (m.tipo === 'ciencias') {
+          get().registrarDescoberta('animais', m.animal);
+        }
         return true;
       },
 
@@ -196,14 +235,17 @@ export const useGame = create(
     {
       name: 'cidade-turbo-3d',
       // v2 (Fatia 8): + habilidade `cienciasVida`. v3 (chegadas vivas no
-      // MERCADO/PADARIA): + habilidade `cores`. O migrate é OBRIGATÓRIO a
-      // cada chave nova: o merge do persist é RASO, então o `habilidades` já
-      // gravado no localStorage (sem a chave nova) substituiria o
-      // ESTADO_INICIAL novo — e registrarHabilidade da chave nova viraria
-      // no-op silencioso em qualquer save antigo. O migrate abaixo é
-      // GENÉRICO (injeta toda chave que faltar, preservando o acumulado) e
-      // serve v1→3 e v2→3 — chave nova só precisa do bump da version.
-      version: 3,
+      // MERCADO/PADARIA): + habilidade `cores`. v4 (Caderninho do Órbi):
+      // + `descobertas`. O migrate é OBRIGATÓRIO a cada chave nova: o merge
+      // do persist é RASO, então o objeto já gravado no localStorage (sem a
+      // chave nova) substituiria o ESTADO_INICIAL novo — e o registro da
+      // chave nova viraria no-op silencioso em qualquer save antigo. O
+      // migrate abaixo é GENÉRICO (injeta toda chave que faltar, preservando
+      // o acumulado) e serve v1→4, v2→4 e v3→4 — chave nova só precisa do
+      // bump da version. Em `descobertas` NÃO há backfill retroativo: o dado
+      // item-a-item nunca existiu; o caderninho começa vazio e a narrativa
+      // cobre ("ainda não anotei nada").
+      version: 4,
       migrate: (persisted) => {
         if (!persisted) return persisted;
         return {
@@ -212,12 +254,16 @@ export const useGame = create(
             ...ESTADO_INICIAL.habilidades,
             ...(persisted.habilidades ?? {}),
           },
+          descobertas: {
+            ...ESTADO_INICIAL.descobertas,
+            ...(persisted.descobertas ?? {}),
+          },
         };
       },
       // persist serializa só state (funções são ignoradas automaticamente).
-      // partialize: só o progresso DURÁVEL é gravado — postoPerto e
-      // chegadaViva são transientes (dependem do agora) e não sobrevivem
-      // a reload.
+      // partialize: só o progresso DURÁVEL é gravado — postoPerto,
+      // chegadaViva e caderninhoAberto são transientes (dependem do agora)
+      // e não sobrevivem a reload.
       partialize: (s) => ({
         nome: s.nome,
         introVista: s.introVista,
@@ -227,6 +273,7 @@ export const useGame = create(
         combustivel: s.combustivel,
         missao: s.missao,
         habilidades: s.habilidades,
+        descobertas: s.descobertas,
       }),
     }
   )

@@ -414,6 +414,192 @@ canvas {
   color: var(--text-soft);
 }
 
+/* ===== Caderninho do Órbi ===== */
+/* Botão-adesivo de acesso (canto sup-direito — único canto livre).
+   100% ESTÁTICO por guard-rail TEA: sem pulso, sem badge, sem animação de
+   atenção. Só responde ao toque (press afunda — gesto da marca). */
+.cad-btn {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 15;
+  width: 56px;
+  height: 56px;
+  font-size: 28px;
+  line-height: 1;
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--solid-3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.cad-btn:active {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+
+/* Overlay de página única — cobre a cena (o input de direção fica mudo
+   enquanto aberto; ver useKeyboard). Fundo navy translúcido calmo. */
+.cad-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(28, 39, 70, 0.45);
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: var(--space-6);
+}
+
+.cad-painel {
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--solid-3);
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  user-select: none;
+  animation: postoEntra var(--dur-calm) var(--ease-soft);
+}
+
+.cad-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* Título-mãe da inversão pedagógica: o sujeito é o ÓRBI descobrindo. */
+.cad-titulo {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.cad-fechar {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+  background: var(--orbi-grass);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  box-shadow: var(--solid-3);
+  flex-shrink: 0;
+}
+
+.cad-fechar:active {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+
+.cad-secao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.cad-secao-titulo {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.cad-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Adesivo descoberto: vibrante, contorno navy, sombra sólida. */
+.cad-adesivo {
+  width: 132px;
+  min-height: 116px;
+  background: var(--surface-base);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--solid-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  text-align: center;
+}
+
+.cad-emoji {
+  font-size: 38px;
+  line-height: 1;
+}
+
+/* Chip de LUGAR: a cor do próprio prédio vira o adesivo (zero banco novo). */
+.cad-chip {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: var(--outline-thin) solid var(--outline-color);
+}
+
+.cad-nome {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+/* O fato que o Órbi aprendeu — visual CAIXA ALTA (a frase vem minúscula,
+   formato de voz). */
+.cad-fato {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: var(--weight-body-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-soft);
+}
+
+/* Slot-MISTÉRIO: o que o Órbi ainda vai descobrir. Tracejado calmo e
+   NEUTRO — nunca Sol (Sol é celebração, fica nos descobertos), nunca
+   contador/"faltam N". O "?" é a curiosidade do Órbi. */
+.cad-misterio {
+  width: 132px;
+  min-height: 116px;
+  border: 3px dashed var(--text-soft);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: var(--weight-display-bold);
+  color: var(--text-soft);
+  opacity: 0.55;
+}
+
 /* Guard-rail TEA+TDAH: respeita reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .mission-banner--ok { animation: none; }
@@ -423,6 +609,7 @@ canvas {
   .posto-botao { transition: none; }
   .viva-painel { animation: none; }
   .viva-carta { transition: none; }
+  .cad-painel { animation: none; }
   .orbi-companion { transition: opacity var(--dur-quick) var(--ease-soft); transform: none; }
   .orbi-companion.is-visible { transform: none; }
   .orbi-companion.is-visible.is-celebrating { animation: none; }

@@ -29,7 +29,13 @@ import { litrosFaltando, postoAtivo } from '../economia.js';
  *    contagem em dobro no relatório de habilidades).
  */
 export function RefuelPanel() {
-  const aberto = useGame((s) => postoAtivo(s.combustivel, s.postoPerto));
+  // `!caderninhoAberto`: se o caderninho está aberto, o painel do posto
+  // espera (uma coisa por vez) — senão o listener de ENTER dele contaria
+  // litros invisíveis por baixo do álbum. Ao fechar o caderninho parado
+  // no posto, o painel abre normal (e congela o N nesse momento).
+  const aberto = useGame(
+    (s) => postoAtivo(s.combustivel, s.postoPerto) && !s.caderninhoAberto
+  );
   const encherTanque = useGame((s) => s.encherTanque);
   const registrarHabilidade = useGame((s) => s.registrarHabilidade);
 

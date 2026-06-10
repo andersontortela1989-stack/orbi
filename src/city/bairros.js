@@ -170,6 +170,9 @@ export const BAIRROS = [
         // Sem pedido/chegada próprios: as frases vêm do banco de animais
         // (missoes-ciencias.js) — chegar aqui sempre tem um bichinho junto.
         soCiencias: true,
+        // `fato` cobre o adesivo do Caderninho (os outros prédios usam a
+        // própria frase de chegada como fato; o VET não tem uma).
+        fato: 'Uau! Então vet é o médico dos animais!',
       },
     ],
   },
