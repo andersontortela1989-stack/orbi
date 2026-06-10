@@ -18,34 +18,47 @@
  * banco fixo por geração via IA no futuro sem tocar no resto do jogo (§E).
  */
 
+// `som` e `artigo` (o/a) existem como DADOS — além das frases prontas do VET —
+// pra outras mecânicas montarem falas com o animal (Fatia 9: o quiz da chegada
+// viva do ZOO pergunta "qual desses faz muu?" e responde "a vaca faz muu!").
 export const ANIMAIS = [
   {
     slug: 'CACHORRO',
     emoji: '🐶',
+    artigo: 'o',
+    som: 'au au',
     pedido: 'Olha, um cachorro! Ele faz au au! Tá dodói… me leva no vet?',
     chegada: 'Uau! Então vet é o médico dos animais! O cachorro vai ficar bom!',
   },
   {
     slug: 'GATO',
     emoji: '🐱',
+    artigo: 'o',
+    som: 'miau',
     pedido: 'Olha, um gato! Ele faz miau! Tá dodói… me leva no vet?',
     chegada: 'Uau! Então vet é o médico dos animais! O gato vai ficar bom!',
   },
   {
     slug: 'VACA',
     emoji: '🐮',
+    artigo: 'a',
+    som: 'muu',
     pedido: 'Olha, uma vaca! Ela faz muu! Tá dodói… me leva no vet?',
     chegada: 'Uau! Então vet é o médico dos animais! A vaca vai ficar boa!',
   },
   {
     slug: 'PATO',
     emoji: '🦆',
+    artigo: 'o',
+    som: 'quá quá',
     pedido: 'Olha, um pato! Ele faz quá quá! Tá dodói… me leva no vet?',
     chegada: 'Uau! Então vet é o médico dos animais! O pato vai ficar bom!',
   },
   {
     slug: 'GALINHA',
     emoji: '🐔',
+    artigo: 'a',
+    som: 'có có',
     pedido: 'Olha, uma galinha! Ela faz có có! Tá dodói… me leva no vet?',
     chegada: 'Uau! Então vet é o médico dos animais! A galinha vai ficar boa!',
   },

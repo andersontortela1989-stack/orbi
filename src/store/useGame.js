@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { DESTINOS_GPS } from '../missions/destinos.js';
 import { sortearAnimal } from '../missions/missoes-ciencias.js';
+import { sortearChegadaViva } from '../missions/missoes.js';
 
 /**
  * Estado global da Cidade Turbo 3D — shape espelhando a §6 do handoff.
@@ -34,6 +35,10 @@ const ESTADO_INICIAL = {
 
   // proximidade do posto (transiente — setado pelos sensores, NÃO persistido)
   postoPerto: false,
+
+  // chegada viva — pergunta aberta na chegada de um lugar "vivo"
+  // (transiente como postoPerto: NÃO persistido; reload = sem pergunta presa)
+  chegadaViva: null,
 
   // missão (uma por vez)
   missao: { tipo: 'nenhuma', destino: null, concluida: false },
@@ -77,6 +82,15 @@ export const useGame = create(
 
       // Proximidade do posto — ligado/desligado pelos sensores de zona.
       setPostoPerto: (perto) => set({ postoPerto: !!perto }),
+
+      // === Chegada viva ===
+      // Abre a mini-interação do lugar (se ele tiver uma): a pergunta sai
+      // PRONTA do registry (animal + opções embaralhadas + frases de voz).
+      abrirChegadaViva: (lugar) => {
+        const pergunta = sortearChegadaViva(lugar);
+        if (pergunta) set({ chegadaViva: pergunta });
+      },
+      fecharChegadaViva: () => set({ chegadaViva: null }),
 
       pagarPedagio: (valor) =>
         set((s) => ({
@@ -195,8 +209,9 @@ export const useGame = create(
         };
       },
       // persist serializa só state (funções são ignoradas automaticamente).
-      // partialize: só o progresso DURÁVEL é gravado — postoPerto é transiente
-      // (depende de onde o carro está agora) e não deve sobreviver a reload.
+      // partialize: só o progresso DURÁVEL é gravado — postoPerto e
+      // chegadaViva são transientes (dependem do agora) e não sobrevivem
+      // a reload.
       partialize: (s) => ({
         nome: s.nome,
         introVista: s.introVista,

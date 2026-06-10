@@ -36,11 +36,16 @@ export function HUD() {
   const baixo = combustivel <= LIMIAR_BAIXO;
 
   // Missão (GPS ou Ciências) só aparece quando NÃO há aviso de combustível
-  // prioritário. Continua UMA instrução por vez: ou aviso, ou missão.
+  // prioritário. Continua UMA instrução por vez: ou aviso, ou missão — e
+  // enquanto a pergunta da chegada viva está aberta, banner nenhum
+  // compete com ela.
+  const chegadaViva = useGame((s) => s.chegadaViva);
   const temMissao =
     (missao?.tipo === 'gps' || missao?.tipo === 'ciencias') && missao.destino;
-  const missaoAtiva = temMissao && !missao.concluida && !abastecendo && !vazio;
-  const missaoAcabou = temMissao && missao.concluida && !abastecendo;
+  const missaoAtiva =
+    temMissao && !missao.concluida && !abastecendo && !vazio && !chegadaViva;
+  const missaoAcabou =
+    temMissao && missao.concluida && !abastecendo && !chegadaViva;
 
   // Banner curto (a voz é quem carrega a personalidade do Órbi):
   // GPS = "HOSPITAL?"; Ciências = "🐱 VET?".

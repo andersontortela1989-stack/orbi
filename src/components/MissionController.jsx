@@ -2,7 +2,11 @@ import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
 import { falar, nomeParaVoz } from '../audio/voz.js';
 import { somSucesso } from '../audio/sons.js';
-import { frasesDaMissao, chaveDaMissao } from '../missions/missoes.js';
+import {
+  frasesDaMissao,
+  chaveDaMissao,
+  temChegadaViva,
+} from '../missions/missoes.js';
 
 // === Tempos de orquestração — afináveis ===
 const CELEBRACAO_MS         = 2200; // entre completar uma missão e sortear a próxima
@@ -24,6 +28,9 @@ const CHEGADAS_POR_ESPECIAL = 4;
  *     sempre VET e não diferenciaria).
  *  4) Quando a missão é concluída: somSucesso + voz comemorando, e depois
  *     de CELEBRACAO_MS sorteia a próxima (proximaMissao: GPS ou Ciências).
+ *     EXCEÇÃO: destino com CHEGADA VIVA (ex.: ZOO) abre a
+ *     mini-interação no lugar de sortear — quem fecha o painel é que
+ *     chama a próxima missão (uma coisa por vez).
  *
  * Render-less (retorna null). Mantém o JSX da cena 3D limpo.
  */
@@ -107,7 +114,12 @@ export function MissionController() {
       }
       clearTimeout(proximaMissaoTO.current);
       proximaMissaoTO.current = setTimeout(() => {
-        useGame.getState().proximaMissao();
+        const atual = useGame.getState().missao;
+        if (atual?.tipo === 'gps' && temChegadaViva(atual.destino)) {
+          useGame.getState().abrirChegadaViva(atual.destino);
+        } else {
+          useGame.getState().proximaMissao();
+        }
       }, CELEBRACAO_MS);
     }
     ultimoConcluido.current = !!concluida;

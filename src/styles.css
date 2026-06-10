@@ -285,6 +285,114 @@ canvas {
   to   { transform: translateY(0);    opacity: 1; }
 }
 
+/* ===== Chegada viva ===== */
+/* Pergunta do Órbi na chegada — cartão-adesivo branco ancorado embaixo,
+   mesmo padrão do painel do posto: não cobre a cena, não pausa o jogo.
+   Cartas grandes (alvo generoso pra criança de 7 anos), sem timer. */
+.viva-overlay {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-5);
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none; /* só o painel recebe clique */
+  display: flex;
+  justify-content: center;
+}
+
+.viva-painel {
+  pointer-events: auto;
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  box-shadow: var(--solid-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  user-select: none;
+  animation: postoEntra var(--dur-calm) var(--ease-soft);
+}
+
+.viva-titulo {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+/* O som do bicho destacado em Sol-deep (mesmo gesto do N do posto). */
+.viva-som {
+  color: var(--orbi-sun-deep);
+}
+
+.viva-cartas {
+  display: flex;
+  gap: var(--space-4);
+}
+
+/* Carta-adesivo de animal: alvo GRANDE (mouse ou touch), fundo céu calmo,
+   contorno navy, degrau sólido; press = afunda (gesto da marca).
+   Toque errado NÃO muda nada aqui — sem vermelho, sem tremor (o feedback
+   neutro é só a voz do Órbi). */
+.viva-carta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 110px;
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  background: var(--surface-base);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--solid-3);
+  cursor: pointer;
+  transition: transform var(--dur-quick) var(--ease-soft),
+              box-shadow var(--dur-quick) var(--ease-soft),
+              background var(--dur-quick) var(--ease-soft);
+}
+
+.viva-carta:hover {
+  background: var(--surface-card);
+}
+
+.viva-carta:active {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+
+/* Acertou/revelou: a carta certa acende em Sol (âmbar da marca — festa
+   contida; nunca vermelho em lugar nenhum). */
+.viva-carta--certa {
+  background: var(--orbi-sun);
+}
+
+.viva-emoji {
+  font-size: 56px;
+  line-height: 1;
+}
+
+.viva-nome {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.viva-dica {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
 /* Guard-rail TEA+TDAH: respeita reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .mission-banner--ok { animation: none; }
@@ -292,6 +400,8 @@ canvas {
   .posto-painel { animation: none; }
   .posto-pip { transition: none; }
   .posto-botao { transition: none; }
+  .viva-painel { animation: none; }
+  .viva-carta { transition: none; }
   .orbi-companion { transition: opacity var(--dur-quick) var(--ease-soft); transform: none; }
   .orbi-companion.is-visible { transform: none; }
   .orbi-companion.is-visible.is-celebrating { animation: none; }

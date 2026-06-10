@@ -9,6 +9,11 @@
 import { FRASE_PEDIDO, FRASE_CHEGADA } from './destinos.js';
 import { ANIMAL_POR_SLUG } from './missoes-ciencias.js';
 
+// Tipo "chegada-viva": lugares cuja chegada abre uma mini-interação
+// de aprendizado (estreia: ZOO). O registry só re-exporta — o banco/gerador
+// vive em chegadas-vivas.js, e lugares novos entram lá.
+export { temChegadaViva, sortearChegadaViva } from './chegadas-vivas.js';
+
 /**
  * Frases de voz da missão ({ pedido, chegada }), ou null se a missão não é
  * reconhecida (tipo desconhecido, destino/animal que não existe mais — ex.:

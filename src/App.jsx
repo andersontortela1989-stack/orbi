@@ -4,6 +4,7 @@ import { Physics } from '@react-three/rapier';
 import { Game } from './components/Game.jsx';
 import { HUD } from './components/HUD.jsx';
 import { RefuelPanel } from './components/RefuelPanel.jsx';
+import { ChegadaVivaPanel } from './components/ChegadaVivaPanel.jsx';
 import { WelcomeVoice } from './components/WelcomeVoice.jsx';
 import { MissionController } from './components/MissionController.jsx';
 import { StartScreen } from './components/StartScreen.jsx';
@@ -63,6 +64,7 @@ export default function App() {
       {/* Overlays 2D — fora do Canvas, React puro */}
       <HUD />
       <RefuelPanel />
+      <ChegadaVivaPanel />
       <div className="controls-hint">
         SETAS = DIRIGIR &nbsp;·&nbsp; ESPAÇO = FREIO DE MÃO (DRIFT)
       </div>
