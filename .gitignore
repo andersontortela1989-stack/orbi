@@ -8,3 +8,6 @@ dist-ssr
 .env.local
 .idea
 .vscode
+
+# conveniencia local (caminho absoluto da maquina)
+jogar-orbi.bat
