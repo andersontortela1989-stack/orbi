@@ -13,12 +13,15 @@ const MAX_TENTATIVAS = 2;
  * CHEGADA VIVA — a pergunta do Órbi na chegada.
  *
  * Abre quando a store tem `chegadaViva` (setada pelo MissionController após a
- * celebração da chegada no lugar). Mostra a pergunta ("QUAL DESSES FAZ MUU?")
- * e 3 cartas grandes de animais; a criança responde tocando.
+ * celebração da chegada no lugar). O painel é GENÉRICO: todo o conteúdo —
+ * título, cartas, dica, frases de voz, habilidade registrada e a fileira
+ * opcional de itens pra contar — vem pronto da pergunta (chegadas-vivas.js).
+ * ZOO = sons de animais; MERCADO = cores de frutas; PADARIA = contagem de
+ * pães (cartas de número, sem emoji).
  *
  * Feedback ASSIMÉTRICO ESTRITO (guard-rail TEA):
  *  - acerto  → festa contida: somSucesso + voz + carta acesa em Sol;
- *  - erro    → NEUTRO: só a voz repete o som, curiosa. Sem som de erro, sem
+ *  - erro    → NEUTRO: só a voz repete a dica, curiosa. Sem som de erro, sem
  *    vermelho, sem nada mudando na tela. (O dado registra tentativa sem
  *    acerto — evidência honesta — mas NADA disso aparece pra criança.)
  *  - 2 erros → o Órbi revela com alegria e ensina de qualquer jeito.
@@ -64,13 +67,13 @@ export function ChegadaVivaPanel() {
     }, FECHAR_MS);
   };
 
-  const responder = (slug) => {
+  const responder = (valor) => {
     if (resolvido.current) return;
 
-    if (slug === pergunta.animal) {
+    if (valor === pergunta.resposta) {
       resolvido.current = true;
       setAcertou(true);
-      registrarHabilidade('cienciasVida', true);
+      registrarHabilidade(pergunta.habilidade, true);
       somSucesso();
       falar(pergunta.fraseAcerto, { interrupt: true });
       finalizar();
@@ -78,7 +81,7 @@ export function ChegadaVivaPanel() {
     }
 
     // Toque errado — neutro e curioso (ver doc do componente).
-    registrarHabilidade('cienciasVida', false);
+    registrarHabilidade(pergunta.habilidade, false);
     const n = tentativas + 1;
     setTentativas(n);
 
@@ -96,37 +99,58 @@ export function ChegadaVivaPanel() {
     <div className="viva-overlay">
       <div className="viva-painel" role="dialog" aria-label="pergunta do Órbi">
         <div className="viva-titulo">
-          QUAL DESSES FAZ{' '}
-          <span className="viva-som">{pergunta.som.toUpperCase()}</span>?
+          {pergunta.tituloAntes}
+          {pergunta.tituloDestaque && (
+            <>
+              {' '}
+              <span className="viva-som">{pergunta.tituloDestaque}</span>
+            </>
+          )}
+          {pergunta.tituloDepois}
         </div>
+
+        {/* Fileira de itens pra CONTAR (PADARIA): pães grandes e separados,
+            dá pra contar com o dedo na tela. aria-hidden: a quantidade é a
+            resposta — o conteúdo acessível é a pergunta falada. */}
+        {pergunta.mostra && (
+          <div className="viva-mostra" aria-hidden="true">
+            {Array.from({ length: pergunta.mostra.quantidade }).map((_, i) => (
+              <span key={i}>{pergunta.mostra.emoji}</span>
+            ))}
+          </div>
+        )}
 
         <div className="viva-cartas">
           {pergunta.opcoes.map((o) => {
-            const certa = (acertou || revelada) && o.slug === pergunta.animal;
+            const certa = (acertou || revelada) && o.valor === pergunta.resposta;
             return (
               /* tabIndex=-1 + blur(): mesma proteção do botão do posto — a
                  carta clicada não pode ficar focada e ser reativada por
                  ESPAÇO (a tecla do freio de mão). */
               <button
-                key={o.slug}
+                key={o.valor}
                 type="button"
                 tabIndex={-1}
                 className={'viva-carta' + (certa ? ' viva-carta--certa' : '')}
                 onClick={(e) => {
-                  responder(o.slug);
+                  responder(o.valor);
                   e.currentTarget.blur();
                 }}
               >
-                <span className="viva-emoji" aria-hidden="true">
-                  {o.emoji}
+                {o.emoji && (
+                  <span className="viva-emoji" aria-hidden="true">
+                    {o.emoji}
+                  </span>
+                )}
+                <span className={o.emoji ? 'viva-nome' : 'viva-numero'}>
+                  {o.rotulo}
                 </span>
-                <span className="viva-nome">{o.slug}</span>
               </button>
             );
           })}
         </div>
 
-        <div className="viva-dica">TOQUE NO BICHO CERTO</div>
+        <div className="viva-dica">{pergunta.dica}</div>
       </div>
     </div>
   );

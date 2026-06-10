@@ -44,12 +44,16 @@ const ESTADO_INICIAL = {
   missao: { tipo: 'nenhuma', destino: null, concluida: false },
 
   // progresso pedagógico — base do relatório por habilidade da BNCC (futuro)
+  // ATENÇÃO: chave NOVA aqui exige bump da `version` do persist lá embaixo —
+  // o migrate injeta a chave em saves antigos; sem isso, registrarHabilidade
+  // dela é no-op silencioso em qualquer localStorage existente.
   habilidades: {
     leituraGlobal: { acertos: 0, tentativas: 0 },
     contagem:      { acertos: 0, tentativas: 0 },
     adicao:        { acertos: 0, tentativas: 0 },
     navegacao:     { acertos: 0, tentativas: 0 },
-    cienciasVida:  { acertos: 0, tentativas: 0 }, // Fatia 8 — exige o migrate v2 abaixo
+    cienciasVida:  { acertos: 0, tentativas: 0 }, // Fatia 8 (VET) + chegada viva do ZOO
+    cores:         { acertos: 0, tentativas: 0 }, // chegada viva do MERCADO (artes)
   },
 };
 
@@ -191,13 +195,15 @@ export const useGame = create(
     }),
     {
       name: 'cidade-turbo-3d',
-      // v2 (Fatia 8): nova habilidade `cienciasVida`. O migrate é OBRIGATÓRIO:
-      // o merge do persist é RASO, então o `habilidades` já gravado no
-      // localStorage (sem a chave nova) substituiria o ESTADO_INICIAL novo —
-      // e registrarHabilidade('cienciasVida') viraria no-op silencioso em
-      // qualquer save antigo. O migrate injeta as chaves que faltarem,
-      // preservando os acertos/tentativas já acumulados.
-      version: 2,
+      // v2 (Fatia 8): + habilidade `cienciasVida`. v3 (chegadas vivas no
+      // MERCADO/PADARIA): + habilidade `cores`. O migrate é OBRIGATÓRIO a
+      // cada chave nova: o merge do persist é RASO, então o `habilidades` já
+      // gravado no localStorage (sem a chave nova) substituiria o
+      // ESTADO_INICIAL novo — e registrarHabilidade da chave nova viraria
+      // no-op silencioso em qualquer save antigo. O migrate abaixo é
+      // GENÉRICO (injeta toda chave que faltar, preservando o acumulado) e
+      // serve v1→3 e v2→3 — chave nova só precisa do bump da version.
+      version: 3,
       migrate: (persisted) => {
         if (!persisted) return persisted;
         return {

@@ -324,9 +324,20 @@ canvas {
   color: var(--text-strong);
 }
 
-/* O som do bicho destacado em Sol-deep (mesmo gesto do N do posto). */
+/* A palavra-chave da pergunta (som do bicho, cor da fruta) destacada em
+   Sol-deep (mesmo gesto do N do posto). */
 .viva-som {
   color: var(--orbi-sun-deep);
+}
+
+/* Fileira de itens pra CONTAR (chegada viva da PADARIA): pães grandes e
+   separados — dá pra contar com o dedo na tela. */
+.viva-mostra {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  font-size: 48px;
+  line-height: 1;
 }
 
 .viva-cartas {
@@ -381,6 +392,16 @@ canvas {
   font-weight: var(--weight-display-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+/* Carta de NÚMERO (sem emoji — chegada viva da PADARIA): o algarismo é o
+   protagonista, do tamanho do emoji das outras cartas. */
+.viva-numero {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+  font-weight: var(--weight-display-bold);
   color: var(--text-strong);
 }
 

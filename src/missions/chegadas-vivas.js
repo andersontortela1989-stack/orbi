@@ -1,21 +1,29 @@
 /**
  * CHEGADAS VIVAS — mini-interação de aprendizado na chegada.
- * (Fatia extra, fora da numeração do roadmap do adendo curricular.)
+ * (Fatias extras, fora da numeração do roadmap do adendo curricular.)
  *
  * Em vez de a chegada ser só uma frase, lugares "vivos" abrem uma pergunta
- * de ~10s: o Órbi pergunta de verdade ("qual desses faz muu?") e a criança
- * responde tocando numa carta. Estreia no ZOO, reusando o banco de animais
- * de missoes-ciencias.js (o som do bicho É o conteúdo).
+ * de ~10s: o Órbi pergunta de verdade e a criança responde tocando numa
+ * carta. Estreou no ZOO (sons de animais); MERCADO (cores das frutas — artes)
+ * e PADARIA (contagem de pães — matemática) entraram na fatia seguinte.
  *
- * GENERALIZÁVEL DE NASCENÇA: cada lugar com chegada viva é uma entrada em
- * GERADORES (slug do prédio → função que sorteia a pergunta). MERCADO,
- * PADARIA etc. entram nas próximas fatias adicionando um gerador aqui —
- * sem tocar no painel, no controlador nem na store.
+ * GENERALIZÁVEL: cada lugar é uma entrada em GERADORES (slug do prédio →
+ * função que sorteia a pergunta). Lugar novo = um gerador aqui — sem tocar
+ * no painel, no controlador nem na store.
  *
- * A pergunta sai PRONTA daqui (opções embaralhadas + as 4 frases de voz
- * montadas): o componente do painel só exibe e fala, sem saber de animais.
- * Frases de voz em minúsculas (lição do TTS — CAIXA ALTA é soletrada);
- * a CAIXA ALTA fica no visual do painel.
+ * A pergunta sai PRONTA e GENÉRICA daqui; o painel só exibe e fala, sem
+ * saber de animais/frutas/números:
+ *   habilidade      — chave registrada na store (dado honesto por toque)
+ *   resposta        — `valor` da carta certa
+ *   tituloAntes / tituloDestaque / tituloDepois — título CAIXA ALTA do
+ *     painel (o destaque acende em Sol-deep; pode ser vazio)
+ *   mostra          — (opcional) fileira de itens pra contar na tela
+ *                     ({ emoji, quantidade }; só a PADARIA usa)
+ *   opcoes          — 3 cartas { valor, emoji|null, rotulo } embaralhadas
+ *                     (sem emoji, o rótulo vira número grande)
+ *   dica            — instrução curta embaixo das cartas
+ *   frasePergunta / fraseAcerto / fraseTenteDeNovo / fraseRevela — as 4
+ *     falas do Órbi, em minúsculas (lição do TTS — CAIXA ALTA é soletrada)
  */
 import { ANIMAIS } from './missoes-ciencias.js';
 
@@ -42,32 +50,45 @@ function embaralhar(arr) {
   return a;
 }
 
-// Evita repetir o animal da última visita — o mesmo ZOO rende pergunta nova
+function sortearItem(lista) {
+  return lista[Math.floor(Math.random() * lista.length)];
+}
+
+// ============================== ZOO ====================================
+// Sons de animais (ciências) — reusa o banco de missoes-ciencias.js.
+
+// Evita repetir o alvo da última visita — o mesmo lugar rende pergunta nova
 // (estado de sessão, de propósito: não persiste nem precisa).
 let ultimoAnimalPerguntado = null;
 
-/** Pergunta de som de animal (ZOO): 1 certa + 2 distratoras, embaralhadas. */
+/** Pergunta de som de animal: 1 certa + 2 distratoras, embaralhadas. */
 function sortearPerguntaAnimal(lugar) {
-  const candidatos = ANIMAIS.filter((a) => a.slug !== ultimoAnimalPerguntado);
   const certo =
-    candidatos[Math.floor(Math.random() * candidatos.length)] ?? ANIMAIS[0];
+    sortearItem(ANIMAIS.filter((a) => a.slug !== ultimoAnimalPerguntado)) ??
+    ANIMAIS[0];
   ultimoAnimalPerguntado = certo.slug;
 
   const distratoras = embaralhar(
     ANIMAIS.filter((a) => a.slug !== certo.slug)
   ).slice(0, 2);
   const opcoes = embaralhar([certo, ...distratoras]).map((a) => ({
-    slug: a.slug,
+    valor: a.slug,
     emoji: a.emoji,
+    rotulo: a.slug,
   }));
 
   const nome = certo.slug.toLowerCase();
   const { artigo, som } = certo;
   return {
     lugar,
-    animal: certo.slug,
-    som, // o painel mostra "QUAL DESSES FAZ MUU?"
+    habilidade: 'cienciasVida',
+    resposta: certo.slug,
+    tituloAntes: 'QUAL DESSES FAZ',
+    tituloDestaque: som.toUpperCase(),
+    tituloDepois: '?',
+    mostra: null,
     opcoes,
+    dica: 'TOQUE NO BICHO CERTO',
     frasePergunta: `Qual desses faz ${som}?`,
     fraseAcerto: `Isso! ${capitalizar(artigo)} ${nome} faz ${som}! Você sabe demais!`,
     fraseTenteDeNovo: `Hmm, vamos ouvir de novo? ${capitalizar(som)}!`,
@@ -75,7 +96,96 @@ function sortearPerguntaAnimal(lugar) {
   };
 }
 
-// slug do prédio → gerador de pergunta. SÓ o ZOO nesta fatia (estreia).
+// ============================ MERCADO ==================================
+// Cores das frutas (artes). Banco próprio da mecânica — cores todas
+// DISTINTAS de propósito: quaisquer 2 distratoras já têm cor diferente
+// da certa (nunca há duas respostas plausíveis).
+
+const FRUTAS = [
+  { slug: 'MAÇÃ',    emoji: '🍎', artigo: 'a', cor: 'vermelha' },
+  { slug: 'BANANA',  emoji: '🍌', artigo: 'a', cor: 'amarela' },
+  { slug: 'UVA',     emoji: '🍇', artigo: 'a', cor: 'roxa' },
+  { slug: 'LARANJA', emoji: '🍊', artigo: 'a', cor: 'laranja' },
+  { slug: 'PERA',    emoji: '🍐', artigo: 'a', cor: 'verde' },
+];
+
+let ultimaFrutaPerguntada = null;
+
+/** Pergunta de cor de fruta: "qual fruta é vermelha?" → toca na maçã. */
+function sortearPerguntaCorFruta(lugar) {
+  const certa =
+    sortearItem(FRUTAS.filter((f) => f.slug !== ultimaFrutaPerguntada)) ??
+    FRUTAS[0];
+  ultimaFrutaPerguntada = certa.slug;
+
+  const distratoras = embaralhar(
+    FRUTAS.filter((f) => f.slug !== certa.slug)
+  ).slice(0, 2);
+  const opcoes = embaralhar([certa, ...distratoras]).map((f) => ({
+    valor: f.slug,
+    emoji: f.emoji,
+    rotulo: f.slug,
+  }));
+
+  const nome = certa.slug.toLowerCase();
+  const { artigo, cor } = certa;
+  return {
+    lugar,
+    habilidade: 'cores',
+    resposta: certa.slug,
+    tituloAntes: 'QUAL FRUTA É',
+    tituloDestaque: cor.toUpperCase(),
+    tituloDepois: '?',
+    mostra: null,
+    opcoes,
+    dica: 'TOQUE NA FRUTA CERTA',
+    frasePergunta: `Qual fruta é ${cor}?`,
+    fraseAcerto: `Isso! ${capitalizar(artigo)} ${nome} é ${cor}! Você sabe as cores!`,
+    fraseTenteDeNovo: `Hmm, vamos ver de novo? ${capitalizar(cor)}!`,
+    fraseRevela: `É ${artigo} ${nome}! ${capitalizar(artigo)} ${nome} é ${cor}!`,
+  };
+}
+
+// ============================ PADARIA ==================================
+// Contagem de pães (matemática). Sem banco: o conteúdo é o N sorteado.
+
+// N pequeno (2–5): cabe na tela em pães grandes, contáveis no dedo.
+const QUANTIDADES = [2, 3, 4, 5];
+
+let ultimaQuantidade = null;
+
+/** Pergunta de contagem: mostra N pães; cartas N-1 / N / N+1 (nunca zero). */
+function sortearPerguntaPaes(lugar) {
+  const n = sortearItem(QUANTIDADES.filter((q) => q !== ultimaQuantidade));
+  ultimaQuantidade = n;
+
+  const opcoes = embaralhar([n - 1, n, n + 1]).map((v) => ({
+    valor: String(v),
+    emoji: null, // sem emoji → o painel mostra o rótulo como NÚMERO grande
+    rotulo: String(v),
+  }));
+
+  return {
+    lugar,
+    habilidade: 'contagem',
+    resposta: String(n),
+    tituloAntes: 'QUANTOS PÃES TEM AQUI?',
+    tituloDestaque: '',
+    tituloDepois: '',
+    mostra: { emoji: '🍞', quantidade: n },
+    opcoes,
+    dica: 'TOQUE NO NÚMERO CERTO',
+    frasePergunta: 'Quantos pães tem aqui?',
+    fraseAcerto: `Isso! São ${n} pães! Você conta muito bem!`,
+    // não vaza a resposta: a dica é contar de novo, não a cor/som do alvo
+    fraseTenteDeNovo: 'Hmm, vamos contar de novo?',
+    fraseRevela: `São ${n} pães! ${n} pãezinhos!`,
+  };
+}
+
+// slug do prédio → gerador de pergunta.
 const GERADORES = {
   ZOO: sortearPerguntaAnimal,
+  MERCADO: sortearPerguntaCorFruta,
+  PADARIA: sortearPerguntaPaes,
 };
