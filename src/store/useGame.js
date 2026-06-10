@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { DESTINOS_GPS } from '../missions/destinos.js';
+import { sortearAnimal } from '../missions/missoes-ciencias.js';
 
 /**
  * Estado global da Cidade Turbo 3D — shape espelhando a §6 do handoff.
@@ -13,6 +14,10 @@ import { DESTINOS_GPS } from '../missions/destinos.js';
  *   useGame.setState({ moedas: 42 })        // forma direta de mexer no estado
  *   useGame.getState().resetar()            // volta ao estado inicial
  */
+
+// Chance da próxima missão ser de Ciências (animal → VET) em vez de GPS.
+// ~1 em 3: variedade sem dominar — as missões de leitura seguem maioria.
+const CHANCE_CIENCIAS = 1 / 3;
 
 const ESTADO_INICIAL = {
   // narrativa "A Chegada" (adendo de narrativa)
@@ -39,6 +44,7 @@ const ESTADO_INICIAL = {
     contagem:      { acertos: 0, tentativas: 0 },
     adicao:        { acertos: 0, tentativas: 0 },
     navegacao:     { acertos: 0, tentativas: 0 },
+    cienciasVida:  { acertos: 0, tentativas: 0 }, // Fatia 8 — exige o migrate v2 abaixo
   },
 };
 
@@ -116,15 +122,54 @@ export const useGame = create(
           return { missao: { tipo: 'gps', destino: novo, concluida: false } };
         }),
 
-      // Disparado pelo sensor de chegada do prédio. Se bate com o destino
-      // da missão ativa, completa + registra leituraGlobal. Se não bate ou
-      // já está concluída, retorna false (silêncio — sem punição).
+      // === Missão de Ciências (Fatia 8) ===
+      // "Leve o animal ao VET": sorteia um bichinho (evitando o último) e
+      // aponta pro VET. As frases vêm do banco de animais (via o registry
+      // frasesDaMissao), não daqui.
+      iniciarMissaoCiencias: () =>
+        set((s) => {
+          const ultimo = s.missao?.tipo === 'ciencias' ? s.missao.animal : null;
+          return {
+            missao: {
+              tipo: 'ciencias',
+              destino: 'VET',
+              animal: sortearAnimal(ultimo),
+              concluida: false,
+            },
+          };
+        }),
+
+      // Sorteio unificado da PRÓXIMA missão (GPS ou Ciências).
+      // Depois de uma missão de Ciências a próxima é SEMPRE GPS: o destino
+      // seria o mesmo VET onde o carro já está parado (o sensor só dispara
+      // ao ENTRAR na zona) — mesma razão do filtro de destino repetido do GPS.
+      proximaMissao: () => {
+        const m = get().missao;
+        if (m?.tipo !== 'ciencias' && Math.random() < CHANCE_CIENCIAS) {
+          get().iniciarMissaoCiencias();
+        } else {
+          get().iniciarMissaoGPS();
+        }
+      },
+
+      // Disparado pelo sensor de chegada de qualquer prédio. Se o slug bate
+      // com o destino da missão ativa, completa + registra a habilidade do
+      // TIPO da missão (gps → leituraGlobal; ciencias → cienciasVida). Se
+      // não bate ou já está concluída, retorna false (silêncio — sem punição).
+      // +1 por conclusão garantido: o guard de `concluida` impede contar duas
+      // vezes, e a chamada vem de evento de física (não de effect/StrictMode).
       processarChegada: (slug) => {
         const m = get().missao;
-        if (!m || m.tipo !== 'gps' || m.concluida) return false;
-        if (m.destino !== slug) return false;
+        if (!m || m.concluida || m.destino !== slug) return false;
+        const habilidade =
+          m.tipo === 'gps'
+            ? 'leituraGlobal'
+            : m.tipo === 'ciencias'
+              ? 'cienciasVida'
+              : null;
+        if (!habilidade) return false;
         get().completarMissao();
-        get().registrarHabilidade('leituraGlobal', true);
+        get().registrarHabilidade(habilidade, true);
         return true;
       },
 
@@ -132,7 +177,23 @@ export const useGame = create(
     }),
     {
       name: 'cidade-turbo-3d',
-      version: 1,
+      // v2 (Fatia 8): nova habilidade `cienciasVida`. O migrate é OBRIGATÓRIO:
+      // o merge do persist é RASO, então o `habilidades` já gravado no
+      // localStorage (sem a chave nova) substituiria o ESTADO_INICIAL novo —
+      // e registrarHabilidade('cienciasVida') viraria no-op silencioso em
+      // qualquer save antigo. O migrate injeta as chaves que faltarem,
+      // preservando os acertos/tentativas já acumulados.
+      version: 2,
+      migrate: (persisted) => {
+        if (!persisted) return persisted;
+        return {
+          ...persisted,
+          habilidades: {
+            ...ESTADO_INICIAL.habilidades,
+            ...(persisted.habilidades ?? {}),
+          },
+        };
+      },
       // persist serializa só state (funções são ignoradas automaticamente).
       // partialize: só o progresso DURÁVEL é gravado — postoPerto é transiente
       // (depende de onde o carro está agora) e não deve sobreviver a reload.

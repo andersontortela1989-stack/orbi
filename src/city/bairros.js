@@ -17,6 +17,7 @@
  * Layout (visto de cima; spawn do carro em 0,0, olhando para +z):
  *
  *                       [ PARQUE ]  [ ZOO ]            ← bairro PARQUE (norte)
+ *                                      [ VET ]
  *
  *              [ ESCOLA ]                              ← CENTRO
  *   [ PORTO ]                                  [ MERCADO ]
@@ -35,6 +36,10 @@
  *     Terra), e a CHEGADA sempre ENSINA de volta — o Órbi "aprende" e repete
  *     o que o lugar é ("então PADARIA é onde faz PÃO!"). Estrutura previsível
  *     ("Uau! Então…") de propósito: previsibilidade acalma (guard-rail TEA).
+ *   soCiencias — (opcional, Fatia 8) prédio FORA do sorteio de leitura do GPS:
+ *     chegar nele sempre acontece dentro de uma missão temática, que traz as
+ *     próprias frases (ex.: VET ← missoes-ciencias.js). Ganha sensor de
+ *     chegada e letreiro normalmente.
  */
 
 export const BAIRROS = [
@@ -154,6 +159,17 @@ export const BAIRROS = [
         rotuloContorno: '#ffffff',
         pedido: 'O que é zoo? Me mostra?',
         chegada: 'Uau! Então isso é um zoo! Aqui moram os bichos!',
+      },
+      {
+        slug: 'VET',
+        pos: [22, 62],
+        size: [12, 7, 12],
+        cor: '#a8c8b0',
+        rotuloCor: '#14301c',
+        rotuloContorno: '#ffffff',
+        // Sem pedido/chegada próprios: as frases vêm do banco de animais
+        // (missoes-ciencias.js) — chegar aqui sempre tem um bichinho junto.
+        soCiencias: true,
       },
     ],
   },

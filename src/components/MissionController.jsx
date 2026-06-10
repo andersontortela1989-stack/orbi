@@ -2,11 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
 import { falar, nomeParaVoz } from '../audio/voz.js';
 import { somSucesso } from '../audio/sons.js';
-import {
-  DESTINOS_GPS,
-  FRASE_PEDIDO,
-  FRASE_CHEGADA,
-} from '../missions/destinos.js';
+import { frasesDaMissao, chaveDaMissao } from '../missions/missoes.js';
 
 // === Tempos de orquestração — afináveis ===
 const CELEBRACAO_MS         = 2200; // entre completar uma missão e sortear a próxima
@@ -18,18 +14,22 @@ const NOVA_MISSAO_NARRACAO_MS = 250; // pequeno respiro entre voz de chegada e n
 const CHEGADAS_POR_ESPECIAL = 4;
 
 /**
- * Orquestra o ciclo da missão de GPS:
- *  1) Boot: garante uma missão de GPS válida ativa.
+ * Orquestra o ciclo de missões — GPS e Ciências (Fatia 8):
+ *  1) Boot: garante uma missão válida ativa (qualquer tipo que o registry
+ *     de missoes.js reconheça; inválida/antiga → sorteia nova).
  *  2) Primeira interação: destrava o speechSynthesis (autoplay policy) e narra
  *     a missão atual depois da saudação ("Bem-vindo ao Órbi").
- *  3) Quando o destino muda (nova missão), narra o novo pedido.
+ *  3) Quando a missão muda, narra o novo pedido. A identidade da missão é a
+ *     `chaveDaMissao` (destino no GPS; animal em Ciências — lá o destino é
+ *     sempre VET e não diferenciaria).
  *  4) Quando a missão é concluída: somSucesso + voz comemorando, e depois
- *     de CELEBRACAO_MS sorteia o próximo destino.
+ *     de CELEBRACAO_MS sorteia a próxima (proximaMissao: GPS ou Ciências).
  *
  * Render-less (retorna null). Mantém o JSX da cena 3D limpo.
  */
 export function MissionController() {
   const destino = useGame((s) => s.missao?.destino);
+  const animal = useGame((s) => s.missao?.animal);
   const concluida = useGame((s) => s.missao?.concluida);
 
   const ultimoNarrado    = useRef(null);
@@ -39,13 +39,13 @@ export function MissionController() {
   const narrarTO         = useRef(null);
   const chegadas         = useRef(0); // conta chegadas da sessão (p/ especial c/ nome)
 
-  // 1) BOOT — garante uma missão de GPS válida ao montar.
+  // 1) BOOT — garante uma missão válida ao montar (gps OU ciencias; missão
+  // persistida que o registry não reconhece é descartada e sorteia-se nova).
   useEffect(() => {
     const m = useGame.getState().missao;
-    const valida =
-      m && m.tipo === 'gps' && DESTINOS_GPS.includes(m.destino) && !m.concluida;
+    const valida = m && !m.concluida && !!frasesDaMissao(m);
     if (!valida) {
-      useGame.getState().iniciarMissaoGPS();
+      useGame.getState().proximaMissao();
     }
   }, []);
 
@@ -56,9 +56,11 @@ export function MissionController() {
       interagiu.current = true;
       narrarTO.current = setTimeout(() => {
         const m = useGame.getState().missao;
-        if (m?.destino && !m.concluida && ultimoNarrado.current !== m.destino) {
-          falar(FRASE_PEDIDO[m.destino]);
-          ultimoNarrado.current = m.destino;
+        const frases = frasesDaMissao(m);
+        const chave = chaveDaMissao(m);
+        if (frases && !m.concluida && ultimoNarrado.current !== chave) {
+          falar(frases.pedido);
+          ultimoNarrado.current = chave;
         }
       }, PRIMEIRA_NARRACAO_MS);
     };
@@ -70,29 +72,31 @@ export function MissionController() {
     };
   }, []);
 
-  // 3) MUDANÇA DE DESTINO — narra cada nova missão (após 1ª interação).
+  // 3) MUDANÇA DE MISSÃO — narra cada nova missão (após 1ª interação).
   useEffect(() => {
     if (!destino || concluida) return;
     if (!interagiu.current) return; // 1ª missão é narrada pelo efeito acima
-    if (ultimoNarrado.current === destino) return;
+    const chave = chaveDaMissao(useGame.getState().missao);
+    if (ultimoNarrado.current === chave) return;
     const id = setTimeout(() => {
       const m = useGame.getState().missao;
-      if (m?.destino === destino && !m.concluida) {
-        falar(FRASE_PEDIDO[destino]);
-        ultimoNarrado.current = destino;
+      const frases = frasesDaMissao(m);
+      if (frases && chaveDaMissao(m) === chave && !m.concluida) {
+        falar(frases.pedido);
+        ultimoNarrado.current = chave;
       }
     }, NOVA_MISSAO_NARRACAO_MS);
     return () => clearTimeout(id);
-  }, [destino, concluida]);
+  }, [destino, animal, concluida]);
 
   // 4) CONCLUÍDA — som + voz + agenda nova missão.
   useEffect(() => {
     if (concluida && !ultimoConcluido.current) {
       somSucesso();
-      const dest = useGame.getState().missao?.destino;
-      if (dest) {
+      const m = useGame.getState().missao;
+      if (m?.destino) {
         chegadas.current += 1;
-        let frase = FRASE_CHEGADA[dest] || 'Uau! Chegamos!';
+        let frase = frasesDaMissao(m)?.chegada || 'Uau! Chegamos!';
         // de vez em quando a comemoração chama a criança pelo nome — ela é quem
         // guia o Órbi (frase neutra: serve pra menino e menina)
         const nome = useGame.getState().nome;
@@ -103,7 +107,7 @@ export function MissionController() {
       }
       clearTimeout(proximaMissaoTO.current);
       proximaMissaoTO.current = setTimeout(() => {
-        useGame.getState().iniciarMissaoGPS();
+        useGame.getState().proximaMissao();
       }, CELEBRACAO_MS);
     }
     ultimoConcluido.current = !!concluida;

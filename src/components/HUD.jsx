@@ -1,5 +1,6 @@
 import { useGame } from '../store/useGame.js';
 import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
+import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
@@ -10,7 +11,8 @@ import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
  *    vermelho de alarme).
  *  - Faixa superior-central: UMA instrução por vez, com prioridade:
  *      1) tanque vazio (e fora do posto) → "ACABOU! ME LEVA NO POSTO?"
- *      2) pedido da missão de GPS ("HOSPITAL?")
+ *      2) pedido da missão — GPS ("HOSPITAL?") ou Ciências ("🐱 VET?",
+ *         Fatia 8: o emoji apresenta o bichinho sem texto extra)
  *      3) confirmação de chegada ("CHEGAMOS!")
  *    Quando o painel de abastecer está aberto, a faixa some — o foco é abastecer.
  *    Tom (adendo de narrativa): o banner fica CURTO pela legibilidade; quem
@@ -33,15 +35,19 @@ export function HUD() {
   const vazio = combustivel <= 0;
   const baixo = combustivel <= LIMIAR_BAIXO;
 
-  // Missão de GPS só aparece quando NÃO há aviso de combustível prioritário.
-  const gpsAtiva =
-    missao?.tipo === 'gps' &&
-    missao.destino &&
-    !missao.concluida &&
-    !abastecendo &&
-    !vazio;
-  const gpsAcabou =
-    missao?.tipo === 'gps' && missao.destino && missao.concluida && !abastecendo;
+  // Missão (GPS ou Ciências) só aparece quando NÃO há aviso de combustível
+  // prioritário. Continua UMA instrução por vez: ou aviso, ou missão.
+  const temMissao =
+    (missao?.tipo === 'gps' || missao?.tipo === 'ciencias') && missao.destino;
+  const missaoAtiva = temMissao && !missao.concluida && !abastecendo && !vazio;
+  const missaoAcabou = temMissao && missao.concluida && !abastecendo;
+
+  // Banner curto (a voz é quem carrega a personalidade do Órbi):
+  // GPS = "HOSPITAL?"; Ciências = "🐱 VET?".
+  const textoBanner =
+    missao?.tipo === 'ciencias'
+      ? `${ANIMAL_POR_SLUG[missao.animal]?.emoji ?? '🐾'} ${missao.destino}?`
+      : `${missao?.destino}?`;
 
   return (
     <>
@@ -52,12 +58,12 @@ export function HUD() {
         </div>
       )}
 
-      {gpsAtiva && (
+      {missaoAtiva && (
         <div className="mission-banner mission-banner--ativa" role="status">
-          {missao.destino}?
+          {textoBanner}
         </div>
       )}
-      {gpsAcabou && (
+      {missaoAcabou && (
         <div className="mission-banner mission-banner--ok" role="status">
           ✓ CHEGAMOS!
         </div>
