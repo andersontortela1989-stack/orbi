@@ -65,4 +65,39 @@ export const PALETA3D = {
   chaoMercado: TINTAS.sunSoft,  // feira
   chaoPorto:   TINTAS.blueSoft, // água
   chaoParque:  TINTAS.grassSoft, // natureza
+
+  // sticker dos prédios (Fatia B): contorno navy + placa branca de letreiro
+  // com texto navy — TODO letreiro tem a mesma cara (previsibilidade TEA)
+  contorno: TINTAS.ink,
+  placa:    TINTAS.white,
+  letreiro: TINTAS.ink,
+
+  // UMA COR POR PRÉDIO (requisito da Fatia B): a cor é identidade
+  // pedagógica do lugar — os chips do Caderninho herdam daqui via
+  // bairros.js. Pares da mesma família nunca no mesmo bairro (exceção
+  // consciente: PARQUE×ZOO, separados por valor claro/escuro).
+  // Guard-rail: "vermelho banido" = sinal de feedback/erro, nunca cor de
+  // mundo — FAROL coral-deep é cor de mundo, ok (o carro sempre foi
+  // avermelhado).
+  predios: {
+    PIZZA:    TINTAS.coral,     // comida quente
+    HOSPITAL: TINTAS.white,     // hospital clássico (contorno segura)
+    ESCOLA:   TINTAS.sun,       // escola = sol/aprender
+    MERCADO:  TINTAS.sunDeep,   // caramelo de feira
+    PADARIA:  TINTAS.coralSoft, // pão/salmão claro
+    PORTO:    TINTAS.blueDeep,  // água funda
+    FAROL:    TINTAS.coralDeep, // farol vermelho clássico
+    PARQUE:   TINTAS.grass,     // natureza
+    ZOO:      TINTAS.grassDeep, // mata
+    VET:      TINTAS.blue,      // clínica céu
+    POSTO:    TINTAS.sunSoft,   // energia
+  },
+
+  // carro — avatar do Heitor: evolução pro coral oficial, não troca
+  carro: {
+    corpo:  TINTAS.coral,
+    cabine: TINTAS.ink,
+    farol:  TINTAS.sunSoft,
+    roda:   TINTAS.ink,
+  },
 };

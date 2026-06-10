@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
 import { useKeyboard } from '../hooks/useKeyboard.js';
+import { PALETA3D } from '../brand/paleta3d.js';
 
 // =====================================================================
 //  PARÂMETROS DE GAME FEEL  —  AJUSTE AQUI, SENTINDO.
@@ -105,22 +106,27 @@ export function Car({ rigidBodyRef }) {
       {/* Um único collider para o carro inteiro — wheels são visual */}
       <CuboidCollider args={[CAR_W / 2, CAR_H / 2, CAR_L / 2]} friction={0.4} />
 
-      {/* Chassi */}
+      {/* Chassi — coral OFICIAL da marca (Fatia B: evolução do avatar, era
+          o vizinho #d94d3a). Edição VISUAL apenas: a física acima não muda. */}
       <mesh castShadow>
         <boxGeometry args={[CAR_W, CAR_H, CAR_L]} />
-        <meshStandardMaterial color="#d94d3a" roughness={0.55} />
+        <meshStandardMaterial color={PALETA3D.carro.corpo} roughness={0.55} />
       </mesh>
 
       {/* Cabine (visual, deslocada para trás → indica "frente") */}
       <mesh castShadow position={[0, CAR_H * 0.6, -0.25]}>
         <boxGeometry args={[CAR_W * 0.85, CAR_H * 0.55, CAR_L * 0.45]} />
-        <meshStandardMaterial color="#1f2630" roughness={0.4} />
+        <meshStandardMaterial color={PALETA3D.carro.cabine} roughness={0.4} />
       </mesh>
 
       {/* "Faróis" — referência visual da frente do carro */}
       <mesh position={[0, 0, CAR_L / 2 - 0.05]}>
         <boxGeometry args={[CAR_W * 0.75, CAR_H * 0.25, 0.1]} />
-        <meshStandardMaterial color="#fce97a" emissive="#fce97a" emissiveIntensity={0.4} />
+        <meshStandardMaterial
+          color={PALETA3D.carro.farol}
+          emissive={PALETA3D.carro.farol}
+          emissiveIntensity={0.4}
+        />
       </mesh>
 
       {/* Rodas (visual apenas) */}
@@ -132,7 +138,7 @@ export function Car({ rigidBodyRef }) {
       ].map((pos, i) => (
         <mesh key={i} position={pos} rotation={[0, 0, Math.PI / 2]} castShadow>
           <cylinderGeometry args={[WHEEL_R, WHEEL_R, WHEEL_T, 16]} />
-          <meshStandardMaterial color="#0b0b0d" roughness={0.8} />
+          <meshStandardMaterial color={PALETA3D.carro.roda} roughness={0.8} />
         </mesh>
       ))}
     </RigidBody>

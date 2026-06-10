@@ -29,8 +29,11 @@
  *   slug   — palavra do letreiro (CAIXA ALTA) E chave da missão de GPS
  *   pos    — [x, z] no plano
  *   size   — [w, h, l]
- *   cor    — cor do prédio
- *   rotuloCor / rotuloContorno — (opcional) contraste do letreiro
+ *   cor    — cor do prédio (Fatia B: sempre via PALETA3D.predios — uma cor
+ *     própria por prédio; é identidade pedagógica do lugar e os chips do
+ *     Caderninho herdam daqui)
+ *   (Fatia B: rotuloCor/rotuloContorno saíram — o letreiro é padronizado
+ *   navy-sobre-placa-branca no Building, igual pra todos)
  *   pedido / chegada — frases pt-BR narradas pelo GPS, no tom do adendo de
  *     narrativa: o PEDIDO é curiosidade do Órbi (ele não conhece nada da
  *     Terra), e a CHEGADA sempre ENSINA de volta — o Órbi "aprende" e repete
@@ -54,7 +57,7 @@ export const BAIRROS = [
         slug: 'PIZZA',
         pos: [-20, 15],
         size: [12, 6, 12],
-        cor: '#c45c4c',
+        cor: PALETA3D.predios.PIZZA,
         pedido: 'Que cheiro bom! O que é pizza? Me leva lá?',
         chegada: 'Uau! Então isso é pizza! Comida redonda e gostosa!',
       },
@@ -62,9 +65,7 @@ export const BAIRROS = [
         slug: 'HOSPITAL',
         pos: [20, 15],
         size: [14, 10, 14],
-        cor: '#b6d3e3',
-        rotuloCor: '#1a2733',
-        rotuloContorno: '#ffffff',
+        cor: PALETA3D.predios.HOSPITAL,
         pedido: 'O que é hospital? Vamos ver?',
         chegada: 'Uau! Então isso é um hospital! Aqui cuida das pessoas!',
       },
@@ -72,9 +73,7 @@ export const BAIRROS = [
         slug: 'ESCOLA',
         pos: [0, 38],
         size: [16, 7, 12],
-        cor: '#d4b75c',
-        rotuloCor: '#2a1f0a',
-        rotuloContorno: '#ffffff',
+        cor: PALETA3D.predios.ESCOLA,
         pedido: 'O que é escola? Me mostra?',
         chegada: 'Uau! Então isso é uma escola! Aqui a gente aprende!',
       },
@@ -90,9 +89,7 @@ export const BAIRROS = [
         slug: 'MERCADO',
         pos: [52, 18],
         size: [14, 8, 14],
-        cor: '#cf923f',
-        rotuloCor: '#2a1c08',
-        rotuloContorno: '#ffffff',
+        cor: PALETA3D.predios.MERCADO,
         pedido: 'O que é mercado? Me leva lá?',
         chegada: 'Uau! Então isso é um mercado! Aqui a gente compra comida!',
       },
@@ -100,9 +97,7 @@ export const BAIRROS = [
         slug: 'PADARIA',
         pos: [60, 44],
         size: [12, 6, 12],
-        cor: '#dcc06f',
-        rotuloCor: '#2a1f0a',
-        rotuloContorno: '#ffffff',
+        cor: PALETA3D.predios.PADARIA,
         pedido: 'Que cheirinho! O que é padaria? Vamos ver?',
         chegada: 'Uau! Então padaria é onde faz pão!',
       },
@@ -118,9 +113,7 @@ export const BAIRROS = [
         slug: 'PORTO',
         pos: [-58, 16],
         size: [16, 7, 14],
-        cor: '#79a7bd',
-        rotuloCor: '#10242e',
-        rotuloContorno: '#ffffff',
+        cor: PALETA3D.predios.PORTO,
         pedido: 'O que é porto? Me mostra?',
         chegada: 'Uau! Então isso é um porto! Aqui os barcos param!',
       },
@@ -128,9 +121,7 @@ export const BAIRROS = [
         slug: 'FAROL',
         pos: [-64, 42],
         size: [8, 14, 8],
-        cor: '#d96a5a',
-        rotuloCor: '#ffffff',
-        rotuloContorno: '#10242e',
+        cor: PALETA3D.predios.FAROL,
         pedido: 'O que é farol? Vamos ver?',
         chegada: 'Uau! Então isso é um farol! Ele acende pra guiar os barcos!',
       },
@@ -146,9 +137,7 @@ export const BAIRROS = [
         slug: 'PARQUE',
         pos: [-14, 72],
         size: [12, 5, 12],
-        cor: '#6aa45c',
-        rotuloCor: '#10240c',
-        rotuloContorno: '#ffffff',
+        cor: PALETA3D.predios.PARQUE,
         pedido: 'O que é parque? Me leva lá?',
         chegada: 'Uau! Então isso é um parque! Aqui brinca no meio das árvores!',
       },
@@ -156,9 +145,7 @@ export const BAIRROS = [
         slug: 'ZOO',
         pos: [14, 78],
         size: [12, 6, 12],
-        cor: '#8cbf6c',
-        rotuloCor: '#10240c',
-        rotuloContorno: '#ffffff',
+        cor: PALETA3D.predios.ZOO,
         pedido: 'O que é zoo? Me mostra?',
         chegada: 'Uau! Então isso é um zoo! Aqui moram os bichos!',
       },
@@ -166,9 +153,7 @@ export const BAIRROS = [
         slug: 'VET',
         pos: [22, 62],
         size: [12, 7, 12],
-        cor: '#a8c8b0',
-        rotuloCor: '#14301c',
-        rotuloContorno: '#ffffff',
+        cor: PALETA3D.predios.VET,
         // Sem pedido/chegada próprios: as frases vêm do banco de animais
         // (missoes-ciencias.js) — chegar aqui sempre tem um bichinho junto.
         soCiencias: true,

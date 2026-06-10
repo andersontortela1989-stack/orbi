@@ -41,8 +41,6 @@ export function City() {
               size={p.size}
               color={p.cor}
               label={p.slug}
-              labelColor={p.rotuloCor}
-              labelOutline={p.rotuloContorno}
             />
           ))}
         </group>

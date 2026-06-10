@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Building } from './Building.jsx';
 import { PostoSensor } from './PostoSensor.jsx';
 import { useGame } from '../store/useGame.js';
+import { PALETA3D } from '../brand/paleta3d.js';
 
 /**
  * Posto de gasolina (Fatia 5). MESMA linguagem visual dos prédios da cidade:
@@ -28,10 +29,8 @@ export function GasStation() {
       <Building
         floorPos={POSTO_POS}
         size={POSTO_SIZE}
-        color="#5fa890"
+        color={PALETA3D.predios.POSTO}
         label="POSTO"
-        labelColor="#0e231c"
-        labelOutline="#ffffff"
       />
 
       <PostoSensor
