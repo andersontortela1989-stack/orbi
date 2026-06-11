@@ -36,9 +36,11 @@ export function Caderninho() {
   const descobertas = useGame((s) => s.descobertas);
   const nome = useGame((s) => s.nome);
 
-  // Botão suprimido enquanto outro painel está aberto (uma coisa por vez).
+  // Botão suprimido enquanto outro painel está aberto (uma coisa por vez):
+  // quiz, posto e garagem.
   const quizAberto = useGame((s) => !!s.chegadaViva);
   const postoAberto = useGame((s) => postoAtivo(s.combustivel, s.postoPerto));
+  const garagemAberta = useGame((s) => s.garagemPerto);
 
   // Voz na abertura — cancela qualquer fala anterior (interrupt) pra
   // abrir/fechar repetido não enfileirar utterances.
@@ -70,7 +72,7 @@ export function Caderninho() {
   };
 
   if (!aberto) {
-    if (quizAberto || postoAberto) return null;
+    if (quizAberto || postoAberto || garagemAberta) return null;
     return (
       /* tabIndex=-1 + blur(): ESPAÇO (freio de mão) não reabre o botão
          que acabou de ser clicado — mesmo padrão dos painéis. */

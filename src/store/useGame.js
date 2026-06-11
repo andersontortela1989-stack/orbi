@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { DESTINOS_GPS } from '../missions/destinos.js';
 import { sortearAnimal } from '../missions/missoes-ciencias.js';
 import { sortearChegadaViva } from '../missions/missoes.js';
+import { COR_POR_ID } from '../city/garagem.js';
 
 /**
  * Estado global da Cidade Turbo 3D — shape espelhando a §6 do handoff.
@@ -33,8 +34,21 @@ const ESTADO_INICIAL = {
   moedas: 0,
   combustivel: 100, // 0–100; chega a 0 → desacelera suave, sem game over
 
+  // Garagem (frente "Garagem") — cor do carro como ESTADO. corCarro é ID
+  // SEMÂNTICO do catálogo (city/garagem.js), não hex: o hex deriva na hora
+  // de renderizar (rebrand-proof — a marca mudou, o save antigo acompanha).
+  // coral vem de fábrica (a cor aprovada da Fatia B).
+  corCarro: 'coral',
+  coresCompradas: ['coral'],
+
   // proximidade do posto (transiente — setado pelos sensores, NÃO persistido)
   postoPerto: false,
+
+  // proximidade da garagem + cor em experimentação no painel (transientes
+  // como postoPerto: NÃO persistidos; corPreview NUNCA sobrevive fora da
+  // garagem — limpo em todo caminho de saída)
+  garagemPerto: false,
+  corPreview: null,
 
   // chegada viva — pergunta aberta na chegada de um lugar "vivo"
   // (transiente como postoPerto: NÃO persistido; reload = sem pergunta presa)
@@ -104,6 +118,40 @@ export const useGame = create(
 
       // Proximidade do posto — ligado/desligado pelos sensores de zona.
       setPostoPerto: (perto) => set({ postoPerto: !!perto }),
+
+      // === Garagem (frente "Garagem") ===
+      // Sair da zona é caminho de SAÍDA do painel: zera o preview junto.
+      setGaragemPerto: (perto) =>
+        set(
+          perto
+            ? { garagemPerto: true }
+            : { garagemPerto: false, corPreview: null }
+        ),
+
+      setCorPreview: (id) => set({ corPreview: id ?? null }),
+
+      // Compra/troca ATÔMICA da cor (um set só, sem estado intermediário).
+      // Regras: já comprada → veste grátis (mesma cor vestida = no-op
+      // natural); moedas suficientes → debita + adiciona + veste;
+      // insuficiente → no-op retornando false (a UI/voz reagem com calma,
+      // nunca com erro — guard-rail TEA). pagarPedagio segue intocada:
+      // ela é do pedágio (Fatia 5.1, reservada ao roadmap).
+      comprarCor: (id) => {
+        const cor = COR_POR_ID[id];
+        if (!cor) return false;
+        const s = get();
+        if (s.coresCompradas.includes(id)) {
+          set({ corCarro: id });
+          return true;
+        }
+        if (s.moedas < cor.preco) return false;
+        set({
+          moedas: s.moedas - cor.preco,
+          coresCompradas: [...s.coresCompradas, id],
+          corCarro: id,
+        });
+        return true;
+      },
 
       // === Chegada viva ===
       // Abre a mini-interação do lugar (se ele tiver uma): a pergunta sai
@@ -252,7 +300,12 @@ export const useGame = create(
       // bump da version. Em `descobertas` NÃO há backfill retroativo: o dado
       // item-a-item nunca existiu; o caderninho começa vazio e a narrativa
       // cobre ("ainda não anotei nada").
-      version: 4,
+      // v5 (garagem): + corCarro/coresCompradas. São chaves de TOPO — o
+      // merge raso do persist já preencheria as ausentes a partir do
+      // ESTADO_INICIAL (a regra "bump obrigatório" do aviso acima vale
+      // para chaves ANINHADAS em habilidades/descobertas) — mas o bump
+      // segue a regra da casa à risca e o migrate genérico cobre de graça.
+      version: 5,
       migrate: (persisted) => {
         if (!persisted) return persisted;
         return {
@@ -269,8 +322,8 @@ export const useGame = create(
       },
       // persist serializa só state (funções são ignoradas automaticamente).
       // partialize: só o progresso DURÁVEL é gravado — postoPerto,
-      // chegadaViva e caderninhoAberto são transientes (dependem do agora)
-      // e não sobrevivem a reload.
+      // chegadaViva, caderninhoAberto, garagemPerto e corPreview são
+      // transientes (dependem do agora) e não sobrevivem a reload.
       partialize: (s) => ({
         nome: s.nome,
         introVista: s.introVista,
@@ -278,6 +331,8 @@ export const useGame = create(
         desbloqueados: s.desbloqueados,
         moedas: s.moedas,
         combustivel: s.combustivel,
+        corCarro: s.corCarro,
+        coresCompradas: s.coresCompradas,
         missao: s.missao,
         habilidades: s.habilidades,
         descobertas: s.descobertas,

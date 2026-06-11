@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Building } from './Building.jsx';
-import { PostoSensor } from './PostoSensor.jsx';
+import { ZoneSensor } from './ZoneSensor.jsx';
 import { useGame } from '../store/useGame.js';
 import { PALETA3D } from '../brand/paleta3d.js';
 
@@ -33,7 +33,7 @@ export function GasStation() {
         label="POSTO"
       />
 
-      <PostoSensor
+      <ZoneSensor
         floorPos={POSTO_POS}
         size={POSTO_SIZE}
         onEnter={() => setPostoPerto(true)}

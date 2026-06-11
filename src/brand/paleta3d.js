@@ -91,6 +91,7 @@ export const PALETA3D = {
     ZOO:      TINTAS.grassDeep, // mata
     VET:      TINTAS.blue,      // clínica céu
     POSTO:    TINTAS.sunSoft,   // energia
+    GARAGEM:  TINTAS.blueSoft,  // oficina calma (serviço, como o POSTO)
   },
 
   // carro — avatar do Heitor: evolução pro coral oficial, não troca

@@ -53,10 +53,12 @@ const fileira = ([cx, cz], [dx, dz]) =>
  * Estado de coleta vive na memória da sessão (Moedas.jsx): reload = cidade
  * sempre acorda igual (todas de volta), contador persistido intacto.
  *
- * Nenhuma fileira dentro da zona do POSTO (sensor com padding 4:
- * x -44..-24, z 14..34): plim nunca toca com o painel de abastecer aberto —
- * as fileiras do corredor do PORTO param antes (z ≤ 10) e retomam depois
- * (z ≥ 38), com margem maior que RAIO_COLETA.
+ * Nenhuma fileira dentro das zonas de SERVIÇO (sensores com padding 4) —
+ * plim nunca toca com um painel aberto:
+ *   POSTO   (x -44..-24, z 14..34): as fileiras do corredor do PORTO param
+ *     antes (z ≤ 10) e retomam depois (z ≥ 38), margem > RAIO_COLETA;
+ *   GARAGEM (x 24..44, z -26..-6): a fileira B termina em x 21 e a G só
+ *     começa em x 48.5.
  */
 export const MOEDAS = [
   // primeira reta do spawn (0,0 olhando +z) — recompensa nos primeiros

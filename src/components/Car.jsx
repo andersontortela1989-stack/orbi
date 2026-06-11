@@ -4,6 +4,8 @@ import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
 import { useKeyboard } from '../hooks/useKeyboard.js';
 import { PALETA3D } from '../brand/paleta3d.js';
+import { useGame } from '../store/useGame.js';
+import { tintaDoCarro } from '../city/garagem.js';
 
 // =====================================================================
 //  PARÂMETROS DE GAME FEEL  —  AJUSTE AQUI, SENTINDO.
@@ -33,6 +35,12 @@ export function Car({ rigidBodyRef }) {
   const input = useKeyboard();
   const localRef = useRef(null);
   const ref = rigidBodyRef ?? localRef;
+
+  // Cor do chassi via store (frente "Garagem") — edição VISUAL apenas,
+  // precedente da Fatia B: troca de cor re-renderiza só o material; o
+  // RigidBody é o mesmo elemento React (não remonta) e a física acima
+  // não muda. corPreview (experimentando na garagem) vence corCarro.
+  const corCorpo = useGame((s) => tintaDoCarro(s.corPreview ?? s.corCarro));
 
   useFrame((_, deltaRaw) => {
     const rb = ref.current;
@@ -106,11 +114,12 @@ export function Car({ rigidBodyRef }) {
       {/* Um único collider para o carro inteiro — wheels são visual */}
       <CuboidCollider args={[CAR_W / 2, CAR_H / 2, CAR_L / 2]} friction={0.4} />
 
-      {/* Chassi — coral OFICIAL da marca (Fatia B: evolução do avatar, era
-          o vizinho #d94d3a). Edição VISUAL apenas: a física acima não muda. */}
+      {/* Chassi — cor escolhida na garagem (coral de fábrica = o coral
+          OFICIAL da Fatia B). Cabine/rodas seguem navy FIXO: identidade +
+          contraste garantido com qualquer corpo do catálogo. */}
       <mesh>
         <boxGeometry args={[CAR_W, CAR_H, CAR_L]} />
-        <meshStandardMaterial color={PALETA3D.carro.corpo} roughness={0.55} />
+        <meshStandardMaterial color={corCorpo} roughness={0.55} />
       </mesh>
 
       {/* Cabine (visual, deslocada para trás → indica "frente") */}

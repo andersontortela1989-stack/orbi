@@ -7,6 +7,7 @@ import { City } from './City.jsx';
 import { Cenario, BlobShadow } from './Cenario.jsx';
 import { Moedas } from './Moedas.jsx';
 import { GasStation } from './GasStation.jsx';
+import { Garagem } from './Garagem.jsx';
 import { MissionSensors } from './MissionSensors.jsx';
 import { FuelController } from './FuelController.jsx';
 import { CameraFollow } from './CameraFollow.jsx';
@@ -49,6 +50,10 @@ export function Game() {
 
       {/* Posto de gasolina (Fatia 5) — mesma linguagem visual + sensor de zona */}
       <GasStation />
+
+      {/* Garagem (frente "Garagem") — serviço como o posto: prédio +
+          zona; o painel 2D (GaragemPanel) vive no App */}
+      <Garagem />
 
       {/* Decoração pura (Fatia C): árvores/postes/faixas/sombras — NADA
           jogável deriva daqui (fronteira documentada no Cenario.jsx) */}

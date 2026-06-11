@@ -285,6 +285,156 @@ canvas {
   to   { transform: translateY(0);    opacity: 1; }
 }
 
+/* ===== Painel da garagem (frente "Garagem") ===== */
+/* Mesmo cartão-adesivo do posto, ancorado embaixo — o carro fica visível
+   na cena ali em cima, onde o preview da cor acontece ao vivo. */
+.garagem-overlay {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-5);
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none; /* só o painel recebe clique */
+  display: flex;
+  justify-content: center;
+}
+
+.garagem-painel {
+  pointer-events: auto;
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  box-shadow: var(--solid-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 340px;
+  user-select: none;
+  animation: postoEntra var(--dur-calm) var(--ease-soft); /* mesmo gesto */
+}
+
+.garagem-titulo {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.garagem-cores {
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* Swatch-adesivo: cartão clicável com a bolinha da cor + a PALAVRA da cor
+   (bônus de letramento: lê SOL, vê o carro ficar amarelo). */
+.garagem-cor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--surface-base);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-family: var(--font-display);
+  transition: transform var(--dur-quick) var(--ease-soft);
+}
+
+.garagem-cor:active {
+  transform: translateY(2px);
+}
+
+/* Em uso: moldura Sol (celebração discreta da escolha atual). */
+.garagem-cor.is-vestida {
+  border: var(--outline) solid var(--orbi-sun-deep);
+  background: var(--surface-card);
+}
+
+/* Em experimentação: tracejado navy calmo (estado neutro, não alarme). */
+.garagem-cor.is-preview {
+  border: var(--outline) dashed var(--outline-color);
+  background: var(--surface-card);
+}
+
+.garagem-swatch {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: var(--outline) solid var(--outline-color);
+}
+
+.garagem-nome {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  color: var(--text-strong);
+}
+
+.garagem-sub {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-body-bold);
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Botão-adesivo de Capim — mesmo gesto do posto. */
+.garagem-botao {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+  background: var(--orbi-grass);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-6);
+  cursor: pointer;
+  box-shadow: var(--solid-3);
+  transition: transform var(--dur-quick) var(--ease-soft),
+              box-shadow var(--dur-quick) var(--ease-soft),
+              background var(--dur-quick) var(--ease-soft);
+}
+
+.garagem-botao:hover {
+  background: var(--orbi-grass-soft);
+}
+
+.garagem-botao:active {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+  background: var(--orbi-grass-deep);
+}
+
+/* "Ainda não dá": chip NEUTRO em tracejado calmo (linguagem dos
+   slots-mistério do caderninho) — nunca vermelho, nunca cadeado. */
+.garagem-neutro {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-soft);
+  border: var(--outline-thin) dashed var(--outline-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-5);
+}
+
+.garagem-dica {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
 /* ===== Chegada viva ===== */
 /* Pergunta do Órbi na chegada — cartão-adesivo branco ancorado embaixo,
    mesmo padrão do painel do posto: não cobre a cena, não pausa o jogo.
@@ -607,6 +757,9 @@ canvas {
   .posto-painel { animation: none; }
   .posto-pip { transition: none; }
   .posto-botao { transition: none; }
+  .garagem-painel { animation: none; }
+  .garagem-cor { transition: none; }
+  .garagem-botao { transition: none; }
   .viva-painel { animation: none; }
   .viva-carta { transition: none; }
   .cad-painel { animation: none; }

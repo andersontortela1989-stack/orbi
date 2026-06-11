@@ -6,6 +6,7 @@ import { PALETA3D } from './brand/paleta3d.js';
 import { Game } from './components/Game.jsx';
 import { HUD } from './components/HUD.jsx';
 import { RefuelPanel } from './components/RefuelPanel.jsx';
+import { GaragemPanel } from './components/GaragemPanel.jsx';
 import { ChegadaVivaPanel } from './components/ChegadaVivaPanel.jsx';
 import { Caderninho } from './components/Caderninho.jsx';
 import { WelcomeVoice } from './components/WelcomeVoice.jsx';
@@ -75,6 +76,7 @@ export default function App() {
       {/* Overlays 2D — fora do Canvas, React puro */}
       <HUD />
       <RefuelPanel />
+      <GaragemPanel />
       <ChegadaVivaPanel />
       <Caderninho />
       <div className="controls-hint">
