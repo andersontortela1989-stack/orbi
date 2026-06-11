@@ -5,6 +5,7 @@ import { postoAtivo } from '../economia.js';
 import {
   CATEGORIAS_CADERNINHO,
   conteudoDescoberta,
+  falaDescoberta,
 } from '../missions/descobertas.js';
 
 /**
@@ -27,6 +28,14 @@ import {
  *  tracejado calmo e NEUTRO (curiosidade do Órbi, não déficit da criança;
  *  Sol é celebração — fica nos descobertos). PROIBIDO em todo o caderninho:
  *  contadores, barras, "X de Y", "faltam N", porcentagens.
+ *
+ *  FALANTE (frente "Caderninho falante"): tocar num adesivo descoberto =
+ *  o Órbi fala o fato (falaDescoberta — derivada do MESMO conteúdo do
+ *  card, rótulo em minúsculas na voz). Re-toque REPETE de propósito:
+ *  fala = conteúdo, não transação — repetição é conforto (TEA); o
+ *  interrupt resolve a rajada real (cancela, nunca sobrepõe). Mistério
+ *  fala UMA linha curiosa fixa, sem contar nem apontar o que falta.
+ *  Fechar corta a fala (pararFala no fechar()).
  *
  *  Com o caderninho aberto o input de direção não move o carro (ver
  *  useKeyboard) — previsibilidade > física viva sob overlay.
@@ -119,12 +128,24 @@ export function Caderninho() {
               <div className="cad-secao-titulo">{cat.titulo}</div>
               <div className="cad-grid">
                 {/* descobertos primeiro, na ORDEM da descoberta (a ordem
-                    conta a história do álbum) */}
+                    conta a história do álbum). Cada adesivo é um BOTÃO que
+                    fala o fato ao toque — tabIndex=-1 + blur(): ESPAÇO
+                    (freio de mão) nunca reativa o último card tocado. */}
                 {achados.map((id) => {
                   const c = conteudoDescoberta(cat.id, id);
                   if (!c) return null;
                   return (
-                    <div className="cad-adesivo" key={id}>
+                    <button
+                      type="button"
+                      className="cad-adesivo"
+                      key={id}
+                      tabIndex={-1}
+                      onClick={(e) => {
+                        const fala = falaDescoberta(cat.id, id);
+                        if (fala) falar(fala, { interrupt: true });
+                        e.currentTarget.blur();
+                      }}
+                    >
                       {c.emoji ? (
                         <span className="cad-emoji" aria-hidden="true">
                           {c.emoji}
@@ -138,15 +159,29 @@ export function Caderninho() {
                       )}
                       <span className="cad-nome">{c.rotulo}</span>
                       <span className="cad-fato">{c.fato}</span>
-                    </div>
+                    </button>
                   );
                 })}
                 {/* slots-mistério: o que o Órbi AINDA vai descobrir —
-                    tracejado calmo e neutro, sem Sol, sem contagem */}
+                    tracejado calmo e neutro, sem Sol, sem contagem. Ao
+                    toque, UMA linha curiosa fixa (igual pra todos —
+                    previsível): convite, nunca déficit. */}
                 {misterios.map((id) => (
-                  <div className="cad-misterio" key={id} aria-hidden="true">
+                  <button
+                    type="button"
+                    className="cad-misterio"
+                    key={id}
+                    tabIndex={-1}
+                    aria-label="ainda não descoberto"
+                    onClick={(e) => {
+                      falar('Hmm, esse eu ainda não descobri... me mostra?', {
+                        interrupt: true,
+                      });
+                      e.currentTarget.blur();
+                    }}
+                  >
                     ?
-                  </div>
+                  </button>
                 ))}
               </div>
             </section>

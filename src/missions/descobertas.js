@@ -55,3 +55,27 @@ export function conteudoDescoberta(categoria, id) {
   }
   return null;
 }
+
+/**
+ * Fala do adesivo ao TOQUE (frente "Caderninho falante") — derivada do
+ * MESMO conteudoDescoberta acima, zero banco novo: mexeu no banco, a fala
+ * acompanha. Composição explícita por categoria (a FORMA do `fato` decide):
+ *   animais/frutas  — fato é FRAGMENTO ("faz miau!") → rótulo + fato;
+ *   contagens       — fato já contém o rótulo ("3 pãezinhos!") → direto;
+ *   lugares         — fato é frase completa do Órbi → direto.
+ *
+ * REGRA DA VOZ EM MINÚSCULAS: o rótulo é rebaixado na fala ("gato! faz
+ * miau!", nunca "GATO!...") — alguns TTS soletram CAIXA ALTA, o mesmo
+ * motivo do nomeParaVoz em voz.js. A CAIXA ALTA fica no visual do card.
+ * (Os fatos de lugares já vêm minúsculos do banco — conferido.)
+ *
+ * Retorna null pra id desconhecido: toque vira silêncio, nunca erro.
+ */
+export function falaDescoberta(categoria, id) {
+  const c = conteudoDescoberta(categoria, id);
+  if (!c) return null;
+  if (categoria === 'animais' || categoria === 'frutas') {
+    return `${String(c.rotulo).toLowerCase()}! ${c.fato}`;
+  }
+  return c.fato;
+}

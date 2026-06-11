@@ -696,6 +696,16 @@ canvas {
   gap: var(--space-1);
   padding: var(--space-3);
   text-align: center;
+  /* Caderninho falante: o card virou <button> (fala o fato ao toque) —
+     reset dos estilos UA + press do adesivo (gated em reduced-motion). */
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: transform var(--dur-quick) var(--ease-soft);
+}
+
+.cad-adesivo:active {
+  transform: translateY(2px);
 }
 
 .cad-emoji {
@@ -748,6 +758,15 @@ canvas {
   font-weight: var(--weight-display-bold);
   color: var(--text-soft);
   opacity: 0.55;
+  /* Caderninho falante: também é <button> (linha curiosa ao toque) —
+     segue visualmente neutro; só responde ao toque, nada chama. */
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--dur-quick) var(--ease-soft);
+}
+
+.cad-misterio:active {
+  transform: translateY(2px);
 }
 
 /* Guard-rail TEA+TDAH: respeita reduced-motion */
@@ -763,6 +782,8 @@ canvas {
   .viva-painel { animation: none; }
   .viva-carta { transition: none; }
   .cad-painel { animation: none; }
+  .cad-adesivo { transition: none; }
+  .cad-misterio { transition: none; }
   .orbi-companion { transition: opacity var(--dur-quick) var(--ease-soft); transform: none; }
   .orbi-companion.is-visible { transform: none; }
   .orbi-companion.is-visible.is-celebrating { animation: none; }
