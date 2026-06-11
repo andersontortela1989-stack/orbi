@@ -101,6 +101,10 @@ export const PALETA3D = {
     roda:   TINTAS.ink,
   },
 
+  // moeda coletável (frente "Moedas na rua") — âmbar do Sol da marca:
+  // micro-celebração espalhada pelo asfalto, mesma família do destaque 2D
+  moeda: TINTAS.sun,
+
   // props do cenário (Fatia C — decoração pura, ver Cenario.jsx)
   tronco:     TINTAS.inkSoft,
   copa:       TINTAS.grass,

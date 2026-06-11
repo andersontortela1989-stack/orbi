@@ -8,11 +8,13 @@ import { PALETA3D, SOMBRA_SOLIDA } from '../brand/paleta3d.js';
  * CENÁRIO (Fatia C da frente Mundo Adesivo 3D) — decoração PURA.
  *
  * FRONTEIRA (gravada aqui de propósito):
- *   bairros.js  = entidades JOGÁVEIS — sensores, missões e chips do
- *                 Caderninho DERIVAM de lá.
+ *   src/city/   = lado JOGÁVEL do mundo, um arquivo por camada:
+ *                 bairros.js (prédios/missões — sensores, GPS e chips do
+ *                 Caderninho derivam de lá) e moedas.js (coletáveis — a
+ *                 coleta de Moedas.jsx deriva de lá).
  *   Cenario.jsx = decoração — NADA deriva daqui: sem sensor, sem missão,
- *                 sem chip. Se um prop um dia virar jogável, ele MIGRA
- *                 pra bairros.js.
+ *                 sem chip, sem coleta. Se um prop um dia virar jogável,
+ *                 ele MIGRA pra src/city/.
  *
  * Conteúdo (poucos e calmos — dosagem TEA, nada anima):
  *   - árvores no PARQUE (InstancedMesh): SEM colisão — parede invisível

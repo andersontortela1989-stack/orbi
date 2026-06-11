@@ -5,6 +5,7 @@ import { Car } from './Car.jsx';
 import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
 import { Cenario, BlobShadow } from './Cenario.jsx';
+import { Moedas } from './Moedas.jsx';
 import { GasStation } from './GasStation.jsx';
 import { MissionSensors } from './MissionSensors.jsx';
 import { FuelController } from './FuelController.jsx';
@@ -75,6 +76,11 @@ export function Game() {
       {/* Sombra sólida do carro (depois do FuelController de propósito —
           só LÊ a posição; não entra na cadeia Car→FuelController) */}
       <BlobShadow targetRef={carRef} />
+
+      {/* Moedas coletáveis (frente "Moedas na rua") — como o BlobShadow,
+          só LÊ a posição do carro: coleta por distância, zero física, fora
+          da cadeia load-bearing Car→FuelController */}
+      <Moedas targetRef={carRef} />
 
       <CameraFollow targetRef={carRef} />
     </>

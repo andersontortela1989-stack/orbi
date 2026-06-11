@@ -11,7 +11,7 @@ import { sortearChegadaViva } from '../missions/missoes.js';
  *
  * Como testar pelo console:
  *   useGame.getState().abastecer(-30)       // combustível: 100 → 70
- *   useGame.getState().pagarPedagio(-5)     // moedas: 0 → 5  (valor negativo "ganha")
+ *   useGame.getState().ganharMoeda(5)       // moedas: +5 (a coleta da rua usa qtd=1)
  *   useGame.setState({ moedas: 42 })        // forma direta de mexer no estado
  *   useGame.getState().resetar()            // volta ao estado inicial
  */
@@ -128,6 +128,13 @@ export const useGame = create(
             descobertas: { ...s.descobertas, [categoria]: [...lista, id] },
           };
         }),
+
+      // === Moedas na rua (frente extra "Moedas") ===
+      // Ganho das moedas coletáveis do asfalto (Moedas.jsx). Clamp em
+      // qtd ≥ 0: ganhar nunca tira — perder só existe via pagarPedagio.
+      // `moedas` já persiste (partialize): é o fundo da futura garagem.
+      ganharMoeda: (qtd = 1) =>
+        set((s) => ({ moedas: s.moedas + Math.max(0, qtd) })),
 
       pagarPedagio: (valor) =>
         set((s) => ({
