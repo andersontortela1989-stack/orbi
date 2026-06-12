@@ -11,11 +11,10 @@
  * dev). Este arquivo fica DADOS PUROS, sem importar o banco: a direção
  * de dependência do projeto é missions deriva de city, nunca o inverso.
  *
- * HONESTIDADE DA FRONTEIRA: na Frente 4 os bichos são presença visual
- * pura — nada deriva daqui AINDA. Eles nascem em src/city/ (e não no
- * Cenario.jsx) porque a Frente 5 ("eu vi um bicho perto da água! me
- * mostra onde?") vai derivar a BUSCA destas posições — e a regra da
- * fronteira manda o prop que vai virar jogável morar logo no destino.
+ * FRONTEIRA: os bichos nasceram aqui na Frente 4 (presença visual pura)
+ * já mirando a Frente 5 — que chegou: a MISSÃO DE BUSCA deriva daqui
+ * (missions/busca.js lê posição e pista; BuscaSensor lê posição). A
+ * aposta da fronteira pagou: virou jogável sem migrar.
  *
  * GUARD-RAILS (invioláveis):
  *   - ESTÁTICO PURO: nada anda, nada persegue, nada aparece/some — o
@@ -31,20 +30,59 @@
  * radianos, todos distintos (nenhum par paralelo — variedade calma).
  */
 
+// `pista`/`pistaCurta` (Frente 5 — missão de busca): a pista descreve o
+// LUGAR do bicho (dado do mundo → mora aqui), nunca o bicho — descobrir
+// QUAL bicho é parte da recompensa. `pista` em minúsculas (vai pra VOZ;
+// TTS soletra CAIXA ALTA); `pistaCurta` em CAIXA ALTA (vai pro banner).
 export const BICHOS = [
   // beira d'água do PORTO (chão azul), no vão entre os lotes PORTO/FAROL
-  { slug: 'PATO',     pos: [-50, 34], heading: 0.6 },
+  {
+    slug: 'PATO',
+    pos: [-50, 34],
+    heading: 0.6,
+    pista: 'perto da água',
+    pistaCurta: 'ÁGUA?',
+  },
 
   // esquina de vizinhança do CENTRO, entre os lotes de PIZZA e ESCOLA
-  { slug: 'GATO',     pos: [-14, 32], heading: -2.2 },
+  {
+    slug: 'GATO',
+    pos: [-14, 32],
+    heading: -2.2,
+    pista: 'no meio das casas do centro',
+    pistaCurta: 'CASAS?',
+  },
 
   // pasto de capim do PARQUE, no vão entre os lotes PARQUE/ZOO
-  { slug: 'VACA',     pos: [0, 84],   heading: 2.9 },
+  {
+    slug: 'VACA',
+    pos: [0, 84],
+    heading: 2.9,
+    pista: 'no capim do parque',
+    pistaCurta: 'CAPIM?',
+  },
 
   // feira — leste do lote do MERCADO (chão sol-soft)
-  { slug: 'GALINHA',  pos: [70, 22],  heading: -0.9 },
+  {
+    slug: 'GALINHA',
+    pos: [70, 22],
+    heading: -0.9,
+    pista: 'na feira do mercado',
+    pistaCurta: 'FEIRA?',
+  },
 
   // cão de oficina, ao lado da GARAGEM (fora da zona; fileira G de moedas
   // a ~3 — se atropelar visualmente, deslizar 2-3 unidades a leste no gate)
-  { slug: 'CACHORRO', pos: [46, -14], heading: 1.7 },
+  {
+    slug: 'CACHORRO',
+    pos: [46, -14],
+    heading: 1.7,
+    pista: 'perto da garagem',
+    pistaCurta: 'GARAGEM?',
+  },
 ];
+
+/** Busca por slug — consumido pela missão de busca (F5) e pelo HUD. */
+export const BICHO_POR_SLUG = Object.fromEntries(
+  BICHOS.map((b) => [b.slug, b])
+);

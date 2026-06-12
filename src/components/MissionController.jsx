@@ -12,6 +12,7 @@ import {
 const CELEBRACAO_MS         = 2200; // entre completar uma missão e sortear a próxima
 const PRIMEIRA_NARRACAO_MS  = 1900; // delay após 1ª interação (deixa a saudação tocar)
 const NOVA_MISSAO_NARRACAO_MS = 250; // pequeno respiro entre voz de chegada e nova
+const REDICA_BUSCA_MS       = 45000; // re-dica única da busca (Frente 5)
 
 // Comemoração ESPECIAL com o nome da criança a cada N chegadas — parcimônia
 // (adendo de narrativa: o nome em toda frase vira ruído).
@@ -95,6 +96,24 @@ export function MissionController() {
     }, NOVA_MISSAO_NARRACAO_MS);
     return () => clearTimeout(id);
   }, [destino, animal, concluida]);
+
+  // 3b) RE-DICA da BUSCA (Frente 5) — se a busca segue aberta após 45s,
+  // a voz repete a MESMA pista UMA única vez (previsível, sem escalada;
+  // o banner já é a dica visual permanente). NADA punitivo: depois da
+  // re-dica, silêncio — a missão espera o tempo que precisar. O timer
+  // limpa sozinho na conclusão/troca (deps + cleanup).
+  useEffect(() => {
+    if (concluida || !destino) return;
+    if (useGame.getState().missao?.tipo !== 'busca') return;
+    const id = setTimeout(() => {
+      const m = useGame.getState().missao;
+      const frases = frasesDaMissao(m);
+      if (m?.tipo === 'busca' && m.destino === destino && !m.concluida && frases) {
+        falar(frases.pedido);
+      }
+    }, REDICA_BUSCA_MS);
+    return () => clearTimeout(id);
+  }, [destino, concluida]);
 
   // 4) CONCLUÍDA — som + voz + agenda nova missão.
   useEffect(() => {

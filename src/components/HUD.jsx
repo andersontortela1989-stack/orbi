@@ -1,6 +1,7 @@
 import { useGame } from '../store/useGame.js';
 import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
 import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
+import { BICHO_POR_SLUG } from '../city/bichos.js';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
@@ -41,18 +42,25 @@ export function HUD() {
   // compete com ela.
   const chegadaViva = useGame((s) => s.chegadaViva);
   const temMissao =
-    (missao?.tipo === 'gps' || missao?.tipo === 'ciencias') && missao.destino;
+    (missao?.tipo === 'gps' ||
+      missao?.tipo === 'ciencias' ||
+      missao?.tipo === 'busca') &&
+    missao.destino;
   const missaoAtiva =
     temMissao && !missao.concluida && !abastecendo && !vazio && !chegadaViva;
   const missaoAcabou =
     temMissao && missao.concluida && !abastecendo && !chegadaViva;
 
   // Banner curto (a voz é quem carrega a personalidade do Órbi):
-  // GPS = "HOSPITAL?"; Ciências = "🐱 VET?".
+  // GPS = "HOSPITAL?"; Ciências = "🐱 VET?"; Busca = "🔍 ÁGUA?" — na
+  // busca o banner mostra a PISTA DE LUGAR, NUNCA o bicho (nem emoji):
+  // descobrir qual bicho é parte da recompensa.
   const textoBanner =
-    missao?.tipo === 'ciencias'
-      ? `${ANIMAL_POR_SLUG[missao.animal]?.emoji ?? '🐾'} ${missao.destino}?`
-      : `${missao?.destino}?`;
+    missao?.tipo === 'busca'
+      ? `🔍 ${BICHO_POR_SLUG[missao.destino]?.pistaCurta ?? '?'}`
+      : missao?.tipo === 'ciencias'
+        ? `${ANIMAL_POR_SLUG[missao.animal]?.emoji ?? '🐾'} ${missao.destino}?`
+        : `${missao?.destino}?`;
 
   return (
     <>
@@ -70,7 +78,8 @@ export function HUD() {
       )}
       {missaoAcabou && (
         <div className="mission-banner mission-banner--ok" role="status">
-          ✓ CHEGAMOS!
+          {/* busca não é chegada: achou o bicho */}
+          {missao?.tipo === 'busca' ? '✓ ACHAMOS!' : '✓ CHEGAMOS!'}
         </div>
       )}
 

@@ -30,6 +30,7 @@
  *     falas do Órbi, em minúsculas (lição do TTS — CAIXA ALTA é soletrada)
  */
 import { ANIMAIS } from './missoes-ciencias.js';
+import { CANTEIRO } from '../city/canteiro.js';
 
 /** Lugar tem chegada viva? (MissionController decide abrir o painel.) */
 export function temChegadaViva(slug) {
@@ -192,9 +193,46 @@ function sortearPerguntaPaes(lugar) {
   };
 }
 
+// ============================ PARQUE ===================================
+// Contagem de ÁRVORES REAIS (Frente 5 — fusão mundo/conteúdo): o "mostra"
+// é o MUNDO — as árvores do canteiro ficam visíveis ACIMA do painel na
+// chegada (mostra: null de propósito). N fixo derivado de city/canteiro.js
+// (mexeu no canteiro, o quiz acompanha). Resposta sempre igual de
+// propósito: previsibilidade é feature (TEA); a contagem VARIÁVEL
+// continua na PADARIA.
+
+/** Pergunta de contagem real: conte as árvores do canteiro do parque. */
+function sortearPerguntaArvores(lugar) {
+  const n = CANTEIRO.arvores.length;
+  const opcoes = embaralhar([n - 1, n, n + 1]).map((v) => ({
+    valor: String(v),
+    emoji: null, // sem emoji → número grande (padrão PADARIA)
+    rotulo: String(v),
+  }));
+
+  return {
+    lugar,
+    habilidade: 'contagem',
+    resposta: String(n),
+    tituloAntes: 'QUANTAS ÁRVORES TEM NO CANTEIRO?',
+    tituloDestaque: '',
+    tituloDepois: '',
+    mostra: null, // o mostra é o MUNDO: o canteiro na tela
+    opcoes,
+    dica: 'CONTE AS ÁRVORES DO CANTEIRO!',
+    descoberta: { categoria: 'contagens', id: String(n) },
+    frasePergunta: 'Quantas árvores tem no canteiro do parque? Vamos contar?',
+    fraseAcerto: `Isso! São ${n} árvores! Você conta muito bem!`,
+    // não vaza a resposta: a dica é contar de novo
+    fraseTenteDeNovo: 'Hmm, vamos contar de novo?',
+    fraseRevela: `São ${n} árvores! ${n} arvorezinhas!`,
+  };
+}
+
 // slug do prédio → gerador de pergunta.
 const GERADORES = {
   ZOO: sortearPerguntaAnimal,
   MERCADO: sortearPerguntaCorFruta,
   PADARIA: sortearPerguntaPaes,
+  PARQUE: sortearPerguntaArvores,
 };

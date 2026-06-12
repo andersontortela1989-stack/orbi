@@ -7,6 +7,8 @@ import { City } from './City.jsx';
 import { Cenario, BlobShadow } from './Cenario.jsx';
 import { Moedas } from './Moedas.jsx';
 import { Bichos } from './Bichos.jsx';
+import { Canteiro } from './Canteiro.jsx';
+import { BuscaSensor } from './BuscaSensor.jsx';
 import { GasStation } from './GasStation.jsx';
 import { Garagem } from './Garagem.jsx';
 import { MissionSensors } from './MissionSensors.jsx';
@@ -79,9 +81,13 @@ export function Game() {
       <Cenario />
 
       {/* Bichos no mundo (frente "Bichos no mundo") — fauna sticker
-          estática, sem colisão; posições em city/bichos.js (a busca da
-          Frente 5 vai derivar de lá) */}
+          estática, sem colisão; posições em city/bichos.js (a missão de
+          busca deriva de lá — Frente 5) */}
       <Bichos />
+
+      {/* Canteiro contável do PARQUE (Frente 5) — as 4 árvores do quiz
+          de contagem real; dados em city/canteiro.js */}
+      <Canteiro />
 
       {/* Sensores invisíveis de chegada (um por prédio) — Fatia 4 */}
       <MissionSensors />
@@ -110,6 +116,10 @@ export function Game() {
           só LÊ a posição do carro: coleta por distância, zero física, fora
           da cadeia load-bearing Car→FuelController */}
       <Moedas targetRef={carRef} />
+
+      {/* Missão de busca (Frente 5) — detecção por proximidade do bicho
+          procurado; mesmo padrão das moedas (só LÊ a posição do carro) */}
+      <BuscaSensor targetRef={carRef} />
 
       <CameraFollow targetRef={carRef} />
     </>

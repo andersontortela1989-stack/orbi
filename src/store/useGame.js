@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { DESTINOS_GPS } from '../missions/destinos.js';
 import { sortearAnimal } from '../missions/missoes-ciencias.js';
 import { sortearChegadaViva } from '../missions/missoes.js';
+import { sortearBicho } from '../missions/busca.js';
 import { COR_POR_ID } from '../city/garagem.js';
 
 /**
@@ -16,10 +17,6 @@ import { COR_POR_ID } from '../city/garagem.js';
  *   useGame.setState({ moedas: 42 })        // forma direta de mexer no estado
  *   useGame.getState().resetar()            // volta ao estado inicial
  */
-
-// Chance da próxima missão ser de Ciências (animal → VET) em vez de GPS.
-// ~1 em 3: variedade sem dominar — as missões de leitura seguem maioria.
-const CHANCE_CIENCIAS = 1 / 3;
 
 const ESTADO_INICIAL = {
   // narrativa "A Chegada" (adendo de narrativa)
@@ -245,17 +242,48 @@ export const useGame = create(
           };
         }),
 
-      // Sorteio unificado da PRÓXIMA missão (GPS ou Ciências).
-      // Depois de uma missão de Ciências a próxima é SEMPRE GPS: o destino
-      // seria o mesmo VET onde o carro já está parado (o sensor só dispara
-      // ao ENTRAR na zona) — mesma razão do filtro de destino repetido do GPS.
+      // === Missão de Busca (Frente 5) ===
+      // "Eu vi um bicho perto da água! Me mostra onde?" — destino é o
+      // SLUG DO BICHO (city/bichos.js): assim o controlador/registry/HUD
+      // tratam a busca pelo mesmo fluxo keyed em `destino`.
+      iniciarMissaoBusca: () =>
+        set((s) => {
+          const ultimo = s.missao?.tipo === 'busca' ? s.missao.destino : null;
+          return {
+            missao: {
+              tipo: 'busca',
+              destino: sortearBicho(ultimo),
+              concluida: false,
+            },
+          };
+        }),
+
+      // Sorteio unificado da PRÓXIMA missão — pesos GPS 2 / Ciências 1 /
+      // Busca 1 (50/25/25), com a regra "nunca duas TEMÁTICAS seguidas":
+      // a temática que acabou de rodar (ciências ou busca) sai do sorteio;
+      // GPS pode repetir, como sempre. A razão original de Ciências segue
+      // valendo: depois dela o destino seria o mesmo VET onde o carro já
+      // está parado (o sensor só dispara ao ENTRAR na zona).
       proximaMissao: () => {
-        const m = get().missao;
-        if (m?.tipo !== 'ciencias' && Math.random() < CHANCE_CIENCIAS) {
-          get().iniciarMissaoCiencias();
-        } else {
-          get().iniciarMissaoGPS();
+        const anterior = get().missao?.tipo;
+        const pesos = [
+          ['gps', 2],
+          ['ciencias', anterior === 'ciencias' ? 0 : 1],
+          ['busca', anterior === 'busca' ? 0 : 1],
+        ];
+        const total = pesos.reduce((soma, [, p]) => soma + p, 0);
+        let r = Math.random() * total;
+        let tipo = 'gps';
+        for (const [t, p] of pesos) {
+          r -= p;
+          if (r < 0) {
+            tipo = t;
+            break;
+          }
         }
+        if (tipo === 'ciencias') get().iniciarMissaoCiencias();
+        else if (tipo === 'busca') get().iniciarMissaoBusca();
+        else get().iniciarMissaoGPS();
       },
 
       // Disparado pelo sensor de chegada de qualquer prédio. Se o slug bate
@@ -282,6 +310,23 @@ export const useGame = create(
         if (m.tipo === 'ciencias') {
           get().registrarDescoberta('animais', m.animal);
         }
+        return true;
+      },
+
+      // Disparado pelo BuscaSensor quando o carro chega perto do bicho
+      // procurado (Frente 5). Mesmo contrato do processarChegada: guard
+      // de `concluida` torna idempotente (a chamada vem de useFrame),
+      // bicho errado/missão de outro tipo = silêncio. Habilidade =
+      // NAVEGAÇÃO (a pista é linguagem→espaço; cienciasVida fica com o
+      // VET/quiz); o bicho achado vira adesivo do caderninho.
+      processarBusca: (slug) => {
+        const m = get().missao;
+        if (!m || m.tipo !== 'busca' || m.concluida || m.destino !== slug) {
+          return false;
+        }
+        get().completarMissao();
+        get().registrarHabilidade('navegacao', true);
+        get().registrarDescoberta('animais', slug);
         return true;
       },
 

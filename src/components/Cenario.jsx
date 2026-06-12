@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Instances, Instance } from '@react-three/drei';
 import * as THREE from 'three';
 import { PALETA3D, SOMBRA_SOLIDA } from '../brand/paleta3d.js';
+import { Arvores } from './Arvores.jsx';
 
 /**
  * CENÁRIO (Fatia C da frente Mundo Adesivo 3D) — decoração PURA.
@@ -11,8 +12,9 @@ import { PALETA3D, SOMBRA_SOLIDA } from '../brand/paleta3d.js';
  *   src/city/   = lado JOGÁVEL do mundo, um arquivo por camada:
  *                 bairros.js (prédios/missões — sensores, GPS e chips
  *                 derivam), moedas.js (coletáveis), garagem.js (serviço +
- *                 catálogo de cores) e bichos.js (fauna — a busca da
- *                 Frente 5 vai derivar de lá).
+ *                 catálogo de cores), bichos.js (fauna — busca deriva) e
+ *                 canteiro.js (árvores CONTÁVEIS do quiz do PARQUE — as
+ *                 10 árvores daqui seguem decorativas e fora de contagem).
  *   Cenario.jsx = decoração — NADA deriva daqui: sem sensor, sem missão,
  *                 sem chip, sem coleta. Se um prop um dia virar jogável,
  *                 ele MIGRA pra src/city/.
@@ -36,14 +38,14 @@ import { PALETA3D, SOMBRA_SOLIDA } from '../brand/paleta3d.js';
 // ---------------------------------------------------------------- árvores
 // Bordas norte/oeste do chão do PARQUE (x -29..29, z 54..94), longe dos
 // lotes de PARQUE/ZOO/VET e da entrada sul (faixa de travessia).
+// Frente 5: a árvore que ficava em [-20,58] foi RELOCADA pra [-27,66] —
+// ela colava no CANTEIRO contável (city/canteiro.js) e a criança contaria
+// 5 em vez de 4; folga ≥8 entre o canteiro e qualquer decorativa.
 const ARVORES = [
   [-26, 60], [-26, 74], [-26, 88], [-16, 92], [-6, 90],
-  [4, 92], [14, 90], [24, 92], [27, 86], [-20, 58],
+  [4, 92], [14, 90], [24, 92], [27, 86], [-27, 66],
 ];
-const COPA_R = 1.7;
-const COPA_Y = 3.0;
-const TRONCO_H = 2.0;
-const TRACO = 0.22; // mesmo traço aditivo do Building
+const TRACO = 0.22; // mesmo traço aditivo do Building (postes usam abaixo)
 
 // ---------------------------------------------------------------- postes
 const POSTES = [
@@ -81,47 +83,11 @@ function MaterialSombra() {
 export function Cenario() {
   return (
     <>
-      {/* ===== ÁRVORES (sem colisão) ===== */}
-      {/* contorno sticker das copas (aditivo: raio + TRACO) */}
-      <Instances limit={ARVORES.length}>
-        <icosahedronGeometry args={[COPA_R + TRACO, 0]} />
-        <meshBasicMaterial color={PALETA3D.contorno} side={THREE.BackSide} />
-        {ARVORES.map(([x, z], i) => (
-          <Instance key={i} position={[x, COPA_Y, z]} />
-        ))}
-      </Instances>
-      {/* copas — capim/capim-deep alternados (variedade calma) */}
-      <Instances limit={ARVORES.length}>
-        <icosahedronGeometry args={[COPA_R, 0]} />
-        <meshLambertMaterial />
-        {ARVORES.map(([x, z], i) => (
-          <Instance
-            key={i}
-            position={[x, COPA_Y, z]}
-            color={i % 2 ? PALETA3D.copaEscura : PALETA3D.copa}
-          />
-        ))}
-      </Instances>
-      {/* troncos (finos — sem contorno próprio; a tinta inkSoft já lê) */}
-      <Instances limit={ARVORES.length}>
-        <cylinderGeometry args={[0.32, 0.38, TRONCO_H, 8]} />
-        <meshLambertMaterial color={PALETA3D.tronco} />
-        {ARVORES.map(([x, z], i) => (
-          <Instance key={i} position={[x, TRONCO_H / 2, z]} />
-        ))}
-      </Instances>
-      {/* sombras sólidas das árvores */}
-      <Instances limit={ARVORES.length}>
-        <circleGeometry args={[COPA_R, 20]} />
-        <MaterialSombra />
-        {ARVORES.map(([x, z], i) => (
-          <Instance
-            key={i}
-            position={[x + SOMBRA_SOLIDA.dx, 0.03, z + SOMBRA_SOLIDA.dz]}
-            rotation={DEITADO}
-          />
-        ))}
-      </Instances>
+      {/* ===== ÁRVORES decorativas (sem colisão) =====
+          Receita extraída pra <Arvores> na Frente 5 (2º consumidor: o
+          canteiro contável) — estas 10 seguem DECORATIVAS, fora de
+          qualquer contagem. */}
+      <Arvores posicoes={ARVORES} />
 
       {/* ===== POSTES ===== */}
       <Instances limit={POSTES.length}>

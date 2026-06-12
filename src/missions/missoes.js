@@ -8,6 +8,7 @@
  */
 import { FRASE_PEDIDO, FRASE_CHEGADA } from './destinos.js';
 import { ANIMAL_POR_SLUG } from './missoes-ciencias.js';
+import { frasesDaBusca } from './busca.js';
 
 // Tipo "chegada-viva": lugares cuja chegada abre uma mini-interação
 // de aprendizado (estreia: ZOO). O registry só re-exporta — o banco/gerador
@@ -32,6 +33,11 @@ export function frasesDaMissao(missao) {
     if (!animal) return null;
     return { pedido: animal.pedido, chegada: animal.chegada };
   }
+  // Busca (Frente 5): destino é o slug do BICHO; frases derivadas de
+  // city/bichos.js (pista) + banco ANIMAIS (som) em busca.js.
+  if (missao.tipo === 'busca') {
+    return frasesDaBusca(missao.destino);
+  }
   return null;
 }
 
@@ -43,7 +49,8 @@ export function frasesDaMissao(missao) {
  */
 export function chaveDaMissao(missao) {
   if (!missao?.destino) return null;
-  return missao.tipo === 'ciencias'
-    ? `ciencias:${missao.animal}`
-    : missao.destino;
+  if (missao.tipo === 'ciencias') return `ciencias:${missao.animal}`;
+  // prefixo evita colisão teórica entre slug de bicho e slug de prédio
+  if (missao.tipo === 'busca') return `busca:${missao.destino}`;
+  return missao.destino;
 }
