@@ -106,6 +106,23 @@ export const PALETA3D = {
   // micro-celebração espalhada pelo asfalto, mesma família do destaque 2D
   moeda: TINTAS.sun,
 
+  // bichos do mundo (frente "Bichos no mundo") — fauna sticker; todo
+  // slug existe no banco ANIMAIS dos quizzes (ponte mundo↔conteúdo).
+  // Crista coral é cor de MUNDO, ok — o guard-rail "vermelho banido"
+  // vale pra feedback/erro, nunca pra mundo (precedente FAROL coral-deep,
+  // gravado na Fatia B).
+  // (Iteração do gate da frente: cachorro saiu do caramelo — colidia com
+  // a COR DA MOEDA no asfalto — e virou branco-malhado navy; o gato herdou
+  // o laranja, realinhando com o emoji 🐱 do quiz/caderninho. inkSoft foi
+  // banido de pelagem: lia como sombra no chão.)
+  bicho: {
+    pelagem:  TINTAS.white,   // pato, vaca, galinha, cachorro (malhado)
+    laranja:  TINTAS.sunDeep, // gato (laranja do emoji)
+    bico:     TINTAS.sunDeep, // pato, galinha
+    mancha:   TINTAS.ink,     // manchas vaca/cachorro (no TOPO — câmera alta)
+    crista:   TINTAS.coral,   // galinha
+  },
+
   // props do cenário (Fatia C — decoração pura, ver Cenario.jsx)
   tronco:     TINTAS.inkSoft,
   copa:       TINTAS.grass,

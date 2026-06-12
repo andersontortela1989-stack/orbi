@@ -9,9 +9,10 @@ import { PALETA3D, SOMBRA_SOLIDA } from '../brand/paleta3d.js';
  *
  * FRONTEIRA (gravada aqui de propósito):
  *   src/city/   = lado JOGÁVEL do mundo, um arquivo por camada:
- *                 bairros.js (prédios/missões — sensores, GPS e chips do
- *                 Caderninho derivam de lá) e moedas.js (coletáveis — a
- *                 coleta de Moedas.jsx deriva de lá).
+ *                 bairros.js (prédios/missões — sensores, GPS e chips
+ *                 derivam), moedas.js (coletáveis), garagem.js (serviço +
+ *                 catálogo de cores) e bichos.js (fauna — a busca da
+ *                 Frente 5 vai derivar de lá).
  *   Cenario.jsx = decoração — NADA deriva daqui: sem sensor, sem missão,
  *                 sem chip, sem coleta. Se um prop um dia virar jogável,
  *                 ele MIGRA pra src/city/.

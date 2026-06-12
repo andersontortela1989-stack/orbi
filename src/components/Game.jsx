@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Grid } from '@react-three/drei';
 import { PALETA3D } from '../brand/paleta3d.js';
 import { Car } from './Car.jsx';
@@ -6,6 +6,7 @@ import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
 import { Cenario, BlobShadow } from './Cenario.jsx';
 import { Moedas } from './Moedas.jsx';
+import { Bichos } from './Bichos.jsx';
 import { GasStation } from './GasStation.jsx';
 import { Garagem } from './Garagem.jsx';
 import { MissionSensors } from './MissionSensors.jsx';
@@ -14,6 +15,24 @@ import { CameraFollow } from './CameraFollow.jsx';
 
 export function Game() {
   const carRef = useRef(null);
+
+  // DEV-only: teleporte do carro pelo console — `teleporte(x, z)`.
+  // Existe pros GATES: fotografar/inspecionar qualquer ponto do mundo com
+  // a câmera REAL do jogo sem dirigir até lá. Zera a velocidade junto
+  // (chegar parado é o esperado de um teleporte). Não existe em produção.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    window.teleporte = (x, z) => {
+      const rb = carRef.current;
+      if (!rb) return false;
+      rb.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      rb.setTranslation({ x, y: 1, z }, true);
+      return true;
+    };
+    return () => {
+      delete window.teleporte;
+    };
+  }, []);
 
   return (
     <>
@@ -58,6 +77,11 @@ export function Game() {
       {/* Decoração pura (Fatia C): árvores/postes/faixas/sombras — NADA
           jogável deriva daqui (fronteira documentada no Cenario.jsx) */}
       <Cenario />
+
+      {/* Bichos no mundo (frente "Bichos no mundo") — fauna sticker
+          estática, sem colisão; posições em city/bichos.js (a busca da
+          Frente 5 vai derivar de lá) */}
+      <Bichos />
 
       {/* Sensores invisíveis de chegada (um por prédio) — Fatia 4 */}
       <MissionSensors />

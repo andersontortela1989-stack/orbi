@@ -11,3 +11,7 @@ dist-ssr
 
 # conveniencia local (caminho absoluto da maquina)
 jogar-orbi.bat
+
+# ferramenta de gate local (fotos pela camera real do jogo)
+gate-fotos.mjs
+gate-fotos/
