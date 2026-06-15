@@ -65,6 +65,7 @@ export const PALETA3D = {
   chaoMercado: TINTAS.sunSoft,  // feira
   chaoPorto:   TINTAS.blueSoft, // água
   chaoParque:  TINTAS.grassSoft, // natureza
+  chaoEstadio: TINTAS.coralSoft, // festa/torcida (Frente 6)
 
   // sticker dos prédios (Fatia B): contorno navy + placa branca de letreiro
   // com texto navy — TODO letreiro tem a mesma cara (previsibilidade TEA)
@@ -92,6 +93,7 @@ export const PALETA3D = {
     VET:      TINTAS.blue,      // clínica céu
     POSTO:    TINTAS.sunSoft,   // energia
     GARAGEM:  TINTAS.blueSoft,  // oficina calma (serviço, como o POSTO)
+    'ESTÁDIO': TINTAS.skyDeep,  // arena céu (Frente 6 — única tinta inédita)
   },
 
   // carro — avatar do Heitor: evolução pro coral oficial, não troca

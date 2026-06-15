@@ -25,6 +25,9 @@
  *   bairro PORTO        🚗 spawn               bairro MERCADO
  *   (oeste)                                    (leste)
  *
+ *                  [ ESTÁDIO ]                         ← bairro ESTÁDIO (sul,
+ *                                                        Frente 6)
+ *
  * Cada prédio:
  *   slug   — palavra do letreiro (CAIXA ALTA) E chave da missão de GPS
  *   pos    — [x, z] no plano
@@ -160,6 +163,28 @@ export const BAIRROS = [
         // `fato` cobre o adesivo do Caderninho (os outros prédios usam a
         // própria frase de chegada como fato; o VET não tem uma).
         fato: 'Uau! Então vet é o médico dos animais!',
+      },
+    ],
+  },
+
+  {
+    // Frente 6 — o 5º bairro, no quadrante sul (era o único virgem).
+    // Conferências de vizinhança: folga 4 (rua) pras fileiras de moedas
+    // A/B/J (z = -10) e folga 11 da zona da GARAGEM (x ≥ 24). O quiz de
+    // bandeiras dispara na chegada (chegadas-vivas.js, gerador ESTÁDIO).
+    // Nenhuma string fala "Copa": o tema é PAÍSES DO MUNDO (guard-rail
+    // de IP em missions/paises.js).
+    slug: 'ESTÁDIO',
+    corChao: PALETA3D.chaoEstadio, // coral-soft (festa/torcida)
+    chao: { centro: [-6, -26], tamanho: [38, 24] },
+    predios: [
+      {
+        slug: 'ESTÁDIO',
+        pos: [-6, -27],
+        size: [18, 8, 14], // o MAIOR prédio da cidade — estádio pede porte
+        cor: PALETA3D.predios['ESTÁDIO'],
+        pedido: 'O que é estádio? Me leva lá?',
+        chegada: 'Uau! Então isso é um estádio! Aqui o mundo inteiro joga bola!',
       },
     ],
   },

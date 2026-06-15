@@ -67,6 +67,7 @@ const ESTADO_INICIAL = {
     animais:   [],
     frutas:    [],
     contagens: [],
+    paises:    [], // Frente 6 (ESTÁDIO) — quiz de bandeiras
   },
 
   // missão (uma por vez)
@@ -83,6 +84,7 @@ const ESTADO_INICIAL = {
     navegacao:     { acertos: 0, tentativas: 0 },
     cienciasVida:  { acertos: 0, tentativas: 0 }, // Fatia 8 (VET) + chegada viva do ZOO
     cores:         { acertos: 0, tentativas: 0 }, // chegada viva do MERCADO (artes)
+    geografia:     { acertos: 0, tentativas: 0 }, // Frente 6 — bandeiras do ESTÁDIO
   },
 };
 
@@ -350,7 +352,10 @@ export const useGame = create(
       // ESTADO_INICIAL (a regra "bump obrigatório" do aviso acima vale
       // para chaves ANINHADAS em habilidades/descobertas) — mas o bump
       // segue a regra da casa à risca e o migrate genérico cobre de graça.
-      version: 5,
+      // v6 (ESTÁDIO, Frente 6): + habilidades.geografia e
+      // descobertas.paises — chaves ANINHADAS, o caso que o bump existe
+      // pra cobrir; o migrate genérico injeta as duas.
+      version: 6,
       migrate: (persisted) => {
         if (!persisted) return persisted;
         return {

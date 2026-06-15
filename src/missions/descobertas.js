@@ -13,6 +13,7 @@
  */
 import { ANIMAIS, ANIMAL_POR_SLUG } from './missoes-ciencias.js';
 import { FRUTAS, QUANTIDADES } from './chegadas-vivas.js';
+import { PAISES, PAIS_POR_SLUG } from './paises.js';
 import { TODOS_PREDIOS } from '../city/bairros.js';
 
 const FRUTA_POR_SLUG = Object.fromEntries(FRUTAS.map((f) => [f.slug, f]));
@@ -29,6 +30,7 @@ export const CATEGORIAS_CADERNINHO = [
   { id: 'animais',   titulo: 'BICHOS',   possiveis: ANIMAIS.map((a) => a.slug) },
   { id: 'frutas',    titulo: 'FRUTAS',   possiveis: FRUTAS.map((f) => f.slug) },
   { id: 'contagens', titulo: 'NÚMEROS',  possiveis: QUANTIDADES.map(String) },
+  { id: 'paises',    titulo: 'PAÍSES',   possiveis: PAISES.map((p) => p.slug) },
 ];
 
 /**
@@ -52,6 +54,16 @@ export function conteudoDescoberta(categoria, id) {
   if (categoria === 'lugares') {
     const p = PREDIO_POR_SLUG[id];
     return p ? { cor: p.cor, rotulo: p.slug, fato: p.fato ?? p.chegada } : null;
+  }
+  if (categoria === 'paises') {
+    const p = PAIS_POR_SLUG[id];
+    // `bandeira` no lugar de emoji/cor: o adesivo renderiza o SVG de
+    // components/Bandeira.jsx (emoji de bandeira não existe no Windows).
+    // `fato` = fatoVoz bespoke do banco; card E voz leem a MESMA fonte
+    // (falaDescoberta deriva daqui), então nunca divergem.
+    return p
+      ? { bandeira: p.slug, rotulo: p.slug, fato: p.fatoVoz }
+      : null;
   }
   return null;
 }
@@ -77,5 +89,21 @@ export function falaDescoberta(categoria, id) {
   if (categoria === 'animais' || categoria === 'frutas') {
     return `${String(c.rotulo).toLowerCase()}! ${c.fato}`;
   }
+  // Países: rótulo + fato, mas pelo nomeVoz do banco — "EUA" minúsculo
+  // seria soletrado torto; "estados unidos! a bandeira de listras...".
+  if (categoria === 'paises') {
+    const p = PAIS_POR_SLUG[id];
+    return p ? `${p.nomeVoz}! ${c.fato}` : null;
+  }
   return c.fato;
+}
+
+// Contrato DEV (mesmo espírito do banco↔desenho do Bandeira.jsx): todo país
+// precisa de fatoVoz — sem ele, conteudoDescoberta devolve fato undefined e o
+// card/voz viram "undefined" (quebra de confiança, pior que bug normal pra
+// criança TEA).
+if (import.meta.env?.DEV) {
+  for (const p of PAISES) {
+    if (!p.fatoVoz) console.warn(`[descobertas] país sem fatoVoz: ${p.slug}`);
+  }
 }

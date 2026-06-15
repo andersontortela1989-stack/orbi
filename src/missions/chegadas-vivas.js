@@ -31,6 +31,7 @@
  */
 import { ANIMAIS } from './missoes-ciencias.js';
 import { CANTEIRO } from '../city/canteiro.js';
+import { PAISES } from './paises.js';
 
 /** Lugar tem chegada viva? (MissionController decide abrir o painel.) */
 export function temChegadaViva(slug) {
@@ -229,10 +230,99 @@ function sortearPerguntaArvores(lugar) {
   };
 }
 
+// ============================ ESTÁDIO ==================================
+// Bandeiras dos PAÍSES DO MUNDO (geografia — Frente 6). Banco e curadoria
+// em paises.js; desenhos em components/Bandeira.jsx (cartas usam o campo
+// `bandeira` — emoji de bandeira não renderiza no Windows, conferido
+// empiricamente). GUARD-RAIL DE IP: bandeiras e nomes de países SOMENTE;
+// "Copa" não aparece em nenhuma string (tema: países do mundo).
+
+let ultimoPaisPerguntado = null;
+
+// Duas bandeiras são confundíveis se colidem em QUALQUER eixo: mesmo GRUPO
+// de COR ou mesma ESTRUTURA (esqueleto). estrutura null = forma única, não
+// colide com ninguém. Eixos ortogonais de propósito (ver paises.js): um rótulo
+// só não capturava cor E forma — França/México (tricolores verticais) escapavam.
+const colide = (a, b) =>
+  a.cor === b.cor || (a.estrutura != null && a.estrutura === b.estrutura);
+
+/** Pergunta de bandeira: 1 certa + 2 distratoras de cor E estrutura distintas. */
+function sortearPerguntaBandeira(lugar) {
+  const certo =
+    sortearItem(PAISES.filter((p) => p.slug !== ultimoPaisPerguntado)) ??
+    PAISES[0];
+  ultimoPaisPerguntado = certo.slug;
+
+  // Distratoras: pool compatível com a certa (cor E estrutura distintas),
+  // embaralhado pra variar entre visitas. Busca exaustiva do 1º par MUTUAMENTE
+  // compatível (backtrack completo, O(n²) — banco pequeno): greedy sem backtrack
+  // podia 'queimar' a 1ª escolha e fechar com <3 cartas numa ordem azarada —
+  // contagem de cartas inconstante = quebra de previsibilidade TEA.
+  const candidatas = embaralhar(
+    PAISES.filter((p) => p.slug !== certo.slug && !colide(p, certo))
+  );
+  let distratoras = null;
+  busca: for (let i = 0; i < candidatas.length; i++) {
+    for (let j = i + 1; j < candidatas.length; j++) {
+      if (!colide(candidatas[i], candidatas[j])) {
+        distratoras = [candidatas[i], candidatas[j]];
+        break busca;
+      }
+    }
+  }
+  // Fallback de CONTAGEM: sem par mutuamente distinto, as 2 primeiras do pool já
+  // são seguras vs a RESPOSTA (distratoras parecidas ENTRE SI não criam 2ª
+  // resposta plausível — o contrato é distratora ≠ confundível com o alvo).
+  // pool < 2 é pego pela checagem DEV no fim do arquivo, antes do runtime.
+  if (!distratoras) distratoras = candidatas.slice(0, 2);
+
+  const opcoes = embaralhar([certo, ...distratoras]).map((p) => ({
+    valor: p.slug,
+    emoji: null,
+    bandeira: p.slug, // carta renderiza <Bandeira> (SVG) no lugar do emoji
+    rotulo: p.slug,   // ler o nome do país é parte da pedagogia (cf. ZOO)
+  }));
+
+  return {
+    lugar,
+    habilidade: 'geografia',
+    resposta: certo.slug,
+    tituloAntes: `QUAL BANDEIRA É ${certo.de.toUpperCase()}`,
+    tituloDestaque: certo.slug,
+    tituloDepois: '?',
+    mostra: null,
+    opcoes,
+    dica: 'TOQUE NA BANDEIRA CERTA',
+    descoberta: { categoria: 'paises', id: certo.slug },
+    frasePergunta: `Qual bandeira é ${certo.de} ${certo.nomeVoz}?`,
+    fraseAcerto: `Isso! A bandeira ${certo.de} ${certo.nomeVoz} é ${certo.cores}! Você conhece o mundo!`,
+    fraseTenteDeNovo: `Hmm, vamos ver de novo? ${capitalizar(certo.nomeVoz)}!`,
+    fraseRevela: `É essa! A bandeira ${certo.de} ${certo.nomeVoz} é ${certo.cores}!`,
+  };
+}
+
 // slug do prédio → gerador de pergunta.
 const GERADORES = {
   ZOO: sortearPerguntaAnimal,
   MERCADO: sortearPerguntaCorFruta,
   PADARIA: sortearPerguntaPaes,
   PARQUE: sortearPerguntaArvores,
+  'ESTÁDIO': sortearPerguntaBandeira,
 };
+
+// Invariante de montabilidade do quiz de bandeiras (mesmo espírito do contrato
+// banco↔desenho do Bandeira.jsx): todo país, como alvo, precisa de ≥2 distratoras
+// não confundíveis (cor E estrutura distintas) — senão o quiz não fecha 3 cartas.
+// País novo que estoure isso avisa no load do dev, nunca vira quiz degradado
+// silencioso. (Checa alvo↔distratora; a compatibilidade mútua do par é garantida
+// em runtime pela busca exaustiva + fallback de sortearPerguntaBandeira.)
+if (import.meta.env?.DEV) {
+  for (const alvo of PAISES) {
+    const ok = PAISES.filter((p) => p.slug !== alvo.slug && !colide(p, alvo));
+    if (ok.length < 2) {
+      console.warn(
+        `[chegadas-vivas] ${alvo.slug}: só ${ok.length} distratora(s) não confundível(is) — quiz de bandeira não fecha 3 cartas`
+      );
+    }
+  }
+}

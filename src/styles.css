@@ -435,6 +435,29 @@ canvas {
   color: var(--text-soft);
 }
 
+/* ===== Bandeiras SVG (Frente 6 — ESTÁDIO) ===== */
+/* Sticker: contorno navy + cantos suaves vêm DAQUI (tokens da marca);
+   as cores internas são as REAIS de cada bandeira (conteúdo pedagógico,
+   exceção documentada no Bandeira.jsx). */
+.bandeira {
+  display: block;
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+
+/* na carta do quiz: ocupa o lugar do emoji grande */
+.viva-bandeira {
+  width: 96px;
+  height: 64px;
+}
+
+/* no adesivo do caderninho: proporção do chip */
+.cad-bandeira {
+  width: 60px;
+  height: 40px;
+}
+
 /* ===== Chegada viva ===== */
 /* Pergunta do Órbi na chegada — cartão-adesivo branco ancorado embaixo,
    mesmo padrão do painel do posto: não cobre a cena, não pausa o jogo.

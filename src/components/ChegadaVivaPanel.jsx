@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../store/useGame.js';
 import { somSucesso } from '../audio/sons.js';
 import { falar } from '../audio/voz.js';
+import { Bandeira } from './Bandeira.jsx';
 
 // Tempo entre resolver (acerto ou revelação) e fechar o painel — a frase
 // final começa e a carta certa acende antes de o fluxo seguir.
@@ -149,12 +150,17 @@ export function ChegadaVivaPanel() {
                   e.currentTarget.blur();
                 }}
               >
+                {/* carta de bandeira (ESTÁDIO, Frente 6): SVG no lugar do
+                    emoji — emoji de bandeira não renderiza no Windows */}
+                {o.bandeira && <Bandeira slug={o.bandeira} className="viva-bandeira" />}
                 {o.emoji && (
                   <span className="viva-emoji" aria-hidden="true">
                     {o.emoji}
                   </span>
                 )}
-                <span className={o.emoji ? 'viva-nome' : 'viva-numero'}>
+                <span
+                  className={o.emoji || o.bandeira ? 'viva-nome' : 'viva-numero'}
+                >
                   {o.rotulo}
                 </span>
               </button>

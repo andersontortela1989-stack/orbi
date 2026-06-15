@@ -7,6 +7,7 @@ import {
   conteudoDescoberta,
   falaDescoberta,
 } from '../missions/descobertas.js';
+import { Bandeira } from './Bandeira.jsx';
 
 /**
  * CADERNINHO DO ÓRBI — o álbum do que ele aprendeu COM a criança.
@@ -146,7 +147,10 @@ export function Caderninho() {
                         e.currentTarget.blur();
                       }}
                     >
-                      {c.emoji ? (
+                      {c.bandeira ? (
+                        /* adesivo de PAÍS (Frente 6): SVG da bandeira */
+                        <Bandeira slug={c.bandeira} className="cad-bandeira" />
+                      ) : c.emoji ? (
                         <span className="cad-emoji" aria-hidden="true">
                           {c.emoji}
                         </span>
