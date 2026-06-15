@@ -10,7 +10,7 @@ import * as THREE from 'three';
 //   ↑ ZOOM = mais perto · ↓ ZOOM = vê mais cidade. Afinar pelo feel.
 //   18 = valor aprovado: POSTO+PIZZA+HOSPITAL+ESCOLA na mesma tela, placas
 //   inteiras e legíveis, carro num tamanho confortável.
-const ZOOM = 18;
+const ZOOM = 16;
 
 // OFFSET = posição da câmera relativa ao carro (câmera NÃO gira com o carro —
 // vista tática). Numa ortográfica define só o ÂNGULO (inclinação iso) e qual
