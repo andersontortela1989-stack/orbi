@@ -14,6 +14,8 @@ import { MissionController } from './components/MissionController.jsx';
 import { StartScreen } from './components/StartScreen.jsx';
 import { OrbiCompanion } from './components/OrbiCompanion.jsx';
 import { IntroChegada } from './components/IntroChegada.jsx';
+import { TouchControls } from './components/TouchControls.jsx';
+import { OrientationGuard } from './components/OrientationGuard.jsx';
 import { useGame } from './store/useGame.js';
 
 export default function App() {
@@ -79,12 +81,14 @@ export default function App() {
       <GaragemPanel />
       <ChegadaVivaPanel />
       <Caderninho />
+      <TouchControls />
       <div className="controls-hint">
         SETAS = DIRIGIR &nbsp;·&nbsp; ESPAÇO = FREIO DE MÃO (DRIFT)
       </div>
       <WelcomeVoice />
       <MissionController />
       <OrbiCompanion />
+      <OrientationGuard />
     </>
   );
 }

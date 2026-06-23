@@ -1332,3 +1332,83 @@ canvas {
   .start-orbi, .start-play { animation: none !important; }
   .start-bubble { transition: none; }
 }
+
+/* ===== Controles de TOQUE (Frente 0 — celular/tablet, layout B) =====
+   Renderizados só em dispositivo táctil (TouchControls.jsx). Botões-adesivo
+   GRANDES e FIXOS nos cantos: ◀ ▶ (esq) · DRIFT ✋ + ACELERA ▲ (dir). O toque
+   dispara o MESMO evento do teclado — sem física nova. */
+.tc-zona {
+  position: fixed;
+  bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+  touch-action: none;
+}
+.tc-esq { left: calc(var(--space-3) + env(safe-area-inset-left)); }
+.tc-dir { right: calc(var(--space-3) + env(safe-area-inset-right)); }
+
+.tc-btn {
+  /* alvo grande p/ dedo de criança MESMO no celular-paisagem (floor 84px,
+     muito acima do mínimo 44px); cresce no tablet via vmin. */
+  width: clamp(84px, 22vmin, 128px);
+  height: clamp(84px, 22vmin, 128px);
+  border-radius: 50%;
+  border: var(--outline-bold) solid var(--ink);
+  background: var(--surface-card);
+  box-shadow: var(--solid-2);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-caps);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform var(--dur-quick) var(--ease-soft),
+              background var(--dur-quick) var(--ease-soft),
+              box-shadow var(--dur-quick) var(--ease-soft);
+}
+.tc-btn .tc-ico { font-size: 2rem; line-height: 1; }
+/* press = degrau encolhe + fill de cor. Feedback, NUNCA punição. */
+.tc-btn.pressed { transform: translateY(2px); box-shadow: var(--solid-press); }
+.tc-steer.pressed { background: var(--accent); }        /* sol */
+.tc-go { background: var(--orbi-grass-soft); }
+.tc-go.pressed { background: var(--success); }          /* capim */
+.tc-drift { background: var(--orbi-coral-soft); }
+.tc-drift.pressed { background: var(--warm); }          /* coral */
+
+@media (prefers-reduced-motion: reduce) { .tc-btn { transition: none; } }
+
+/* No táctil, a dica de teclado é inútil e colidiria com os botões → some. */
+@media (pointer: coarse) { .controls-hint { display: none; } }
+
+/* ===== Trava de orientação (retrato → vire o celular) ===== */
+.orient-guard {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--surface-base);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  text-align: center;
+}
+.orient-emoji { font-size: 3.5rem; line-height: 1; }
+.orient-msg {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  font-size: var(--text-lg);
+  color: var(--ink);
+  max-width: 18ch;
+  line-height: 1.3;
+}
