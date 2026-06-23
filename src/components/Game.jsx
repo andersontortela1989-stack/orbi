@@ -5,6 +5,7 @@ import { Car } from './Car.jsx';
 import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
 import { Cenario, BlobShadow } from './Cenario.jsx';
+import { DecoracaoExtra } from './DecoracaoExtra.jsx';
 import { Moedas } from './Moedas.jsx';
 import { Bichos } from './Bichos.jsx';
 import { Canteiro } from './Canteiro.jsx';
@@ -79,6 +80,11 @@ export function Game() {
       {/* Decoração pura (Fatia C): árvores/postes/faixas/sombras — NADA
           jogável deriva daqui (fronteira documentada no Cenario.jsx) */}
       <Cenario />
+
+      {/* Decoração EXTRA (cidade viva — detalhe urbano terrestre) — camada
+          ISOLADA e removível: tudo <mesh>/<Instances> sem colisão, nas bordas
+          dos bairros. Desligar = comentar esta linha. (DecoracaoExtra.jsx) */}
+      <DecoracaoExtra />
 
       {/* Bichos no mundo (frente "Bichos no mundo") — fauna sticker
           estática, sem colisão; posições em city/bichos.js (a missão de

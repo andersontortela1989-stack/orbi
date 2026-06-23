@@ -132,6 +132,21 @@ export const PALETA3D = {
   poste:      TINTAS.white,
   luminaria:  TINTAS.sun,
   faixa:      TINTAS.white,
+
+  // DECORAÇÃO EXTRA (componente isolado DecoracaoExtra.jsx) — "cidade viva":
+  // detalhe urbano TERRESTRE nas bordas. Tudo derivado de TINTAS; NÃO toca
+  // predios/bicho/carro/moeda. Cores -soft/frias: nunca o âmbar-da-moeda
+  // (sun cheio) nem o coral-do-carro (coral cheio).
+  // (Os toques espaciais — planetas/foguete/antenas — foram CORTADOS no gate:
+  // a câmera ortográfica não os favorecia. Identidade espacial = tela inicial.)
+  deco: {
+    arbusto:       TINTAS.grass,      // moita (alterna com a escura)
+    arbustoEsc:    TINTAS.grassDeep,
+    floreira:      TINTAS.blueSoft,   // caixa da floreira
+    floreiraTopo:  TINTAS.grass,      // verdinho em cima
+    banco:         TINTAS.inkSoft,
+    engradado:     TINTAS.paper,      // caixa de doca (madeira clara, NÃO âmbar)
+  },
 };
 
 /**
