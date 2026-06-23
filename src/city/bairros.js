@@ -149,8 +149,8 @@ export const BAIRROS = [
         pos: [14, 78],
         size: [12, 6, 12],
         cor: PALETA3D.predios.ZOO,
-        pedido: 'O que é zoo? Me mostra?',
-        chegada: 'Uau! Então isso é um zoo! Aqui moram os bichos!',
+        pedido: 'O que é zoológico? Me mostra?',
+        chegada: 'Uau! Então isso é um zoológico! Aqui moram os bichos!',
       },
       {
         slug: 'VET',
@@ -162,7 +162,7 @@ export const BAIRROS = [
         soCiencias: true,
         // `fato` cobre o adesivo do Caderninho (os outros prédios usam a
         // própria frase de chegada como fato; o VET não tem uma).
-        fato: 'Uau! Então vet é o médico dos animais!',
+        fato: 'Uau! Então o veterinário é o médico dos animais!',
       },
     ],
   },

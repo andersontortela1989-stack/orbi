@@ -8,8 +8,8 @@
  * habilidade `cienciasVida` (adendo do currículo, §F).
  *
  * Padrão das frases (aprovado pelo Anderson): curto, uma ideia por frase —
- *   pedido:  "Olha, um gato! Ele faz miau! Tá dodói… me leva no vet?"
- *   chegada: "Uau! Então vet é o médico dos animais! O gato vai ficar bom!"
+ *   pedido:  "Olha, um gato! Ele faz miau! Tá dodói… me leva no veterinário?"
+ *   chegada: "Uau! Então o veterinário é o médico dos animais! O gato vai ficar bom!"
  * Frases de VOZ em minúsculas: alguns TTS soletram palavras em CAIXA ALTA
  * (mesmo motivo do nomeParaVoz em voz.js). A CAIXA ALTA fica no HUD/letreiro.
  *
@@ -27,40 +27,40 @@ export const ANIMAIS = [
     emoji: '🐶',
     artigo: 'o',
     som: 'au au',
-    pedido: 'Olha, um cachorro! Ele faz au au! Tá dodói… me leva no vet?',
-    chegada: 'Uau! Então vet é o médico dos animais! O cachorro vai ficar bom!',
+    pedido: 'Olha, um cachorro! Ele faz au au! Tá dodói… me leva no veterinário?',
+    chegada: 'Uau! Então o veterinário é o médico dos animais! O cachorro vai ficar bom!',
   },
   {
     slug: 'GATO',
     emoji: '🐱',
     artigo: 'o',
     som: 'miau',
-    pedido: 'Olha, um gato! Ele faz miau! Tá dodói… me leva no vet?',
-    chegada: 'Uau! Então vet é o médico dos animais! O gato vai ficar bom!',
+    pedido: 'Olha, um gato! Ele faz miau! Tá dodói… me leva no veterinário?',
+    chegada: 'Uau! Então o veterinário é o médico dos animais! O gato vai ficar bom!',
   },
   {
     slug: 'VACA',
     emoji: '🐮',
     artigo: 'a',
     som: 'muu',
-    pedido: 'Olha, uma vaca! Ela faz muu! Tá dodói… me leva no vet?',
-    chegada: 'Uau! Então vet é o médico dos animais! A vaca vai ficar boa!',
+    pedido: 'Olha, uma vaca! Ela faz muu! Tá dodói… me leva no veterinário?',
+    chegada: 'Uau! Então o veterinário é o médico dos animais! A vaca vai ficar boa!',
   },
   {
     slug: 'PATO',
     emoji: '🦆',
     artigo: 'o',
     som: 'quá quá',
-    pedido: 'Olha, um pato! Ele faz quá quá! Tá dodói… me leva no vet?',
-    chegada: 'Uau! Então vet é o médico dos animais! O pato vai ficar bom!',
+    pedido: 'Olha, um pato! Ele faz quá quá! Tá dodói… me leva no veterinário?',
+    chegada: 'Uau! Então o veterinário é o médico dos animais! O pato vai ficar bom!',
   },
   {
     slug: 'GALINHA',
     emoji: '🐔',
     artigo: 'a',
     som: 'có có',
-    pedido: 'Olha, uma galinha! Ela faz có có! Tá dodói… me leva no vet?',
-    chegada: 'Uau! Então vet é o médico dos animais! A galinha vai ficar boa!',
+    pedido: 'Olha, uma galinha! Ela faz có có! Tá dodói… me leva no veterinário?',
+    chegada: 'Uau! Então o veterinário é o médico dos animais! A galinha vai ficar boa!',
   },
 ];
 
