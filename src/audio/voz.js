@@ -35,6 +35,10 @@ let initialized = false;
 // ou após `voiceschanged` repopular a lista).
 let vozEscolhida = null;
 let cacheValido = false;
+// Voz CONGELADA após a 1ª fala pt-BR: a partir daí a lista do sistema pode
+// mudar à vontade que a voz do Órbi não troca mais (intro == jogo). Era a
+// re-seleção tardia que causava o "masculina na intro, feminina no jogo".
+let vozTravada = false;
 
 function ensureInit() {
   if (initialized) return;
@@ -45,31 +49,40 @@ function ensureInit() {
   // Lista (re)populou → invalida o cache; a PRÓXIMA fala re-seleciona.
   // (Em browsers que nunca disparam o evento, a seleção lazy por fala cobre.)
   window.speechSynthesis.addEventListener?.('voiceschanged', () => {
-    cacheValido = false;
+    // re-seleciona só ENQUANTO a voz não travou; depois da 1ª fala pt-BR
+    // ignora mudanças tardias da lista (a causa-raiz da troca de voz).
+    if (!vozTravada) cacheValido = false;
   });
 }
 
 /**
- * Ranking de vozes pra voz do Órbi — maior pontuação vence; empate fica com
- * a primeira na ordem da lista do browser:
- *   5 — pt-BR neural ("Natural"/"Online" no nome: Microsoft Francisca/
- *       Antonio/Thalita no Edge — as melhores disponíveis de graça)
- *   4 — "Google português do Brasil" (Chrome)
- *   3 — qualquer pt-BR (inclui `pt_BR` com underscore — Android/Linux)
- *   2 — qualquer pt-* (pt-PT: sotaque errado, mas é português)
- *   0 — não-pt: NUNCA escolhida (melhor o default do browser com
- *       lang='pt-BR' do que uma voz inglesa lendo português)
+ * Ranking da voz do Órbi — UMA voz feminina, determinística cross-device.
+ * Maior pontuação vence; o desempate NÃO é mais "primeira da lista" (que
+ * variava por aparelho e às vezes caía no Antonio ♂): é por NOME, numa
+ * ordem fixa de vozes pt-BR femininas conhecidas. Cadeia aprovada:
+ *   Francisca → Thalita → Luciana → (outras ♀ pt-BR conhecidas) →
+ *   Google pt-BR → qualquer pt-BR → (nada pt: default do browser).
+ *
+ * Por que por NOME: várias neurais pt-BR empatam em "qualidade", mas têm
+ * GÊNEROS diferentes — fixar o nome fixa o PERSONAGEM (previsibilidade,
+ * guard-rail TEA). Femininas por serem as mais disponíveis de fábrica
+ * (Android/iOS/Chrome) → maior chance da MESMA cara em todo aparelho.
  */
+// Vozes pt-BR femininas conhecidas, em ordem de preferência.
+// Francisca/Thalita = Edge (Natural); Luciana = Apple; demais = Android/outros.
+const FEM_PT = ['francisca', 'thalita', 'luciana', 'maria', 'leticia', 'letícia', 'giovanna', 'brenda', 'manuela'];
+
 function pontuacao(v) {
   const nome = (v.name || '').toLowerCase();
   const lang = (v.lang || '').toLowerCase().replace('_', '-');
   if (lang === 'pt-br') {
-    if (/natural|online/.test(nome)) return 5;
-    if (/google/.test(nome)) return 4;
-    return 3;
+    const idx = FEM_PT.findIndex((n) => nome.includes(n));
+    if (idx !== -1) return 100 - idx;   // 100 (Francisca) … desce na ordem
+    if (/google/.test(nome)) return 50; // Google pt-BR (tipicamente ♀)
+    return 40;                          // qualquer pt-BR (inclui ♂ Antonio)
   }
-  if (lang.startsWith('pt')) return 2;
-  return 0;
+  if (lang.startsWith('pt')) return 2;  // pt-PT: português, sotaque errado
+  return 0;                             // não-pt: nunca (melhor default+lang)
 }
 
 function bestVoice() {
@@ -92,6 +105,9 @@ function bestVoice() {
 
   vozEscolhida = melhor;
   cacheValido = true;
+  // Achou uma voz pt → CONGELA pra sessão inteira. (Se a lista ainda não
+  // tinha voz pt, melhor=null: não trava, re-tenta quando a lista mudar.)
+  if (melhor) vozTravada = true;
 
   // Diagnóstico por browser/dispositivo (só em dev) — loga SEMPRE que o
   // cache (re)valida: comparar com o valor anterior esconderia o caso
@@ -155,3 +171,9 @@ export function pararFala() {
     window.speechSynthesis.cancel();
   }
 }
+
+// Pré-aquece a lista de vozes assim que o módulo carrega — bem antes da 1ª
+// fala (que só acontece depois da tela inicial + nome + clique no JOGAR).
+// Quando a intro finalmente fala, a lista já populou → a voz escolhida já é
+// a definitiva, e a trava a congela igual pro jogo. (no-op fora do browser.)
+ensureInit();
