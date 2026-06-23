@@ -26,35 +26,66 @@ const ACCENT_SVG =
 const SUN_PLANET_SVG =
   '<svg width="96" height="96" viewBox="0 0 96 96"><circle cx="48" cy="48" r="30" fill="#FFC53D" stroke="#1C2746" stroke-width="6"/><ellipse cx="48" cy="48" rx="44" ry="14" transform="rotate(-22 48 48)" fill="none" stroke="#1C2746" stroke-width="5"/></svg>';
 
+// MESMA cidade que o Heitor dirige — re-tonalizada pro entardecer espacial.
+// Silhueta idêntica (elo com o mundo do jogo), só a cor muda: casinhas em
+// tons crepúsculo e janelas ACESAS (creme quente) = cidade ao anoitecer.
 const GROUND_SVG = `
   <svg viewBox="0 0 1280 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
     <g opacity="0.96">
       <g>
-        <rect x="150" y="92" width="74" height="96" rx="14" fill="#BEE5F8" stroke="#1C2746" stroke-width="5"/>
-        <rect x="166" y="110" width="18" height="18" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
-        <rect x="192" y="110" width="18" height="18" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
-        <rect x="232" y="64" width="64" height="124" rx="14" fill="#FFE0A0" stroke="#1C2746" stroke-width="5"/>
-        <rect x="248" y="84" width="16" height="16" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
-        <rect x="270" y="84" width="16" height="16" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
-        <rect x="248" y="114" width="16" height="16" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
-        <rect x="270" y="114" width="16" height="16" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
+        <rect x="150" y="92" width="74" height="96" rx="14" fill="#8E9FD4" stroke="#1C2746" stroke-width="5"/>
+        <rect x="166" y="110" width="18" height="18" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
+        <rect x="192" y="110" width="18" height="18" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
+        <rect x="232" y="64" width="64" height="124" rx="14" fill="#C9A8D6" stroke="#1C2746" stroke-width="5"/>
+        <rect x="248" y="84" width="16" height="16" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
+        <rect x="270" y="84" width="16" height="16" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
+        <rect x="248" y="114" width="16" height="16" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
+        <rect x="270" y="114" width="16" height="16" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
       </g>
       <g>
-        <rect x="980" y="74" width="68" height="116" rx="14" fill="#BDE8C5" stroke="#1C2746" stroke-width="5"/>
-        <rect x="997" y="94" width="16" height="16" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
-        <rect x="1019" y="94" width="16" height="16" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
-        <rect x="1056" y="98" width="74" height="92" rx="14" fill="#FBC4B5" stroke="#1C2746" stroke-width="5"/>
-        <rect x="1073" y="116" width="18" height="18" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
-        <rect x="1099" y="116" width="18" height="18" rx="4" fill="#fff" stroke="#1C2746" stroke-width="3"/>
+        <rect x="980" y="74" width="68" height="116" rx="14" fill="#7E9BC4" stroke="#1C2746" stroke-width="5"/>
+        <rect x="997" y="94" width="16" height="16" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
+        <rect x="1019" y="94" width="16" height="16" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
+        <rect x="1056" y="98" width="74" height="92" rx="14" fill="#C98FA8" stroke="#1C2746" stroke-width="5"/>
+        <rect x="1073" y="116" width="18" height="18" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
+        <rect x="1099" y="116" width="18" height="18" rx="4" fill="#FFE9A8" stroke="#1C2746" stroke-width="3"/>
       </g>
     </g>
-    <path d="M0 120 Q 360 64 640 96 Q 960 128 1280 92 L1280 300 L0 300 Z" fill="#5BBE6E" stroke="#1C2746" stroke-width="6"/>
-    <path d="M120 300 Q 220 214 320 300 Z" fill="#3F9E52" opacity="0.28"/>
-    <path d="M900 300 Q 1010 206 1120 300 Z" fill="#3F9E52" opacity="0.28"/>
+    <path d="M0 120 Q 360 64 640 96 Q 960 128 1280 92 L1280 300 L0 300 Z" fill="#6E5AA0" stroke="#1C2746" stroke-width="6"/>
+    <path d="M120 300 Q 220 214 320 300 Z" fill="#574484" opacity="0.32"/>
+    <path d="M900 300 Q 1010 206 1120 300 Z" fill="#574484" opacity="0.32"/>
   </svg>`;
 
-const SPARK = (fill) =>
-  `<svg width="100%" height="100%" viewBox="0 0 34 34"><path d="M17 1 l4 12 12 4 -12 4 -4 12 -4 -12 -12 -4 12 -4 z" fill="${fill}" stroke="#1C2746" stroke-width="3"/></svg>`;
+// estrela-adesivo: MESMO shape da intro "A Chegada" (coerência intro→abertura).
+const STAR_SVG = (s) =>
+  `<svg width="${s}" height="${s}" viewBox="0 0 34 34"><path d="M17 1 l4 12 12 4 -12 4 -4 12 -4 -12 -12 -4 12 -4 z" fill="#FFFFFF" stroke="#1C2746" stroke-width="2.6"/></svg>`;
+
+// campo de estrelas discretas — posições FIXAS (calmas), longe do centro
+// (onde ficam logo/Órbi/JOGAR). Pulso suave e escalonado no CSS.
+const ESTRELAS = [
+  { left: 470, top: 96, s: 20 },
+  { left: 760, top: 70, s: 14 },
+  { left: 980, top: 150, s: 22 },
+  { left: 250, top: 250, s: 16 },
+  { left: 1130, top: 240, s: 18 },
+  { left: 150, top: 430, s: 13 },
+  { left: 1080, top: 430, s: 15 },
+  { left: 600, top: 56, s: 12 },
+];
+
+// planeta grande e ESTÁVEL — redondo, lavanda, com faixas suaves recortadas
+// no círculo (giram MUITO devagar: lê como rotação calma, nunca agressiva).
+const BIG_PLANET_SVG = `
+  <svg width="260" height="260" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><clipPath id="bp"><circle cx="130" cy="130" r="92"/></clipPath></defs>
+    <circle cx="130" cy="130" r="92" fill="#B59BE0" stroke="#1C2746" stroke-width="7"/>
+    <g clip-path="url(#bp)">
+      <ellipse cx="130" cy="100" rx="120" ry="15" fill="#C9B6EC" opacity="0.85"/>
+      <ellipse cx="130" cy="150" rx="120" ry="20" fill="#A487D6" opacity="0.75"/>
+      <circle cx="92"  cy="176" r="13" fill="#A487D6"/>
+      <circle cx="172" cy="116" r="9"  fill="#C9B6EC"/>
+    </g>
+  </svg>`;
 
 const ENTER_DELAY_MS = 1100; // respiro da comemoração antes de entrar na cidade
 
@@ -101,15 +132,18 @@ export function StartScreen({ onPlay, onVerHistoria }) {
   return (
     <div className="orbi-start">
       <div className="start-screen" style={{ transform: `scale(${scale})` }}>
-        {/* DECOR */}
+        {/* DECOR — céu de entardecer espacial: planetas estáveis + estrelas calmas */}
         <div className="start-decor">
+          <Raw className="start-big-planet" html={BIG_PLANET_SVG} />
           <Raw className="start-sun-planet" html={SUN_PLANET_SVG} />
-          <div className="start-cloud start-cloud--a"><i /></div>
-          <div className="start-cloud start-cloud--b"><i /></div>
-          <div className="start-cloud start-cloud--c"><i /></div>
-          <Raw className="start-spark" style={{ left: 540, top: 120, width: 34, height: 34 }} html={SPARK('#FFC53D')} />
-          <Raw className="start-spark" style={{ right: 120, top: 300, width: 26, height: 26 }} html={SPARK('#F0623E')} />
-          <Raw className="start-spark" style={{ left: 240, top: 470, width: 22, height: 22 }} html={SPARK('#58B6E8')} />
+          {ESTRELAS.map((e, i) => (
+            <Raw
+              key={i}
+              className="start-star"
+              style={{ left: e.left, top: e.top, width: e.s, height: e.s, animationDelay: `${(i % 4) * 0.9}s` }}
+              html={STAR_SVG(e.s)}
+            />
+          ))}
         </div>
 
         {/* COLINA + CIDADE */}

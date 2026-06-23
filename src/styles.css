@@ -1072,7 +1072,8 @@ canvas {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: var(--orbi-sky-deep);
+  /* moldura/letterbox no celular = tom crepúsculo (não o azul-céu antigo) */
+  background: var(--orbi-twilight-deep);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1087,53 +1088,49 @@ canvas {
   overflow: hidden;
   flex: none;
   transform-origin: center center;
+  /* crepúsculo espacial: lavanda quase branco no topo (logo/Órbi legíveis)
+     descendo pro roxo suave onde o JOGAR amarelo grita */
   background: radial-gradient(
     120% 95% at 50% 8%,
-    var(--orbi-sky-hi) 0%,
-    var(--orbi-sky) 45%,
-    var(--orbi-sky-deep) 100%
+    var(--orbi-twilight-hi) 0%,
+    var(--orbi-twilight-mid) 48%,
+    var(--orbi-twilight-deep) 100%
   );
 }
 
 /* ---- decor ---- */
 .start-decor { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 
-.start-sun-planet { position: absolute; top: 54px; left: 70px; }
+/* Saturno-sticker que já existia — ampliado e estável no canto sup-esquerdo */
+.start-sun-planet {
+  position: absolute; top: 60px; left: 70px;
+  transform: scale(1.35); transform-origin: top left;
+}
 
-.start-cloud {
-  position: absolute;
-  background: #fff;
-  border: var(--outline) solid var(--ink);
-  border-radius: var(--radius-pill);
-  box-shadow: var(--solid-1);
+/* planeta grande, estável, lado direito do céu. Gira MUITO devagar (90s):
+   leitura de rotação calma, nunca agressiva. Bem longe do Órbi/JOGAR. */
+.start-big-planet {
+  position: absolute; top: 392px; right: 86px;
+  width: 260px; height: 260px;
 }
-.start-cloud::before,
-.start-cloud::after {
-  content: "";
-  position: absolute;
-  background: #fff;
-  border: var(--outline) solid var(--ink);
-  border-radius: 50%;
+.start-big-planet svg {
+  width: 100%; height: 100%;
+  transform-origin: 50% 50%;
+  animation: startPlanetSpin 90s linear infinite;
 }
-/* máscara branca que esconde o contorno navy onde os caroços encontram a barra */
-.start-cloud i {
-  position: absolute;
-  left: 6px; right: 6px; top: 3px; bottom: 3px;
-  background: #fff;
-  border-radius: var(--radius-pill);
-  z-index: 1;
-}
-.start-cloud--a { width: 150px; height: 46px; left: 150px; top: 150px; }
-.start-cloud--a::before { width: 60px; height: 60px; left: 24px; top: -30px; }
-.start-cloud--a::after  { width: 46px; height: 46px; left: 80px; top: -20px; }
-.start-cloud--b { width: 120px; height: 40px; right: 190px; top: 120px; opacity: .96; }
-.start-cloud--b::before { width: 52px; height: 52px; left: 20px; top: -26px; }
-.start-cloud--b::after  { width: 40px; height: 40px; left: 64px; top: -16px; }
-.start-cloud--c { width: 96px; height: 32px; left: 60px; top: 330px; opacity: .9; }
-.start-cloud--c::before { width: 40px; height: 40px; left: 16px; top: -20px; }
-.start-cloud--c::after  { width: 30px; height: 30px; left: 50px; top: -12px; }
+@keyframes startPlanetSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-.start-spark { position: absolute; }
+/* estrelas — brilho ESTÁTICO (halo de glow FIXO, sempre presente, não pisca)
+   + respiro lento e gentil. Piso de opacidade alto: brilham firme, NÃO
+   acendem-apagam. Régua TEA: glow sim, cintilação não. */
+.start-star {
+  position: absolute;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 1))
+          drop-shadow(0 0 8px rgba(255, 252, 236, .85))
+          drop-shadow(0 0 16px rgba(255, 244, 210, .55));
+  animation: startTwinkle 5s var(--ease-soft) infinite;
+}
+@keyframes startTwinkle { 0%, 100% { opacity: .76; } 50% { opacity: 1; } }
 
 /* ---- colina + cidade ---- */
 .start-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; z-index: 2; }
@@ -1280,31 +1277,31 @@ canvas {
   font-family: var(--font-body);
   font-weight: var(--weight-body-bold);
   font-size: var(--text-body);
-  color: var(--orbi-ink-soft);
+  color: rgba(255, 255, 255, .8);            /* sussurra sobre o crepúsculo */
   background: none;
   border: none;
-  border-bottom: 2px dashed var(--orbi-ink-faint);
+  border-bottom: 2px dashed rgba(255, 255, 255, .4);
   padding: 2px 2px;
   cursor: pointer;
   transition: color var(--dur-quick) var(--ease-soft), border-color var(--dur-quick) var(--ease-soft);
 }
-.start-historia:hover { color: var(--orbi-ink); border-color: var(--orbi-ink-soft); }
+.start-historia:hover { color: #fff; border-color: rgba(255, 255, 255, .7); }
 
 /* ---- cantinhos ---- */
 .start-controls { position: absolute; top: 30px; right: 34px; z-index: 4; display: flex; gap: 16px; }
 .start-rbtn {
   width: 66px; height: 66px;
   border-radius: var(--radius-pill);
-  background: #fff;
-  border: var(--outline) solid var(--ink);
-  box-shadow: var(--solid-2);
+  background: rgba(255, 255, 255, .22);       /* frosted: discreto sobre o céu */
+  border: var(--outline-thin) solid rgba(255, 255, 255, .5);
+  box-shadow: 0 4px 0 rgba(28, 39, 70, .22);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform var(--dur-quick) var(--ease-soft), box-shadow var(--dur-quick) var(--ease-soft);
 }
-.start-rbtn:active { transform: translateY(4px); box-shadow: var(--solid-press); }
+.start-rbtn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(28, 39, 70, .22); }
 .start-rbtn svg { display: block; }
 
 .start-parents {
@@ -1319,17 +1316,18 @@ canvas {
   font-family: var(--font-display);
   font-weight: var(--weight-display-bold);
   font-size: 16px;
-  color: var(--orbi-ink-soft);
-  background: rgba(255, 255, 255, .7);
-  border: var(--outline-thin) solid var(--orbi-ink-soft);
+  color: rgba(255, 255, 255, .85);            /* sussurra no rodapé crepúsculo */
+  background: rgba(28, 39, 70, .22);
+  border: var(--outline-thin) solid rgba(255, 255, 255, .4);
   border-radius: var(--radius-pill);
   padding: 8px 16px;
   cursor: pointer;
 }
-.start-parents:hover { color: var(--orbi-ink); border-color: var(--orbi-ink); }
+.start-parents:hover { color: #fff; border-color: rgba(255, 255, 255, .7); }
 
 @media (prefers-reduced-motion: reduce) {
-  .start-orbi, .start-play { animation: none !important; }
+  .start-orbi, .start-play,
+  .start-big-planet svg, .start-star { animation: none !important; }
   .start-bubble { transition: none; }
 }
 

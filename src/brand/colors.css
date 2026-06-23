@@ -60,6 +60,20 @@
   --orbi-line:         #C2DEEC;   /* divisórias suaves sobre céu */
 
   /* ================================================================
+     CREPÚSCULO ESPACIAL — clima da TELA INICIAL (StartScreen)
+     Lavanda/roxo SUAVE de entardecer. Pastel CLARO no topo (logo e
+     Órbi seguem legíveis) descendo pro roxo onde o JOGAR amarelo
+     grita. Mais claro que a intro navy: lê como "depois do pouso".
+     Régua TEA: calmo, nada estridente. Só ADIÇÃO — nada removido.
+     ================================================================ */
+  --orbi-twilight-hi:   #EFEAF9;   /* topo do céu: lavanda quase branco */
+  --orbi-twilight-mid:  #D3C4ED;   /* meio: lavanda médio */
+  --orbi-twilight-deep: #A88FD4;   /* base: roxo suave (nunca escuro) */
+  --orbi-twilight-hill: #6E5AA0;   /* colina de entardecer (era capim) */
+  --orbi-twilight-hill-deep: #574484; /* sombra da colina */
+  --orbi-star:          #FFF4D6;   /* estrela discreta, creme quente */
+
+  /* ================================================================
      ALIASES SEMÂNTICOS — use estes nos componentes
      ================================================================ */
   /* superfícies */
