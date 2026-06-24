@@ -99,7 +99,7 @@ export function StartScreen({ onPlay, onVerHistoria }) {
   const [pose, setPose] = useState('acenando');
   const [pressed, setPressed] = useState(false);
   const [bubble, setBubble] = useState(false);
-  const [somOn, setSomOn] = useState(true);
+  const [somOn, setSomOn] = useState(() => localStorage.getItem('orbi-som') !== 'off');
   const busy = useRef(false);
 
   // Escala o canvas fixo 1280×800 pra caber na janela (nunca trava em 0).
@@ -188,7 +188,13 @@ export function StartScreen({ onPlay, onVerHistoria }) {
         <div className="start-controls">
           <button
             className="start-rbtn"
-            onClick={() => setSomOn((v) => !v)}
+            onClick={() =>
+              setSomOn((v) => {
+                const novo = !v;
+                localStorage.setItem('orbi-som', novo ? 'on' : 'off');
+                return novo;
+              })
+            }
             aria-label={somOn ? 'Som ligado' : 'Som desligado'}
           >
             <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
