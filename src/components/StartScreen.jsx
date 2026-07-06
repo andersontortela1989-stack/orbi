@@ -6,7 +6,7 @@ import { useGame } from '../store/useGame.js';
  * Tela de abertura do Órbi — fiel a "Órbi - Tela de Abertura.html".
  *
  * Logo (wordmark adesivo + planeta no "Ó") + tagline "um mundo pra descobrir"
- * + Órbi acenando + botão JOGAR grande + cantinhos (som / Área dos pais).
+ * + Órbi acenando + botão JOGAR grande + cantinho "Área dos pais".
  *
  * Composição em "canvas fixo" 1280×800 escalado pra caber em qualquer janela
  * (mesma técnica do mock: garante que o enquadramento aprovado nunca quebre).
@@ -15,8 +15,10 @@ import { useGame } from '../store/useGame.js';
  * depois entra na cidade. Guard-rail TEA+TDAH: resposta clara a UMA ação,
  * movimento contido, tudo gated em prefers-reduced-motion.
  *
- * Som e "Área dos pais" são PLACEHOLDERS por ora (visuais, fiéis ao mock) —
- * fiação real fica pra um passo futuro.
+ * "Área dos pais" é PLACEHOLDER por ora (visual, fiel ao mock) — fiação real
+ * fica pra um passo futuro. O botão de som saiu junto com o tema cantado
+ * (decisão de produto): ele só ligava/desligava a música, e botão sem efeito
+ * viola a previsibilidade TEA. Volta com o tema novo, numa atualização futura.
  */
 
 // SVGs estáticos copiados verbatim do mock (markup confiável → innerHTML ok).
@@ -99,7 +101,6 @@ export function StartScreen({ onPlay, onVerHistoria }) {
   const [pose, setPose] = useState('acenando');
   const [pressed, setPressed] = useState(false);
   const [bubble, setBubble] = useState(false);
-  const [somOn, setSomOn] = useState(() => localStorage.getItem('orbi-som') !== 'off');
   const busy = useRef(false);
 
   // Escala o canvas fixo 1280×800 pra caber na janela (nunca trava em 0).
@@ -184,40 +185,8 @@ export function StartScreen({ onPlay, onVerHistoria }) {
           )}
         </div>
 
-        {/* CANTINHOS (placeholders por ora) */}
-        <div className="start-controls">
-          <button
-            className="start-rbtn"
-            onClick={() =>
-              setSomOn((v) => {
-                const novo = !v;
-                localStorage.setItem('orbi-som', novo ? 'on' : 'off');
-                return novo;
-              })
-            }
-            aria-label={somOn ? 'Som ligado' : 'Som desligado'}
-          >
-            <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-              <path
-                d="M5 11 H10 L16 6 V24 L10 19 H5 Z"
-                fill="#FFC53D"
-                stroke="#1C2746"
-                strokeWidth="2.6"
-                strokeLinejoin="round"
-              />
-              {somOn && (
-                <path
-                  d="M20 11 Q23 15 20 19 M23 8 Q28 15 23 22"
-                  stroke="#1C2746"
-                  strokeWidth="2.6"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              )}
-            </svg>
-          </button>
-        </div>
-
+        {/* CANTINHOS: só "Área dos pais" por ora — o botão de som saiu com o
+            tema cantado (ver doc do componente); volta com o tema novo. */}
         <button className="start-parents" onClick={(e) => e.preventDefault()} aria-label="Área dos pais">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <rect x="4" y="10" width="16" height="11" rx="3" fill="#fff" stroke="#46557E" strokeWidth="2.4" />

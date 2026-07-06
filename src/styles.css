@@ -1288,22 +1288,8 @@ canvas {
 .start-historia:hover { color: #fff; border-color: rgba(255, 255, 255, .7); }
 
 /* ---- cantinhos ---- */
-.start-controls { position: absolute; top: 30px; right: 34px; z-index: 4; display: flex; gap: 16px; }
-.start-rbtn {
-  width: 66px; height: 66px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .22);       /* frosted: discreto sobre o céu */
-  border: var(--outline-thin) solid rgba(255, 255, 255, .5);
-  box-shadow: 0 4px 0 rgba(28, 39, 70, .22);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--dur-quick) var(--ease-soft), box-shadow var(--dur-quick) var(--ease-soft);
-}
-.start-rbtn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(28, 39, 70, .22); }
-.start-rbtn svg { display: block; }
-
+/* .start-controls / .start-rbtn saíram com o botão de som (tema cantado
+   removido); voltam com o tema novo numa atualização futura. */
 .start-parents {
   position: absolute;
   bottom: 26px;

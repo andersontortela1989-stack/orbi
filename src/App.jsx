@@ -1,4 +1,4 @@
-import { Suspense, useState, useRef, useEffect } from 'react';
+import { Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Stats } from '@react-three/drei';
@@ -28,34 +28,9 @@ export default function App() {
   const introVista = useGame((s) => s.introVista);
   const [fase, setFase] = useState('abertura'); // 'abertura' | 'intro' | 'jogo'
 
-  // --- Tema cantado do Orbi: toca SO na intro (a chegada do alien).
-  // Fora da intro, silencio: no mundo a voz cantada competiria com o TTS
-  // que ensina. Autoplay exige gesto -> play() so dispara quando a fase
-  // muda por clique (nunca no mount).
-  const audioTemaRef = useRef(null);
-  useEffect(() => {
-    const audio = new Audio('/audio/orbi-tema.mp3');
-    audio.loop = true;
-    audio.volume = 0.45;
-    audio.preload = 'auto';
-    audioTemaRef.current = audio;
-    return () => {
-      audio.pause();
-      audio.src = '';
-      audioTemaRef.current = null;
-    };
-  }, []);
-  useEffect(() => {
-    const audio = audioTemaRef.current;
-    if (!audio) return;
-    const somLigado = localStorage.getItem('orbi-som') !== 'off';
-    if (fase === 'intro' && somLigado) {
-      audio.play().catch(() => {});
-    } else {
-      audio.pause();
-      if (fase !== 'intro') audio.currentTime = 0;
-    }
-  }, [fase]);
+  // Tema cantado removido (decisão de produto): a intro volta a ser silenciosa
+  // até o TTS. O tema novo virá como atualização futura — lança sem, adiciona
+  // depois. Com ele voltam o asset e o botão de som da StartScreen.
 
   if (fase === 'abertura') {
     return (
