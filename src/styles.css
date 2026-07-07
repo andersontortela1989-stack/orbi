@@ -1511,3 +1511,14 @@ canvas {
   max-width: 18ch;
   line-height: 1.3;
 }
+
+/* Dica secundária: instrução pro caso do rotation-lock ligado. Menor e mais
+   suave que a msg principal — presente sem competir. */
+.orient-sub {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-soft);
+  max-width: 24ch;
+  line-height: 1.35;
+  margin-top: calc(-1 * var(--space-2));
+}

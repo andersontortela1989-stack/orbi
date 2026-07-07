@@ -36,6 +36,7 @@ export function OrientationGuard() {
     <div className="orient-guard" role="alertdialog" aria-label="vire o celular">
       <div className="orient-emoji" aria-hidden="true">🔄</div>
       <div className="orient-msg">Vire o celular na horizontal pra brincar!</div>
+      <div className="orient-sub">não virou? ative o girar automático do celular 🔄</div>
     </div>
   );
 }
