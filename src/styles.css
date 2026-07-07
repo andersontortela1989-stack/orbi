@@ -1549,6 +1549,8 @@ canvas {
 .tc-drift.pressed { background: var(--warm); }          /* coral */
 .tc-re { background: var(--orbi-blue-soft); }
 .tc-re.pressed { background: var(--info); }             /* azul-céu */
+.tc-buzina { background: var(--orbi-sun-soft); }
+.tc-buzina.pressed { background: var(--accent); }       /* sol */
 
 @media (prefers-reduced-motion: reduce) { .tc-btn { transition: none; } }
 

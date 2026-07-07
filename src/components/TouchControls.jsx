@@ -37,8 +37,11 @@ const TACTIL =
 
 // Botão → `code` de tecla (o mesmo que o teclado manda).
 const BOTOES = [
-  { code: 'ArrowLeft',  zona: 'esq', classe: 'tc-steer', ico: '◀', rotulo: 'VIRA' },
-  { code: 'ArrowRight', zona: 'esq', classe: 'tc-steer', ico: '▶', rotulo: 'VIRA' },
+  { code: 'ArrowLeft',  zona: 'esq', classe: 'tc-steer',  ico: '◀', rotulo: 'VIRA' },
+  { code: 'ArrowRight', zona: 'esq', classe: 'tc-steer',  ico: '▶', rotulo: 'VIRA' },
+  // Buzina no cluster ESQUERDO (o direito já tem 3): dispara 'KeyB', a mesma
+  // tecla do desktop — o <Buzina> ouve e toca o som. Sem física, sem save.
+  { code: 'KeyB',       zona: 'esq', classe: 'tc-buzina', ico: '📣', rotulo: 'BUZINA' },
   { code: 'Space',      zona: 'dir', classe: 'tc-drift', ico: '✋', rotulo: 'DRIFT' },
   // RÉ entre DRIFT e ACELERA: ACELERA fica na borda direita (posição validada
   // do Layout B) e a ré nasce ao lado dela. Dispara ArrowDown — a mesma tecla

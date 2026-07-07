@@ -59,3 +59,10 @@ export function somNeutro() {
 export function somTique() {
   tom({ freq: 660, dur: 0.07, type: 'sine', gain: 0.12 });
 }
+
+/** Buzina simpática — "bip-bip" de duas notas curtas e SUAVES (triangle, sem
+ *  grave alto nem susto; régua sensorial). ~300ms total. */
+export function somBuzina() {
+  tom({ freq: 520, dur: 0.13, type: 'triangle', gain: 0.15 });
+  tom({ freq: 415, dur: 0.15, type: 'triangle', gain: 0.15, delay: 0.15 });
+}

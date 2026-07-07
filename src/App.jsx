@@ -16,6 +16,7 @@ import { zoomDoViewport } from './components/CameraFollow.jsx';
 import { OrbiCompanion } from './components/OrbiCompanion.jsx';
 import { IntroChegada } from './components/IntroChegada.jsx';
 import { TouchControls } from './components/TouchControls.jsx';
+import { Buzina } from './components/Buzina.jsx';
 import { OrientationGuard } from './components/OrientationGuard.jsx';
 import { useGame } from './store/useGame.js';
 
@@ -132,6 +133,7 @@ export default function App() {
       <WelcomeVoice />
       <MissionController />
       <OrbiCompanion />
+      <Buzina />
       <OrientationGuard />
     </>
   );
