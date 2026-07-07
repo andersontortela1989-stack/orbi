@@ -12,6 +12,7 @@ import { Caderninho } from './components/Caderninho.jsx';
 import { WelcomeVoice } from './components/WelcomeVoice.jsx';
 import { MissionController } from './components/MissionController.jsx';
 import { StartScreen } from './components/StartScreen.jsx';
+import { zoomDoViewport } from './components/CameraFollow.jsx';
 import { OrbiCompanion } from './components/OrbiCompanion.jsx';
 import { IntroChegada } from './components/IntroChegada.jsx';
 import { TouchControls } from './components/TouchControls.jsx';
@@ -91,11 +92,12 @@ export default function App() {
         dpr={[1, 2]}
         orthographic
         camera={{
-          // Zoom INICIAL da câmera ortográfica. O valor que vale ao vivo é
-          // garantido pelo CameraFollow (o R3F só usa este prop na montagem;
-          // mexer aqui sozinho não atualiza no HMR). Mantido em sincronia com o
-          // ZOOM de lá. Para reenquadrar, ajuste ZOOM em CameraFollow.jsx.
-          zoom: 16,
+          // Zoom INICIAL da câmera ortográfica — a MESMA função do CameraFollow
+          // (zoomDoViewport: desktop 16 fixo, mobile deriva da altura). Assim o
+          // 1º frame já nasce no zoom certo; o CameraFollow segue reforçando ao
+          // vivo (o R3F só usa este prop na montagem; mexer aqui não atualiza no
+          // HMR). Para reenquadrar, ajuste as constantes em CameraFollow.jsx.
+          zoom: zoomDoViewport(),
           position: [0, 44, 24],
           near: 0.1,
           far: 500,

@@ -1490,6 +1490,32 @@ canvas {
 /* No táctil, a dica de teclado é inútil e colidiria com os botões → some. */
 @media (pointer: coarse) { .controls-hint { display: none; } }
 
+/* ===== HUD compacto em telas baixas (celular em paisagem) =====
+   Reduz ~25-30% o card de moedas/combustível, a pílula de missão, o botão do
+   caderninho e o mascote — pra não competirem com a pílula nem com os botões de
+   toque. Só propriedades intrínsecas (nada de transform): a pílula preserva o
+   translateX(-50%) e o mascote o seu transform de entrada/comemoração. Os botões
+   de TOQUE (.tc-btn) NÃO encolhem — alvo grande é regra (régua TEA). */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hud {
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-2);
+    min-width: 160px;
+  }
+  .hud-icon,
+  .hud-value { font-size: 20px; }
+  .hud-bar { height: 12px; }
+
+  .mission-banner {
+    padding: var(--space-3) var(--space-4);
+    font-size: 20px;
+  }
+
+  .cad-btn { width: 42px; height: 42px; font-size: 21px; }
+
+  .orbi-companion { width: 88px; }
+}
+
 /* ===== Trava de orientação (retrato → vire o celular) ===== */
 .orient-guard {
   position: fixed;
