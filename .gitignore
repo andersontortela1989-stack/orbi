@@ -9,6 +9,9 @@ dist-ssr
 .idea
 .vscode
 
+# backups locais (git bundle create) — nunca versionar
+*.bundle
+
 # conveniencia local (caminho absoluto da maquina)
 jogar-orbi.bat
 
