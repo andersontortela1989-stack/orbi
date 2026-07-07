@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Stats } from '@react-three/drei';
@@ -32,6 +32,40 @@ export default function App() {
   // até o TTS. O tema novo virá como atualização futura — lança sem, adiciona
   // depois. Com ele voltam o asset e o botão de som da StartScreen.
 
+  // P0 celular: o <Canvas> ortográfico fixa o frustum (left/right/top/bottom)
+  // no tamanho do container NO MOUNT — não passamos esses props, quem calcula é
+  // o R3F, uma vez. O OrientationGuard é só overlay (não impede a montagem), então
+  // montar em RETRATO deixava o mundo enquadrado por um frustum retrato e "sumindo"
+  // ao girar pra paisagem. O desktop nunca sofreu porque sempre monta em paisagem.
+  // Solução: montar o Canvas SÓ em paisagem — o mesmo caminho comprovado do desktop.
+  //
+  // TRAVA (mount-once): uma vez liberado, NUNCA volta a false. Inclinar pra retrato
+  // no meio do jogo mantém a simulação viva (o guard cobre a tela); desmontar
+  // resetaria o rapier — reset-surpresa fere a previsibilidade (TEA). Init em
+  // paisagem/desktop já nasce true (sem flash); só o retrato inicial espera o giro.
+  const [canvasLiberado, setCanvasLiberado] = useState(
+    () =>
+      typeof window === 'undefined' ||
+      !window.matchMedia ||
+      window.matchMedia('(orientation: landscape)').matches
+  );
+  useEffect(() => {
+    if (canvasLiberado) return; // trava: já liberou, nada mais a observar
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(orientation: landscape)');
+    const upd = () => {
+      if (mq.matches) setCanvasLiberado(true); // só liga; nunca desliga
+    };
+    upd();
+    // addEventListener é o moderno; addListener é o fallback (Safari antigo).
+    if (mq.addEventListener) mq.addEventListener('change', upd);
+    else mq.addListener(upd);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', upd);
+      else mq.removeListener(upd);
+    };
+  }, [canvasLiberado]);
+
   if (fase === 'abertura') {
     return (
       <StartScreen
@@ -47,9 +81,12 @@ export default function App() {
 
   return (
     <>
-      {/* Fatia C: sem `shadows` (sombra é SÓLIDA, estilo sticker — ver
-          Cenario.jsx/Building.jsx); teto de dpr e powerPreference =
-          higiene preventiva pra telas grandes/notebooks. */}
+      {/* P0 celular: monta o Canvas SÓ em paisagem (canvasLiberado). O frustum
+          ortográfico se fixa no tamanho do MOUNT; montar em retrato (atrás do
+          OrientationGuard, que é só overlay) enquadrava o mundo errado ao girar.
+          Fatia C: sem `shadows` (sombra SÓLIDA, sticker); teto de dpr +
+          powerPreference = higiene pra telas grandes/notebooks. */}
+      {canvasLiberado && (
       <Canvas
         dpr={[1, 2]}
         orthographic
@@ -78,6 +115,7 @@ export default function App() {
           </Physics>
         </Suspense>
       </Canvas>
+      )}
 
       {/* Overlays 2D — fora do Canvas, React puro */}
       <HUD />
