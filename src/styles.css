@@ -1482,6 +1482,8 @@ canvas {
 .tc-go.pressed { background: var(--success); }          /* capim */
 .tc-drift { background: var(--orbi-coral-soft); }
 .tc-drift.pressed { background: var(--warm); }          /* coral */
+.tc-re { background: var(--orbi-blue-soft); }
+.tc-re.pressed { background: var(--info); }             /* azul-céu */
 
 @media (prefers-reduced-motion: reduce) { .tc-btn { transition: none; } }
 

@@ -40,6 +40,10 @@ const BOTOES = [
   { code: 'ArrowLeft',  zona: 'esq', classe: 'tc-steer', ico: '◀', rotulo: 'VIRA' },
   { code: 'ArrowRight', zona: 'esq', classe: 'tc-steer', ico: '▶', rotulo: 'VIRA' },
   { code: 'Space',      zona: 'dir', classe: 'tc-drift', ico: '✋', rotulo: 'DRIFT' },
+  // RÉ entre DRIFT e ACELERA: ACELERA fica na borda direita (posição validada
+  // do Layout B) e a ré nasce ao lado dela. Dispara ArrowDown — a mesma tecla
+  // de ré do teclado (Car.jsx: input.down → recuo, desencosta da parede).
+  { code: 'ArrowDown',  zona: 'dir', classe: 'tc-re',    ico: '▼', rotulo: 'RÉ' },
   { code: 'ArrowUp',    zona: 'dir', classe: 'tc-go',    ico: '▲', rotulo: 'ACELERA' },
 ];
 
