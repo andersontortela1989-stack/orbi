@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Orbi } from './Orbi.jsx';
+import { AreaPais } from './AreaPais.jsx';
 import { useGame } from '../store/useGame.js';
 
 /**
@@ -101,6 +102,7 @@ export function StartScreen({ onPlay, onVerHistoria }) {
   const [pose, setPose] = useState('acenando');
   const [pressed, setPressed] = useState(false);
   const [bubble, setBubble] = useState(false);
+  const [paisAberto, setPaisAberto] = useState(false);
   const busy = useRef(false);
 
   // Escala o canvas fixo 1280×800 pra caber na janela (nunca trava em 0).
@@ -187,7 +189,11 @@ export function StartScreen({ onPlay, onVerHistoria }) {
 
         {/* CANTINHOS: só "Área dos pais" por ora — o botão de som saiu com o
             tema cantado (ver doc do componente); volta com o tema novo. */}
-        <button className="start-parents" onClick={(e) => e.preventDefault()} aria-label="Área dos pais">
+        <button
+          className="start-parents"
+          onClick={() => setPaisAberto(true)}
+          aria-label="Área dos pais"
+        >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <rect x="4" y="10" width="16" height="11" rx="3" fill="#fff" stroke="#46557E" strokeWidth="2.4" />
             <path d="M8 10 V7 a4 4 0 0 1 8 0 V10" stroke="#46557E" strokeWidth="2.4" fill="none" />
@@ -195,6 +201,11 @@ export function StartScreen({ onPlay, onVerHistoria }) {
           Área dos pais
         </button>
       </div>
+
+      {/* Overlay da Área dos pais — filho de .orbi-start (NÃO de .start-screen,
+          que tem transform: scale()): position:fixed lá dentro seria escalado.
+          Fica FORA da moldura escalada, ocupando a viewport inteira. */}
+      {paisAberto && <AreaPais onFechar={() => setPaisAberto(false)} />}
     </div>
   );
 }
