@@ -1,5 +1,8 @@
+import { useRef } from 'react';
 import { useGame } from '../store/useGame.js';
 import { useCarona } from '../store/useCarona.js';
+import { CEUS, useCeuId, ciclarCeu } from '../ceu.js';
+import { falar } from '../audio/voz.js';
 import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
 import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
@@ -66,6 +69,18 @@ export function HUD() {
   // primeiro), acima das missões (que já somem a bordo).
   const caronaAtiva = caronaBordo && !abastecendo && !vazio && !chegadaViva;
 
+  // Botão de céu (dia/entardecer/noite) — a criança comanda. Voz curiosa no
+  // PRIMEIRO uso de cada preset na sessão (parcimônia; não repete a cada toque).
+  const ceuId = useCeuId();
+  const ceusFalados = useRef(new Set());
+  const trocarCeu = () => {
+    const novo = ciclarCeu();
+    if (!ceusFalados.current.has(novo)) {
+      ceusFalados.current.add(novo);
+      falar(CEUS[novo].voz);
+    }
+  };
+
   // Banner curto (a voz é quem carrega a personalidade do Órbi):
   // GPS = "HOSPITAL?"; Ciências = "🐱 VET?"; Busca = "🔍 ÁGUA?" — na
   // busca o banner mostra a PISTA DE LUGAR, NUNCA o bicho (nem emoji):
@@ -103,6 +118,21 @@ export function HUD() {
           {missao?.tipo === 'busca' ? '✓ ACHAMOS!' : '✓ CHEGAMOS!'}
         </div>
       )}
+
+      {/* Botão de céu — a criança comanda dia/entardecer/noite (troca seca no
+          toque). tabIndex=-1 + blur(): ESPAÇO (freio) não reativa o botão. */}
+      <button
+        type="button"
+        className="ceu-btn"
+        tabIndex={-1}
+        aria-label="mudar o céu"
+        onClick={(e) => {
+          trocarCeu();
+          e.currentTarget.blur();
+        }}
+      >
+        {CEUS[ceuId].rotulo}
+      </button>
 
       <div className="hud" aria-live="polite">
         <div className="hud-row">

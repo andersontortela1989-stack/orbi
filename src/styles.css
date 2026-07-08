@@ -636,6 +636,32 @@ canvas {
   box-shadow: var(--solid-press);
 }
 
+/* Botão de céu — mesma linguagem do caderninho, à esquerda dele (topo-direito).
+   A criança comanda dia/entardecer/noite. */
+.ceu-btn {
+  position: fixed;
+  top: var(--space-4);
+  right: calc(var(--space-4) + 56px + var(--space-3));
+  z-index: 15;
+  width: 56px;
+  height: 56px;
+  font-size: 26px;
+  line-height: 1;
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--solid-3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.ceu-btn:active {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+
 /* Overlay de página única — cobre a cena (o input de direção fica mudo
    enquanto aberto; ver useKeyboard). Fundo navy translúcido calmo. */
 .cad-overlay {
@@ -1599,6 +1625,12 @@ canvas {
   }
 
   .cad-btn { width: 42px; height: 42px; font-size: 21px; }
+  .ceu-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+    right: calc(var(--space-4) + 42px + var(--space-3));
+  }
 
   .orbi-companion { width: 88px; }
 }

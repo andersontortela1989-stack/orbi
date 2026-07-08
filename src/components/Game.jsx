@@ -40,13 +40,10 @@ export function Game() {
 
   return (
     <>
-      {/* Iluminação DIA ADESIVO: ambiente alto (mundo chapado e claro,
-          estilo sticker) + direcional suave só pra definir formas.
-          Fatia C: shadow map dinâmico SAIU (decisão estética) — a sombra
-          do mundo é SÓLIDA, offset único da marca (SOMBRA_SOLIDA em
-          paleta3d.js; planos em Building.jsx e Cenario.jsx). */}
-      <ambientLight intensity={0.9} />
-      <directionalLight position={[30, 50, 20]} intensity={0.65} />
+      {/* Iluminação: agora no <Ceu> (App), junto com fundo/fog — a criança
+          troca dia/entardecer/noite num lugar só. Shadow map dinâmico SAIU
+          (Fatia C): a sombra do mundo é SÓLIDA, offset único da marca
+          (SOMBRA_SOLIDA em paleta3d.js; planos em Building.jsx/Cenario.jsx). */}
 
       <Ground />
 

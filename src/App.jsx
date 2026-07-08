@@ -2,7 +2,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Stats } from '@react-three/drei';
-import { PALETA3D } from './brand/paleta3d.js';
+import { Ceu } from './components/Ceu.jsx';
 import { Game } from './components/Game.jsx';
 import { HUD } from './components/HUD.jsx';
 import { RefuelPanel } from './components/RefuelPanel.jsx';
@@ -105,10 +105,10 @@ export default function App() {
         }}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
       >
-        {/* DIA ADESIVO (frente Mundo Adesivo 3D): céu claro da marca; o fog
-            desvanece a distância pro céu-profundo — sem parede preta. */}
-        <color attach="background" args={[PALETA3D.ceu]} />
-        <fog attach="fog" args={[PALETA3D.neblina, 80, 180]} />
+        {/* Céu comandado pela criança (dia/entardecer/noite): fundo + fog +
+            luzes num componente só, trocados no toque. O fog desvanece a
+            distância pra cor do céu — sem parede preta. */}
+        <Ceu />
         {/* FPS dev-only (frente Mundo Adesivo 3D) — baseline antes/depois de
             cada fatia visual. Não existe em build de produção. */}
         {import.meta.env.DEV && <Stats />}
