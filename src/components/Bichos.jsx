@@ -253,7 +253,7 @@ function Galinha() {
 // asfalto). SELA navy no dorso + ORELHAS CAÍDAS navy (vs. cones laranja
 // do gato) + RABO ERGUIDO — três assinaturas de cima, zero ambiguidade
 // com a vaca (sela única vs. manchas espalhadas, porte e cabeça redonda).
-function Cachorro() {
+export function Cachorro() {
   return (
     <>
       <ContornoCaixa position={[0, 0.38, -0.05]} size={[0.6, 0.55, 1.3]} />

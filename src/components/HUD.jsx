@@ -1,4 +1,5 @@
 import { useGame } from '../store/useGame.js';
+import { useCarona } from '../store/useCarona.js';
 import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
 import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
@@ -41,15 +42,29 @@ export function HUD() {
   // enquanto a pergunta da chegada viva está aberta, banner nenhum
   // compete com ela.
   const chegadaViva = useGame((s) => s.chegadaViva);
+
+  // Carona (store próprio): a bordo, a pílula vira "🐶 PARQUE?" e as missões
+  // normais somem do HUD — uma instrução por vez (régua TEA).
+  const caronaBordo = useCarona((s) => s.aBordo);
+
   const temMissao =
     (missao?.tipo === 'gps' ||
       missao?.tipo === 'ciencias' ||
       missao?.tipo === 'busca') &&
     missao.destino;
   const missaoAtiva =
-    temMissao && !missao.concluida && !abastecendo && !vazio && !chegadaViva;
+    temMissao &&
+    !missao.concluida &&
+    !abastecendo &&
+    !vazio &&
+    !chegadaViva &&
+    !caronaBordo;
   const missaoAcabou =
-    temMissao && missao.concluida && !abastecendo && !chegadaViva;
+    temMissao && missao.concluida && !abastecendo && !chegadaViva && !caronaBordo;
+
+  // Pílula da carona — prioridade abaixo do aviso de combustível (segurança
+  // primeiro), acima das missões (que já somem a bordo).
+  const caronaAtiva = caronaBordo && !abastecendo && !vazio && !chegadaViva;
 
   // Banner curto (a voz é quem carrega a personalidade do Órbi):
   // GPS = "HOSPITAL?"; Ciências = "🐱 VET?"; Busca = "🔍 ÁGUA?" — na
@@ -68,6 +83,12 @@ export function HUD() {
       {vazio && !abastecendo && (
         <div className="mission-banner mission-banner--aviso" role="status">
           ⛽ ACABOU! ME LEVA NO POSTO?
+        </div>
+      )}
+
+      {caronaAtiva && (
+        <div className="mission-banner mission-banner--ativa" role="status">
+          🐶 PARQUE?
         </div>
       )}
 

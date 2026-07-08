@@ -15,6 +15,7 @@ import { Garagem } from './Garagem.jsx';
 import { MissionSensors } from './MissionSensors.jsx';
 import { FuelController } from './FuelController.jsx';
 import { CameraFollow } from './CameraFollow.jsx';
+import { Carona } from './Carona.jsx';
 
 export function Game() {
   const carRef = useRef(null);
@@ -126,6 +127,10 @@ export function Game() {
       {/* Missão de busca (Frente 5) — detecção por proximidade do bicho
           procurado; mesmo padrão das moedas (só LÊ a posição do carro) */}
       <BuscaSensor targetRef={carRef} />
+
+      {/* Carona (piloto: 1 passageiro) — o cachorrinho quer ir ao PARQUE.
+          Estado em store próprio (useCarona); só LÊ a posição do carro */}
+      <Carona targetRef={carRef} />
 
       <CameraFollow targetRef={carRef} />
     </>

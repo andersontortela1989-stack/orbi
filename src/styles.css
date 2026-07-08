@@ -158,6 +158,26 @@ canvas {
   background: var(--orbi-sun-soft);
 }
 
+/* Balão do cão da CARONA — sobre a cabeça dele no mundo (drei Html, projetado
+   a cada frame). ESTÁTICO (sem pulso/fade — régua TEA). pointer-events:none:
+   nunca rouba um toque dos controles. Mesma linguagem-adesivo da pílula. */
+.carona-balao {
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-strong);
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--solid-2);
+  padding: var(--space-2) var(--space-4);
+}
+
 @keyframes missionPop {
   from { transform: translateX(-50%) scale(0.9); opacity: 0; }
   to   { transform: translateX(-50%) scale(1);   opacity: 1; }
