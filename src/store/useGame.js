@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { SAVE_VERSION, CHAVE_SAVE, storageSeguro } from '../save.js';
 import { DESTINOS_GPS } from '../missions/destinos.js';
 import { sortearAnimal } from '../missions/missoes-ciencias.js';
 import { sortearChegadaViva } from '../missions/missoes.js';
@@ -335,7 +336,11 @@ export const useGame = create(
       resetar: () => set(ESTADO_INICIAL),
     }),
     {
-      name: 'cidade-turbo-3d',
+      name: CHAVE_SAVE,
+      // Anti-reset-silencioso (P0-06): igual ao storage default, exceto que
+      // save corrompido é preservado num backup ANTES de qualquer escrita e
+      // o jogo abre jogável — nunca descarta progresso em silêncio (save.js).
+      storage: storageSeguro,
       // v2 (Fatia 8): + habilidade `cienciasVida`. v3 (chegadas vivas no
       // MERCADO/PADARIA): + habilidade `cores`. v4 (Caderninho do Órbi):
       // + `descobertas`. O migrate é OBRIGATÓRIO a cada chave nova: o merge
@@ -355,7 +360,9 @@ export const useGame = create(
       // v6 (ESTÁDIO, Frente 6): + habilidades.geografia e
       // descobertas.paises — chaves ANINHADAS, o caso que o bump existe
       // pra cobrir; o migrate genérico injeta as duas.
-      version: 6,
+      // O NÚMERO mora em save.js (SAVE_VERSION): persist e teto do import
+      // andam juntos por construção. O bump continua sendo feito lá.
+      version: SAVE_VERSION,
       migrate: (persisted) => {
         if (!persisted) return persisted;
         return {

@@ -1,27 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-
-// Chave do save — a MESMA do persist do zustand (useGame.js). Só leitura/escrita
-// da string já existente; nada aqui conhece o shape interno do estado.
-const CHAVE_SAVE = 'cidade-turbo-3d';
-// Maior version que este app entende (== version do persist em useGame.js).
-// Import de version acima disso é recusado — não sabemos migrar do futuro.
-const VERSION_MAX = 6;
-
-// Base64 UTF-8-seguro (o nome da criança pode ter acento): encodeURIComponent
-// vira bytes antes do btoa, e o caminho inverso desfaz. Sem escape/unescape.
-function paraBase64(str) {
-  const bytes = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, h) =>
-    String.fromCharCode(parseInt(h, 16))
-  );
-  return btoa(bytes);
-}
-function deBase64(b64) {
-  const bytes = atob(b64); // lança em Base64 inválido
-  const pct = Array.from(bytes, (c) =>
-    '%' + c.charCodeAt(0).toString(16).padStart(2, '0')
-  ).join('');
-  return decodeURIComponent(pct); // lança em UTF-8 inválido
-}
+import {
+  CHAVE_SAVE,
+  validarSaveImportado,
+  resumoDoSave,
+  backupDoSaveAtual,
+  paraBase64,
+  deBase64,
+} from '../save.js';
 
 // Copia com fallback pra browsers sem Clipboard API (textarea + execCommand).
 async function copiarTexto(texto) {
@@ -58,10 +43,13 @@ async function copiarTexto(texto) {
  * recarrega). Vive só aqui — a criança não vê.
  *
  * FRONTEIRA: mexe APENAS na string do localStorage do save (a mesma do persist),
- * por leitura/escrita — zero store, zero schema, zero lógica de jogo, zero TTS
- * (nada passa por falar()). O import valida ANTES de escrever e, em erro, NUNCA
- * toca o save existente. Depois de importar, um reload deixa o persist hidratar
- * e migrar (v1→6) normalmente.
+ * por leitura/escrita — zero store, zero lógica de jogo, zero TTS (nada passa
+ * por falar()). Validação, resumo e backup vêm PRONTOS de save.js (a fronteira
+ * que conhece o shape); aqui é só UI. O import valida ANTES de escrever, mostra
+ * um RESUMO do que vai entrar (nome, veículo, moedas, descobertas) e só
+ * substitui após confirmação — com o save atual copiado pra 'orbi-save-bkp'
+ * antes da escrita destrutiva. Em erro, NUNCA toca o save existente. Depois de
+ * importar, um reload deixa o persist hidratar e migrar (v1→6) normalmente.
  *
  * Espelha o padrão visual do Caderninho (card claro, contorno navy, FECHAR
  * grande no topo), com classes próprias `pais-*`. MONTAGEM: filho de
@@ -86,6 +74,9 @@ export function AreaPais({ onFechar }) {
   const [copiado, setCopiado] = useState(false);
   const [erroExport, setErroExport] = useState('');
   const [msgImport, setMsgImport] = useState('');
+  // Import pendente de confirmação: { json, resumo }. Enquanto existe, o botão
+  // TRAZER dá lugar ao resumo + CONFIRMAR/CANCELAR. Nada foi escrito ainda.
+  const [pendente, setPendente] = useState(null);
   const timeoutCopia = useRef(null);
 
   // Limpa o timer do "copiado!" se o painel fechar no meio.
@@ -108,6 +99,9 @@ export function AreaPais({ onFechar }) {
     timeoutCopia.current = setTimeout(() => setCopiado(false), 2000);
   };
 
+  // Passo 1: decodifica + valida (estrito, em save.js) e monta o RESUMO.
+  // Nenhuma escrita acontece aqui — o save atual fica intacto em todo
+  // caminho de erro E enquanto o adulto decide.
   const importar = () => {
     const txt = codigo.trim();
     if (!txt) {
@@ -123,30 +117,34 @@ export function AreaPais({ onFechar }) {
       setMsgImport('esse código não funcionou, confere se copiou inteiro.');
       return;
     }
-    // Validação ESTRITA, ANTES de tocar em qualquer coisa: { state:objeto,
-    // version:número ∈ [1, VERSION_MAX] }. Futuro (version > atual) é recusado
-    // (não sabemos migrar do que ainda não existe).
-    const valido =
-      dados &&
-      typeof dados === 'object' &&
-      dados.state &&
-      typeof dados.state === 'object' &&
-      typeof dados.version === 'number' &&
-      dados.version >= 1 &&
-      dados.version <= VERSION_MAX;
-    if (!valido) {
+    if (!validarSaveImportado(dados)) {
       setMsgImport('esse código não funcionou, confere se copiou inteiro.');
       return;
     }
-    // Só agora escreve — o save atual ficou intacto em todo caminho de erro.
+    setMsgImport('');
+    setPendente({ json, resumo: resumoDoSave(dados) });
+  };
+
+  // Passo 2 (após confirmação): backup do save atual em 'orbi-save-bkp' e SÓ
+  // ENTÃO a escrita destrutiva. Backup falhou → não substitui (regra P0-06).
+  const confirmarImport = () => {
+    if (!pendente) return;
+    if (!backupDoSaveAtual()) {
+      setMsgImport('não consegui guardar o backup; nada foi alterado.');
+      setPendente(null);
+      return;
+    }
     try {
-      localStorage.setItem(CHAVE_SAVE, json);
+      localStorage.setItem(CHAVE_SAVE, pendente.json);
     } catch (_) {
       setMsgImport('não consegui salvar aqui; tente de novo.');
+      setPendente(null);
       return;
     }
     window.location.reload();
   };
+
+  const cancelarImport = () => setPendente(null);
 
   return (
     <div className="pais-overlay">
@@ -228,19 +226,55 @@ export function AreaPais({ onFechar }) {
             onChange={(e) => {
               setCodigo(e.target.value);
               setMsgImport('');
+              setPendente(null); // código mudou: o resumo anterior não vale mais
             }}
           />
-          <button
-            type="button"
-            className="pais-btn pais-btn--secundario"
-            tabIndex={-1}
-            onClick={importar}
-          >
-            TRAZER PROGRESSO DE OUTRO APARELHO
-          </button>
-          <p className="pais-nota">
-            isto substitui o progresso salvo neste aparelho pelo do código.
-          </p>
+          {!pendente && (
+            <>
+              <button
+                type="button"
+                className="pais-btn pais-btn--secundario"
+                tabIndex={-1}
+                onClick={importar}
+              >
+                TRAZER PROGRESSO DE OUTRO APARELHO
+              </button>
+              <p className="pais-nota">
+                isto substitui o progresso salvo neste aparelho pelo do código.
+              </p>
+            </>
+          )}
+          {pendente && (
+            <>
+              <p className="pais-texto">encontrei este progresso no código:</p>
+              <ul className="pais-lista">
+                <li>nome: {pendente.resumo.nome || '(sem nome ainda)'}</li>
+                <li>veículo: {pendente.resumo.veiculo}</li>
+                <li>moedas: {pendente.resumo.moedas}</li>
+                <li>descobertas no caderninho: {pendente.resumo.totalDescobertas}</li>
+              </ul>
+              <p className="pais-nota">
+                confirmar substitui o progresso deste aparelho — o atual fica
+                guardado num backup interno.
+              </p>
+              <button
+                type="button"
+                className="pais-btn"
+                tabIndex={-1}
+                onClick={confirmarImport}
+              >
+                SIM, TRAZER ESTE PROGRESSO
+              </button>
+              <button
+                type="button"
+                className="pais-btn pais-btn--secundario"
+                tabIndex={-1}
+                onClick={cancelarImport}
+              >
+                CANCELAR
+              </button>
+            </>
+          )}
           {msgImport && <p className="pais-aviso">{msgImport}</p>}
         </section>
 
