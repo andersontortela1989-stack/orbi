@@ -278,6 +278,26 @@ export function AreaPais({ onFechar }) {
           {msgImport && <p className="pais-aviso">{msgImport}</p>}
         </section>
 
+        {/* Canal de feedback (P0-05) — território adulto, no fim de propósito.
+            Só um <a> estático: nova aba SEMPRE (a sessão do jogo nunca se
+            perde com a criança por perto), noopener/noreferrer, zero iframe,
+            zero coleta do lado do jogo. */}
+        <section className="pais-secao">
+          <h3 className="pais-secao-titulo">Conte como foi</h3>
+          <p className="pais-texto">
+            Jogou com seu filho? Suas respostas ajudam o Órbi a melhorar. Nada
+            é obrigatório.
+          </p>
+          <a
+            className="pais-texto"
+            href="https://forms.gle/mbqvbcooxG149Yry9"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Abrir o formulário →
+          </a>
+        </section>
+
         <p className="pais-rodape">
           Feito com carinho por Anderson Tortela — para o Heitor
         </p>
