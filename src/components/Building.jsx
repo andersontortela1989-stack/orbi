@@ -1,5 +1,5 @@
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
-import { Billboard, Text } from '@react-three/drei';
+import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { PALETA3D, SOMBRA_SOLIDA, TINTAS } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
@@ -15,19 +15,19 @@ import { perfilVisual } from '../visual/world-style.js';
 const TRACO = 0.2;
 
 const ESTILOS = Object.freeze({
-  PIZZA:    { telhado: 'piramide', acento: TINTAS.sun,       janela: '#FFD28B' },
-  HOSPITAL: { telhado: 'plano',    acento: TINTAS.coral,     janela: '#BFF4FF' },
-  ESCOLA:   { telhado: 'piramide', acento: TINTAS.violet,    janela: '#FFE3A5' },
-  MERCADO:  { telhado: 'plano',    acento: TINTAS.grass,     janela: '#FFE09E' },
-  PADARIA:  { telhado: 'piramide', acento: TINTAS.sunDeep,   janela: '#FFD39D' },
-  PORTO:    { telhado: 'domo',     acento: TINTAS.blueSoft,  janela: '#C5F5FF' },
-  FAROL:    { telhado: 'farol',    acento: TINTAS.sun,       janela: '#FFF2B8' },
-  PARQUE:   { telhado: 'piramide', acento: TINTAS.grassDeep, janela: '#D8FFCE' },
-  ZOO:      { telhado: 'domo',     acento: TINTAS.sun,       janela: '#D6FFD4' },
-  VET:      { telhado: 'plano',    acento: TINTAS.coral,     janela: '#C7F2FF' },
-  POSTO:    { telhado: 'posto',    acento: TINTAS.blue,      janela: '#FFF0B0' },
-  GARAGEM:  { telhado: 'plano',    acento: TINTAS.violet,    janela: '#BEEBFF' },
-  'ESTÁDIO': { telhado: 'domo',    acento: TINTAS.sun,       janela: '#E6F8FF' },
+  PIZZA:    { telhado: 'piramide', acento: TINTAS.sun,       janela: '#FFD28B', texto: TINTAS.ink },
+  HOSPITAL: { telhado: 'plano',    acento: TINTAS.coral,     janela: '#BFF4FF', texto: TINTAS.white },
+  ESCOLA:   { telhado: 'piramide', acento: TINTAS.violet,    janela: '#FFE3A5', texto: TINTAS.white },
+  MERCADO:  { telhado: 'plano',    acento: TINTAS.grass,     janela: '#FFE09E', texto: TINTAS.ink },
+  PADARIA:  { telhado: 'piramide', acento: TINTAS.sunDeep,   janela: '#FFD39D', texto: TINTAS.ink },
+  PORTO:    { telhado: 'domo',     acento: TINTAS.blueSoft,  janela: '#C5F5FF', texto: TINTAS.ink },
+  FAROL:    { telhado: 'farol',    acento: TINTAS.sun,       janela: '#FFF2B8', texto: TINTAS.ink },
+  PARQUE:   { telhado: 'piramide', acento: TINTAS.grassDeep, janela: '#D8FFCE', texto: TINTAS.white },
+  ZOO:      { telhado: 'domo',     acento: TINTAS.sun,       janela: '#D6FFD4', texto: TINTAS.ink },
+  VET:      { telhado: 'plano',    acento: TINTAS.coral,     janela: '#C7F2FF', texto: TINTAS.white },
+  POSTO:    { telhado: 'posto',    acento: TINTAS.blue,      janela: '#FFF0B0', texto: TINTAS.white },
+  GARAGEM:  { telhado: 'plano',    acento: TINTAS.violet,    janela: '#BEEBFF', texto: TINTAS.white },
+  'ESTÁDIO': { telhado: 'domo',    acento: TINTAS.sun,       janela: '#E6F8FF', texto: TINTAS.ink },
 });
 
 function Telhado({ tipo, w, h, l, acento }) {
@@ -175,12 +175,15 @@ function Marco({ label, w, h, l, acento, brilho }) {
   return null;
 }
 
-function Placa({ label, h, w, l, fontSize, acento }) {
-  const tamanhoFonte = fontSize ?? Math.max(1.28, Math.min(1.8, Math.min(w, l) * 0.15));
-  const placaW = label.length * tamanhoFonte * 0.67 + 1.15;
-  const placaH = tamanhoFonte * 1.45;
+function Placa({ label, h, w, l, fontSize, acento, texto }) {
+  const tamanhoFonte = fontSize ?? Math.max(
+    0.78,
+    Math.min(1.15, (w * 0.7) / Math.max(1, label.length * 0.67))
+  );
+  const placaW = Math.min(w * 0.82, label.length * tamanhoFonte * 0.67 + 1.05);
+  const placaH = tamanhoFonte * 1.55;
   return (
-    <Billboard position={[0, h / 2 + 2.35, 0]} follow>
+    <group position={[0, h / 2 - 0.9, l / 2 + 0.28]}>
       <mesh position={[0, 0, -0.05]}>
         <boxGeometry args={[placaW + 0.35, placaH + 0.35, 0.2]} />
         <meshBasicMaterial color={TINTAS.violetDeep} />
@@ -192,7 +195,7 @@ function Placa({ label, h, w, l, fontSize, acento }) {
       <Text
         position={[0, 0, 0.13]}
         fontSize={tamanhoFonte}
-        color={TINTAS.white}
+        color={texto}
         anchorX="center"
         anchorY="middle"
         letterSpacing={0.045}
@@ -200,7 +203,7 @@ function Placa({ label, h, w, l, fontSize, acento }) {
       >
         {label}
       </Text>
-    </Billboard>
+    </group>
   );
 }
 
@@ -261,7 +264,15 @@ export function Building({ floorPos, size, color, label, fontSize }) {
         {visual.detalhes && (
           <Marco label={label} w={w} h={h} l={l} acento={estilo.acento} brilho={visual.brilhoJanela} />
         )}
-        <Placa label={label} h={h} w={w} l={l} fontSize={fontSize} acento={estilo.acento} />
+        <Placa
+          label={label}
+          h={h}
+          w={w}
+          l={l}
+          fontSize={fontSize}
+          acento={estilo.acento}
+          texto={estilo.texto}
+        />
       </RigidBody>
     </>
   );
