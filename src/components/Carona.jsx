@@ -6,7 +6,7 @@ import { ZoneSensor } from './ZoneSensor.jsx';
 import { useCarona } from '../store/useCarona.js';
 import { useGame } from '../store/useGame.js';
 import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
-import { useRegistrarAtividade } from '../activity/useActivity.js';
+import { useActivity, useRegistrarAtividade } from '../activity/useActivity.js';
 import { somSucesso } from '../audio/sons.js';
 
 /**
@@ -50,6 +50,7 @@ const RECOMPENSA = 3; // +moedas na entrega (decisão do gate)
 
 export function Carona({ targetRef }) {
   const aBordo = useCarona((s) => s.aBordo);
+  const atividade = useActivity();
   useRegistrarAtividade('carona', aBordo);
   const passageiroRef = useRef(null);
   const entregandoRef = useRef(false);
@@ -125,9 +126,14 @@ export function Carona({ targetRef }) {
           {/* Balão estático sobre o cão — HTML (emoji não renderiza no SDF
               do drei Text). pointer-events:none no CSS: nunca rouba um toque
               dos controles. */}
-          <Html position={[ESPERA_POS[0], 3.2, ESPERA_POS[1]]} center>
-            <div className="carona-balao">🐶 PARQUE?</div>
-          </Html>
+          {/* O wrapper do drei Html usa z-index projetado e pode atravessar
+              overlays React. Painel aberto = balão desmontado, garantindo
+              uma única camada de atenção em configurações, quizzes e álbum. */}
+          {atividade.hud !== 'painel' && (
+            <Html position={[ESPERA_POS[0], 3.2, ESPERA_POS[1]]} center>
+              <div className="carona-balao">🐶 PARQUE?</div>
+            </Html>
+          )}
 
           {/* Zona de embarque: entrar perto do cão = pega a carona. */}
           <ZoneSensor
