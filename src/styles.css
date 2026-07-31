@@ -158,6 +158,185 @@ canvas {
   background: var(--orbi-sun-soft);
 }
 
+/* ===== Aventuras em etapas ===== */
+.adv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 32;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--space-5);
+  overflow-y: auto;
+  background: rgba(28, 39, 70, 0.22);
+}
+
+.adv-overlay--resumo {
+  align-items: center;
+  background: rgba(28, 39, 70, 0.45);
+}
+
+.adv-painel {
+  width: min(720px, 100%);
+  padding: var(--space-5) var(--space-6);
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--solid-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+  user-select: none;
+  animation: postoEntra var(--dur-calm) var(--ease-soft);
+}
+
+.adv-painel--mensagem { max-width: 640px; }
+.adv-painel--resumo { max-width: 680px; }
+
+.adv-selo {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-display-bold);
+  letter-spacing: var(--tracking-caps);
+  color: var(--text-strong);
+  background: var(--orbi-grass-soft);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+}
+
+.adv-titulo {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: var(--weight-display-bold);
+  color: var(--text-strong);
+  text-transform: uppercase;
+}
+
+.adv-texto {
+  margin: 0;
+  max-width: 34ch;
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-body-bold);
+  color: var(--text-strong);
+}
+
+.adv-opcoes {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.adv-opcao {
+  min-width: 140px;
+  padding: var(--space-4);
+  background: var(--surface-base);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--solid-3);
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: var(--weight-display-bold);
+  cursor: pointer;
+}
+
+.adv-opcao:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+
+.adv-opcao:disabled { opacity: 1; cursor: default; }
+.adv-opcao--certa { background: var(--orbi-sun); }
+.adv-emoji { display: block; font-size: 50px; line-height: 1; margin-bottom: var(--space-2); }
+
+.adv-continuar,
+.adv-ajuda-painel {
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-pill);
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  cursor: pointer;
+}
+
+.adv-continuar {
+  padding: var(--space-4) var(--space-6);
+  background: var(--orbi-sun);
+  box-shadow: var(--solid-3);
+  font-size: 21px;
+}
+
+.adv-ajuda-painel {
+  padding: var(--space-3) var(--space-5);
+  background: var(--surface-card);
+  font-size: var(--text-sm);
+}
+
+.adv-continuar:active,
+.adv-ajuda-painel:active {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+
+.adv-ajuda {
+  position: fixed;
+  top: 88px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-card);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-pill);
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  cursor: pointer;
+}
+
+.adv-aprendizados {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+  list-style: none;
+}
+
+.adv-aprendizados li {
+  padding: var(--space-3) var(--space-4);
+  background: var(--orbi-blue-soft);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-strong);
+  font-family: var(--font-body);
+  font-weight: var(--weight-body-bold);
+}
+
+.adv-recompensas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.adv-recompensas span {
+  padding: var(--space-2) var(--space-3);
+  background: var(--orbi-sun-soft);
+  border: var(--outline-thin) dashed var(--outline-color);
+  border-radius: var(--radius-pill);
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-display-bold);
+}
+
 /* Balão do cão da CARONA — sobre a cabeça dele no mundo (drei Html, projetado
    a cada frame). ESTÁTICO (sem pulso/fade — régua TEA). pointer-events:none:
    nunca rouba um toque dos controles. Mesma linguagem-adesivo da pílula. */
@@ -1541,6 +1720,7 @@ canvas {
   .start-big-planet svg, .start-star { animation: none !important; }
   .start-bubble { transition: none; }
   .pais-painel { animation: none; }
+  .adv-painel { animation: none; }
 }
 
 /* ===== Controles de TOQUE (Frente 0 — celular/tablet, layout B) =====
@@ -1623,6 +1803,15 @@ canvas {
     padding: var(--space-3) var(--space-4);
     font-size: 20px;
   }
+
+  .adv-ajuda { top: 68px; font-size: 12px; padding: 5px 10px; }
+  .adv-overlay { padding: var(--space-3); }
+  .adv-painel { padding: var(--space-3) var(--space-4); gap: var(--space-2); }
+  .adv-titulo { font-size: 20px; }
+  .adv-texto { font-size: 16px; }
+  .adv-opcao { min-width: 105px; padding: var(--space-2); font-size: 15px; }
+  .adv-emoji { font-size: 34px; }
+  .adv-continuar { padding: var(--space-2) var(--space-4); font-size: 16px; }
 
   .cad-btn { width: 42px; height: 42px; font-size: 21px; }
   .ceu-btn {

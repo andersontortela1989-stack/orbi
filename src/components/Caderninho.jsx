@@ -24,7 +24,7 @@ import { Bandeira } from './Bandeira.jsx';
  *  aconteceu no quiz; o caderninho é revisita por iniciativa da criança.
  *  Suprimido enquanto qualquer outro painel está aberto (quiz, posto).
  *
- *  OVERLAY — página única, 4 seções empilhadas (LUGARES primeiro: enche a
+ *  OVERLAY — página única, seções empilhadas (LUGARES primeiro: enche a
  *  cada chegada, garante conteúdo no topo). Descobertos = adesivos
  *  vibrantes na ordem da descoberta; o resto = slots-mistério "?" em
  *  tracejado calmo e NEUTRO (curiosidade do Órbi, não déficit da criança;

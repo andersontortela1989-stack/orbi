@@ -6,6 +6,8 @@ import { useActivity } from '../activity/useActivity.js';
 import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
 import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
+import { useAdventure } from '../adventure/useAdventure.js';
+import { enviarEventoAventura } from '../adventure/runtime.js';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
@@ -33,6 +35,7 @@ export function HUD() {
   const missao = useGame((s) => s.missao);
   const pct = Math.max(0, Math.min(100, combustivel));
   const atividade = useActivity();
+  const aventura = useAdventure();
 
   // Estados da economia (Fatia 5)
   // `abastecendo` (painel aberto) vem do MESMO seletor que o RefuelPanel usa —
@@ -54,6 +57,7 @@ export function HUD() {
     missao.destino;
   const missaoAtiva =
     temMissao &&
+    !aventura.ativa &&
     !missao.concluida &&
     !abastecendo &&
     !vazio &&
@@ -61,6 +65,7 @@ export function HUD() {
     atividade.hud === 'missao';
   const missaoAcabou =
     temMissao &&
+    !aventura.ativa &&
     missao.concluida &&
     !abastecendo &&
     !chegadaViva &&
@@ -70,6 +75,17 @@ export function HUD() {
   // primeiro), acima das missões (que já somem a bordo).
   const caronaAtiva =
     atividade.hud === 'carona' && !abastecendo && !vazio && !chegadaViva;
+
+  const aventuraNoHud =
+    aventura.ativa &&
+    aventura.objetivo &&
+    atividade.foco === 'em_missao' &&
+    atividade.hud === 'missao' &&
+    !abastecendo &&
+    !vazio;
+  const contadorAventura = aventura.contador
+    ? ` ${aventura.contador.atual}/${aventura.contador.total}`
+    : '';
 
   // Botão de céu (dia/entardecer/noite) — a criança comanda. Voz curiosa no
   // PRIMEIRO uso de cada preset na sessão (parcimônia; não repete a cada toque).
@@ -107,6 +123,25 @@ export function HUD() {
         <div className="mission-banner mission-banner--ativa" role="status">
           🐶 PARQUE?
         </div>
+      )}
+
+      {aventuraNoHud && (
+        <>
+          <div className="mission-banner mission-banner--ativa" role="status">
+            {aventura.objetivo}{contadorAventura}
+          </div>
+          <button
+            type="button"
+            className="adv-ajuda"
+            aria-label="ouvir uma dica"
+            onClick={(e) => {
+              enviarEventoAventura({ tipo: 'pedir_ajuda' });
+              e.currentTarget.blur();
+            }}
+          >
+            💡 DICA
+          </button>
+        </>
       )}
 
       {missaoAtiva && (

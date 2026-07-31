@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGame } from '../store/useGame.js';
 import { useKeyboard } from '../hooks/useKeyboard.js';
-import { falarNoFoco } from '../activity/index.js';
+import { coordenadorAtividade, falarNoFoco } from '../activity/index.js';
 import {
   CONSUMO_POR_METRO,
   V_LIMP,
@@ -40,6 +40,7 @@ export function FuelController({ targetRef }) {
   useFrame((_, deltaRaw) => {
     const rb = targetRef.current;
     if (!rb) return;
+    if (!coordenadorAtividade.estado().mundo) return;
 
     const dt = Math.min(deltaRaw, 1 / 30);
     const v = rb.linvel();

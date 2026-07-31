@@ -1,4 +1,5 @@
 import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import { coordenadorAtividade } from '../activity/index.js';
 
 /**
  * Volume invisível envolvendo um prédio. Dispara `onArrival` quando um corpo
@@ -21,7 +22,10 @@ export function ArrivalSensor({ floorPos, size, padding = 3.5, onArrival }) {
         onIntersectionEnter={(payload) => {
           // Filtra: só corpos dinâmicos (na cena atual, só o carro).
           // Ignora chão e prédios fixos que ficam dentro do volume do sensor.
-          if (payload.other.rigidBody?.isDynamic?.()) {
+          if (
+            coordenadorAtividade.estado().mundo &&
+            payload.other.rigidBody?.isDynamic?.()
+          ) {
             onArrival();
           }
         }}

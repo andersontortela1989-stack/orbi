@@ -6,6 +6,7 @@ import { useKeyboard } from '../hooks/useKeyboard.js';
 import { PALETA3D } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
 import { tintaDoCarro } from '../city/garagem.js';
+import { coordenadorAtividade } from '../activity/index.js';
 
 // =====================================================================
 //  PARÂMETROS DE GAME FEEL  —  AJUSTE AQUI, SENTINDO.
@@ -41,10 +42,20 @@ export function Car({ rigidBodyRef }) {
   // RigidBody é o mesmo elemento React (não remonta) e a física acima
   // não muda. corPreview (experimentando na garagem) vence corCarro.
   const corCorpo = useGame((s) => tintaDoCarro(s.corPreview ?? s.corCarro));
+  const temRegador = useGame((s) => s.recompensas.includes('regador-no-teto'));
 
   useFrame((_, deltaRaw) => {
     const rb = ref.current;
     if (!rb) return;
+
+    // Painel bloqueante congela o corpo imediatamente, inclusive a inércia
+    // de uma tecla que estava pressionada antes da abertura.
+    if (!coordenadorAtividade.estado().mundo) {
+      const v = rb.linvel();
+      rb.setLinvel({ x: 0, y: v.y, z: 0 }, true);
+      rb.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      return;
+    }
 
     // Clamp do dt para sobreviver a freezes / tab pausada
     const dt = Math.min(deltaRaw, 1 / 30);
@@ -127,6 +138,25 @@ export function Car({ rigidBodyRef }) {
         <boxGeometry args={[CAR_W * 0.85, CAR_H * 0.55, CAR_L * 0.45]} />
         <meshStandardMaterial color={PALETA3D.carro.cabine} roughness={0.4} />
       </mesh>
+
+      {/* Recompensa permanente da aventura do parque — visual apenas, sem
+          collider e sem alterar o centro de massa ou o feel aprovado. */}
+      {temRegador && (
+        <group position={[0, CAR_H * 1.18, -0.25]} scale={0.55}>
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.42, 0.42, 1.1, 14]} />
+            <meshLambertMaterial color={PALETA3D.predios.VET} />
+          </mesh>
+          <mesh position={[0.8, 0.12, 0]} rotation={[0, 0, -Math.PI / 2]}>
+            <coneGeometry args={[0.22, 0.8, 12]} />
+            <meshLambertMaterial color={PALETA3D.predios.VET} />
+          </mesh>
+          <mesh position={[-0.15, 0.55, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.42, 0.09, 8, 14, Math.PI]} />
+            <meshBasicMaterial color={PALETA3D.contorno} />
+          </mesh>
+        </group>
+      )}
 
       {/* "Faróis" — referência visual da frente do carro */}
       <mesh position={[0, 0, CAR_L / 2 - 0.05]}>

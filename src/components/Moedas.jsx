@@ -11,6 +11,7 @@ import {
 } from '../city/moedas.js';
 import { useGame } from '../store/useGame.js';
 import { somMoeda } from '../audio/sons.js';
+import { coordenadorAtividade } from '../activity/index.js';
 
 /**
  * Moedas coletáveis (frente "Moedas na rua") — render + coleta + respawn.
@@ -77,6 +78,7 @@ export function Moedas({ targetRef }) {
   );
 
   useFrame((state) => {
+    if (!coordenadorAtividade.estado().mundo) return;
     const rb = targetRef.current;
     if (!rb) return;
     const t = state.clock.elapsedTime;

@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { SAVE_VERSION, CHAVE_SAVE, storageSeguro } from '../save.js';
+import {
+  SAVE_VERSION,
+  CHAVE_SAVE,
+  migrarEstadoPersistido,
+  storageSeguro,
+} from '../save.js';
 import { DESTINOS_GPS } from '../missions/destinos.js';
 import { sortearAnimal } from '../missions/missoes-ciencias.js';
 import { sortearChegadaViva } from '../missions/missoes.js';
@@ -69,7 +74,13 @@ const ESTADO_INICIAL = {
     frutas:    [],
     contagens: [],
     paises:    [], // Frente 6 (ESTÁDIO) — quiz de bandeiras
+    objetos:   [], // Aventura 01 — água e futuros objetos do mundo
   },
+
+  // Consequências duráveis das aventuras. Flags são semânticas (não detalhes
+  // de render): o cenário decide como representar `parque_florido`.
+  worldFlags: {},
+  recompensas: [],
 
   // missão (uma por vez)
   missao: { tipo: 'nenhuma', destino: null, concluida: false },
@@ -175,6 +186,20 @@ export const useGame = create(
           return {
             descobertas: { ...s.descobertas, [categoria]: [...lista, id] },
           };
+        }),
+
+      ativarWorldFlag: (flag) =>
+        set((s) => {
+          const chave = String(flag ?? '').trim();
+          if (!chave || s.worldFlags?.[chave]) return {};
+          return { worldFlags: { ...s.worldFlags, [chave]: true } };
+        }),
+
+      registrarRecompensa: (item) =>
+        set((s) => {
+          const id = String(item ?? '').trim();
+          if (!id || s.recompensas.includes(id)) return {};
+          return { recompensas: [...s.recompensas, id] };
         }),
 
       // === Moedas na rua (frente extra "Moedas") ===
@@ -360,23 +385,20 @@ export const useGame = create(
       // v6 (ESTÁDIO, Frente 6): + habilidades.geografia e
       // descobertas.paises — chaves ANINHADAS, o caso que o bump existe
       // pra cobrir; o migrate genérico injeta as duas.
+      // v7 (Aventura 01): + descobertas.objetos, worldFlags e recompensas.
+      // Só o resultado durável entra aqui; painel/etapa da aventura seguem
+      // transientes até a implementação explícita do snapshot completo.
       // O NÚMERO mora em save.js (SAVE_VERSION): persist e teto do import
       // andam juntos por construção. O bump continua sendo feito lá.
       version: SAVE_VERSION,
-      migrate: (persisted) => {
-        if (!persisted) return persisted;
-        return {
-          ...persisted,
-          habilidades: {
-            ...ESTADO_INICIAL.habilidades,
-            ...(persisted.habilidades ?? {}),
-          },
-          descobertas: {
-            ...ESTADO_INICIAL.descobertas,
-            ...(persisted.descobertas ?? {}),
-          },
-        };
-      },
+      migrate: (persisted) => migrarEstadoPersistido(persisted, ESTADO_INICIAL),
+      // Normaliza também saves que declaram v7 mas vieram parciais por import.
+      // O `migrate` do Zustand só roda quando a versão muda; `merge` garante os
+      // defaults aninhados em toda hidratação, sem apagar funções da store.
+      merge: (persisted, atual) => ({
+        ...atual,
+        ...migrarEstadoPersistido(persisted, ESTADO_INICIAL),
+      }),
       // persist serializa só state (funções são ignoradas automaticamente).
       // partialize: só o progresso DURÁVEL é gravado — postoPerto,
       // chegadaViva, caderninhoAberto, garagemPerto e corPreview são
@@ -393,6 +415,8 @@ export const useGame = create(
         missao: s.missao,
         habilidades: s.habilidades,
         descobertas: s.descobertas,
+        worldFlags: s.worldFlags,
+        recompensas: s.recompensas,
       }),
     }
   )

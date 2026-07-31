@@ -18,6 +18,18 @@ import { TODOS_PREDIOS } from '../city/bairros.js';
 
 const FRUTA_POR_SLUG = Object.fromEntries(FRUTAS.map((f) => [f.slug, f]));
 const PREDIO_POR_SLUG = Object.fromEntries(TODOS_PREDIOS.map((p) => [p.slug, p]));
+const OBJETOS = {
+  agua: {
+    emoji: '💧',
+    rotulo: 'ÁGUA',
+    fato: 'A água ajuda as plantas a crescer!',
+  },
+  'flor-do-parque': {
+    emoji: '🌼',
+    rotulo: 'FLOR DO PARQUE',
+    fato: 'Esta flor cresceu quando você levou água ao parque!',
+  },
+};
 
 /**
  * Seções do caderninho, na ordem de exibição. LUGARES primeiro: preenche a
@@ -31,6 +43,7 @@ export const CATEGORIAS_CADERNINHO = [
   { id: 'frutas',    titulo: 'FRUTAS',   possiveis: FRUTAS.map((f) => f.slug) },
   { id: 'contagens', titulo: 'NÚMEROS',  possiveis: QUANTIDADES.map(String) },
   { id: 'paises',    titulo: 'PAÍSES',   possiveis: PAISES.map((p) => p.slug) },
+  { id: 'objetos',   titulo: 'OBJETOS',  possiveis: Object.keys(OBJETOS) },
 ];
 
 /**
@@ -64,6 +77,9 @@ export function conteudoDescoberta(categoria, id) {
     return p
       ? { bandeira: p.slug, rotulo: p.slug, fato: p.fatoVoz }
       : null;
+  }
+  if (categoria === 'objetos') {
+    return OBJETOS[id] ?? null;
   }
   return null;
 }

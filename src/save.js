@@ -16,14 +16,47 @@
 // Versão atual do save — a MESMA passada ao persist (useGame.js) e o teto que
 // o import aceita (versão do futuro é recusada: não sabemos migrar dela).
 // Bump aqui a cada chave nova aninhada em habilidades/descobertas (ver o
-// histórico v2→v6 no comentário do persist).
-export const SAVE_VERSION = 6;
+// histórico v2→v7 no comentário do persist).
+export const SAVE_VERSION = 7;
 
 export const CHAVE_SAVE = 'cidade-turbo-3d';
 // Cópia do save atual, feita ANTES do import sobrescrever (escrita destrutiva).
 export const CHAVE_BACKUP_IMPORT = 'orbi-save-bkp';
 // Cópia BRUTA de um save que não parseou/validou — matéria-prima de recuperação.
 export const CHAVE_BACKUP_CORROMPIDO = 'cidade-turbo-3d-corrompido-bkp';
+
+/**
+ * Migração pura do shape persistido. Recebe os defaults da store para manter
+ * save.js desacoplado do Zustand e continuar testável diretamente no Node.
+ */
+export function migrarEstadoPersistido(persisted, defaults) {
+  if (!persisted) return persisted;
+  const recompensas = Array.isArray(persisted.recompensas)
+    ? [...new Set(persisted.recompensas.filter((item) => typeof item === 'string'))]
+    : [...(defaults.recompensas ?? [])];
+  const flagsPersistidas =
+    persisted.worldFlags &&
+    typeof persisted.worldFlags === 'object' &&
+    !Array.isArray(persisted.worldFlags)
+      ? persisted.worldFlags
+      : {};
+  return {
+    ...persisted,
+    habilidades: {
+      ...defaults.habilidades,
+      ...(persisted.habilidades ?? {}),
+    },
+    descobertas: {
+      ...defaults.descobertas,
+      ...(persisted.descobertas ?? {}),
+    },
+    worldFlags: {
+      ...(defaults.worldFlags ?? {}),
+      ...flagsPersistidas,
+    },
+    recompensas,
+  };
+}
 
 function temStorage() {
   return typeof localStorage !== 'undefined';
@@ -97,7 +130,7 @@ export function validarSaveImportado(dados) {
 /**
  * Resumo humano de um save JÁ VALIDADO — o que o adulto confere antes de
  * confirmar a substituição: nome, veículo, moedas e o total de descobertas
- * (soma das 5 categorias do caderninho). Defensivo em toda chave: um save
+ * (soma das categorias do caderninho). Defensivo em toda chave: um save
  * antigo (v1) não tem `descobertas`, e o resumo mostra 0 sem quebrar.
  */
 export function resumoDoSave(dados) {

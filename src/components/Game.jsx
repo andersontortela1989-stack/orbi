@@ -16,6 +16,9 @@ import { MissionSensors } from './MissionSensors.jsx';
 import { FuelController } from './FuelController.jsx';
 import { CameraFollow } from './CameraFollow.jsx';
 import { Carona } from './Carona.jsx';
+import { AdventureMarker } from './AdventureMarker.jsx';
+import { BaldesAventura } from './BaldesAventura.jsx';
+import { FloresParque } from './FloresParque.jsx';
 
 export function Game() {
   const carRef = useRef(null);
@@ -93,10 +96,17 @@ export function Game() {
           de contagem real; dados em city/canteiro.js */}
       <Canteiro />
 
+      {/* Aventura 01: consequência permanente + marcador de ajuda. */}
+      <FloresParque />
+      <AdventureMarker />
+
       {/* Sensores invisíveis de chegada (um por prédio) — Fatia 4 */}
       <MissionSensors />
 
       <Car rigidBodyRef={carRef} />
+
+      {/* Coletáveis aparecem só durante “O Parque Está com Sede”. */}
+      <BaldesAventura targetRef={carRef} />
 
       {/* Combustível (Fatia 5) — DEPOIS do <Car> de propósito: seu useFrame roda
           após o do carro, então o controle de "tanque vazio" tem a palavra final

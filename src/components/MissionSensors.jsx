@@ -1,17 +1,30 @@
 import { ArrivalSensor } from './ArrivalSensor.jsx';
 import { useGame } from '../store/useGame.js';
 import { PREDIOS_GPS } from '../missions/destinos.js';
+import { coordenadorAtividade } from '../activity/index.js';
+import {
+  aventuraAtiva,
+  enviarEventoAventura,
+} from '../adventure/runtime.js';
 
 /**
- * Coloca um sensor de chegada em cada prédio da cidade.
- * Quando o carro entra na zona de qualquer prédio, dispara
- * `processarChegada(slug)` na store — que checa contra a missão ativa
- * e (se bater) marca concluída + registra a habilidade leituraGlobal.
+ * Coloca um sensor de chegada em cada prédio da cidade. A aventura ativa tem
+ * prioridade; fora dela, encaminha ao fluxo legado de GPS/Ciências.
  *
- * Acerto → MissionController reage e celebra. Errado → silêncio.
+ * Sem foco de missão (carona/painel), a chegada é ignorada.
  */
 export function MissionSensors() {
   const processarChegada = useGame((s) => s.processarChegada);
+
+  const chegou = (slug) => {
+    // Missão suspensa por carona/painel nunca progride por baixo do foco.
+    if (!coordenadorAtividade.temFoco('em_missao')) return;
+    if (aventuraAtiva()) {
+      enviarEventoAventura({ tipo: 'chegou', lugar: slug });
+      return;
+    }
+    processarChegada(slug);
+  };
 
   return (
     <>
@@ -20,7 +33,7 @@ export function MissionSensors() {
           key={slug}
           floorPos={floorPos}
           size={size}
-          onArrival={() => processarChegada(slug)}
+          onArrival={() => chegou(slug)}
         />
       ))}
     </>

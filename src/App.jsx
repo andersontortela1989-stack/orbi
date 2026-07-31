@@ -19,6 +19,7 @@ import { TouchControls } from './components/TouchControls.jsx';
 import { Buzina } from './components/Buzina.jsx';
 import { OrientationGuard } from './components/OrientationGuard.jsx';
 import { useGame } from './store/useGame.js';
+import { AdventureController } from './components/AdventureController.jsx';
 
 export default function App() {
   // Fluxo "A Chegada" (adendo de narrativa): abertura → intro → jogo.
@@ -131,6 +132,7 @@ export default function App() {
         SETAS = DIRIGIR &nbsp;·&nbsp; ESPAÇO = FREIO DE MÃO (DRIFT)
       </div>
       <WelcomeVoice />
+      <AdventureController />
       <MissionController />
       <OrbiCompanion />
       <Buzina />

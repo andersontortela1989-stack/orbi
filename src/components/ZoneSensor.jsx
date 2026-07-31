@@ -1,4 +1,5 @@
 import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import { coordenadorAtividade } from '../activity/index.js';
 
 /**
  * Sensor de ZONA genérico — dispara ao ENTRAR e ao SAIR. Nasceu como
@@ -25,10 +26,20 @@ export function ZoneSensor({ floorPos, size, padding = 4, onEnter, onExit }) {
         args={[w / 2 + padding, h, l / 2 + padding]}
         sensor
         onIntersectionEnter={(payload) => {
-          if (payload.other.rigidBody?.isDynamic?.()) onEnter?.();
+          if (
+            coordenadorAtividade.estado().mundo &&
+            payload.other.rigidBody?.isDynamic?.()
+          ) {
+            onEnter?.();
+          }
         }}
         onIntersectionExit={(payload) => {
-          if (payload.other.rigidBody?.isDynamic?.()) onExit?.();
+          if (
+            coordenadorAtividade.estado().mundo &&
+            payload.other.rigidBody?.isDynamic?.()
+          ) {
+            onExit?.();
+          }
         }}
       />
     </RigidBody>

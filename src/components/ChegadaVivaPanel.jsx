@@ -28,8 +28,8 @@ const MAX_TENTATIVAS = 2;
  *    acerto — evidência honesta — mas NADA disso aparece pra criança.)
  *  - 2 erros → o Órbi revela com alegria e ensina de qualquer jeito.
  *
- * Sem timer; dirigir continua livre (overlay embaixo, padrão RefuelPanel —
- * não é modal). A voz da pergunta entra SEM interrupt: ela espera na fila a
+ * Sem timer; o coordenador congela direção e mundo enquanto a carta está
+ * aberta. A voz da pergunta entra SEM interrupt: ela espera na fila a
  * celebração da chegada terminar inteira (uma coisa por vez).
  *
  * Efeitos de conclusão em handlers de clique, guardados por `resolvido`

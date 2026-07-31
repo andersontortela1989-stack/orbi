@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
 import { nomeParaVoz } from '../audio/voz.js';
-import { falarDaAtividade } from '../activity/index.js';
+import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
 import { useActivity, useRegistrarAtividade } from '../activity/useActivity.js';
 import { somSucesso } from '../audio/sons.js';
 import {
@@ -9,6 +9,8 @@ import {
   chaveDaMissao,
   temChegadaViva,
 } from '../missions/missoes.js';
+import { useAdventure } from '../adventure/useAdventure.js';
+import { aventuraAtiva as aventuraEstaAtiva } from '../adventure/runtime.js';
 
 // === Tempos de orquestração — afináveis ===
 const CELEBRACAO_MS         = 2200; // entre completar uma missão e sortear a próxima
@@ -42,17 +44,39 @@ export function MissionController() {
   const animal = useGame((s) => s.missao?.animal);
   const concluida = useGame((s) => s.missao?.concluida);
   const tipo = useGame((s) => s.missao?.tipo);
+  const aventuraAtiva = useAdventure().ativa;
   const missaoReconhecida =
     tipo === 'gps' || tipo === 'ciencias' || tipo === 'busca';
-  useRegistrarAtividade('em_missao', missaoReconhecida);
+  // Missão antiga e aventura compartilham a mesma atividade. O registro fica
+  // vivo durante a troca para um cleanup não liberar o foco da outra dona.
+  useRegistrarAtividade('em_missao', missaoReconhecida || aventuraAtiva);
   const { foco } = useActivity();
 
   const ultimoNarrado    = useRef(null);
   const ultimoConcluido  = useRef(false);
   const interagiu        = useRef(false);
   const proximaMissaoTO  = useRef(null);
+  const proximaPendente  = useRef(false);
   const narrarTO         = useRef(null);
   const chegadas         = useRef(0); // conta chegadas da sessão (p/ especial c/ nome)
+
+  const executarProxima = () => {
+    proximaMissaoTO.current = null;
+    if (
+      !proximaPendente.current ||
+      aventuraEstaAtiva() ||
+      !coordenadorAtividade.temFoco('em_missao')
+    ) {
+      return;
+    }
+    proximaPendente.current = false;
+    const atual = useGame.getState().missao;
+    if (atual?.tipo === 'gps' && temChegadaViva(atual.destino)) {
+      useGame.getState().abrirChegadaViva(atual.destino);
+    } else {
+      useGame.getState().proximaMissao();
+    }
+  };
 
   // 1) BOOT — garante uma missão válida ao montar (gps OU ciencias; missão
   // persistida que o registry não reconhece é descartada e sorteia-se nova).
@@ -70,6 +94,7 @@ export function MissionController() {
       if (interagiu.current) return;
       interagiu.current = true;
       narrarTO.current = setTimeout(() => {
+        if (aventuraEstaAtiva()) return;
         const m = useGame.getState().missao;
         const frases = frasesDaMissao(m);
         const chave = chaveDaMissao(m);
@@ -90,6 +115,7 @@ export function MissionController() {
 
   // 3) MUDANÇA DE MISSÃO — narra cada nova missão (após 1ª interação).
   useEffect(() => {
+    if (aventuraAtiva) return;
     if (!destino || concluida) return;
     if (!interagiu.current) return; // 1ª missão é narrada pelo efeito acima
     const chave = chaveDaMissao(useGame.getState().missao);
@@ -104,7 +130,7 @@ export function MissionController() {
       }
     }, NOVA_MISSAO_NARRACAO_MS);
     return () => clearTimeout(id);
-  }, [destino, animal, concluida, foco]);
+  }, [destino, animal, concluida, foco, aventuraAtiva]);
 
   // 3b) RE-DICA da BUSCA (Frente 5) — se a busca segue aberta após 45s,
   // a voz repete a MESMA pista UMA única vez (previsível, sem escalada;
@@ -112,6 +138,7 @@ export function MissionController() {
   // re-dica, silêncio — a missão espera o tempo que precisar. O timer
   // limpa sozinho na conclusão/troca (deps + cleanup).
   useEffect(() => {
+    if (aventuraAtiva) return;
     if (concluida || !destino || foco !== 'em_missao') return;
     if (useGame.getState().missao?.tipo !== 'busca') return;
     const id = setTimeout(() => {
@@ -122,10 +149,11 @@ export function MissionController() {
       }
     }, REDICA_BUSCA_MS);
     return () => clearTimeout(id);
-  }, [destino, concluida, foco]);
+  }, [destino, concluida, foco, aventuraAtiva]);
 
   // 4) CONCLUÍDA — som + voz + agenda nova missão.
   useEffect(() => {
+    if (aventuraAtiva) return;
     if (concluida && !ultimoConcluido.current) {
       somSucesso();
       const m = useGame.getState().missao;
@@ -141,17 +169,29 @@ export function MissionController() {
         falarDaAtividade('em_missao', frase, { interrupt: true });
       }
       clearTimeout(proximaMissaoTO.current);
-      proximaMissaoTO.current = setTimeout(() => {
-        const atual = useGame.getState().missao;
-        if (atual?.tipo === 'gps' && temChegadaViva(atual.destino)) {
-          useGame.getState().abrirChegadaViva(atual.destino);
-        } else {
-          useGame.getState().proximaMissao();
-        }
-      }, CELEBRACAO_MS);
+      proximaPendente.current = true;
+      proximaMissaoTO.current = setTimeout(executarProxima, CELEBRACAO_MS);
+    }
+    if (!concluida) {
+      proximaPendente.current = false;
+      clearTimeout(proximaMissaoTO.current);
+      proximaMissaoTO.current = null;
     }
     ultimoConcluido.current = !!concluida;
-  }, [concluida]);
+  }, [concluida, aventuraAtiva]);
+
+  // Se carona/painel tomou o foco durante a celebração, o timer para. A
+  // próxima missão só nasce quando `em_missao` voltar ao topo.
+  useEffect(() => {
+    if (foco !== 'em_missao' || aventuraAtiva) {
+      clearTimeout(proximaMissaoTO.current);
+      proximaMissaoTO.current = null;
+      return;
+    }
+    if (concluida && proximaPendente.current && !proximaMissaoTO.current) {
+      proximaMissaoTO.current = setTimeout(executarProxima, 250);
+    }
+  }, [foco, aventuraAtiva, concluida]);
 
   // Limpeza geral
   useEffect(

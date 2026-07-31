@@ -14,6 +14,7 @@ import {
   CHAVE_BACKUP_IMPORT,
   CHAVE_BACKUP_CORROMPIDO,
   storageSeguro,
+  migrarEstadoPersistido,
   validarSaveImportado,
   resumoDoSave,
   backupDoSaveAtual,
@@ -100,6 +101,28 @@ test('versão futura é recusada; até SAVE_VERSION é aceita', () => {
   assert.equal(validarSaveImportado({ state: {}, version: SAVE_VERSION + 1 }), false);
   assert.equal(validarSaveImportado({ state: {}, version: SAVE_VERSION }), true);
   assert.equal(validarSaveImportado({ state: {}, version: 1 }), true);
+});
+
+test('migração v7 injeta objetos, flags e recompensas sem perder progresso antigo', () => {
+  const defaults = {
+    habilidades: { contagem: { acertos: 0, tentativas: 0 } },
+    descobertas: { lugares: [], objetos: [] },
+    worldFlags: {},
+    recompensas: [],
+  };
+  const migrado = migrarEstadoPersistido(
+    {
+      moedas: 9,
+      habilidades: { contagem: { acertos: 2, tentativas: 3 } },
+      descobertas: { lugares: ['PARQUE'] },
+    },
+    defaults
+  );
+  assert.equal(migrado.moedas, 9);
+  assert.deepEqual(migrado.descobertas.objetos, []);
+  assert.deepEqual(migrado.worldFlags, {});
+  assert.deepEqual(migrado.recompensas, []);
+  assert.equal(migrado.habilidades.contagem.acertos, 2);
 });
 
 test('import inválido: sem state, version não-numérica, 0, null, não-objeto', () => {
