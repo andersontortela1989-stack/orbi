@@ -19,9 +19,11 @@ import { Carona } from './Carona.jsx';
 import { AdventureMarker } from './AdventureMarker.jsx';
 import { BaldesAventura } from './BaldesAventura.jsx';
 import { FloresParque } from './FloresParque.jsx';
+import { useGame } from '../store/useGame.js';
 
 export function Game() {
   const carRef = useRef(null);
+  const detalhesVisuais = useGame((s) => s.preferencias.detalhesVisuais);
 
   // DEV-only: teleporte do carro pelo console — `teleporte(x, z)`.
   // Existe pros GATES: fotografar/inspecionar qualquer ponto do mundo com
@@ -53,7 +55,7 @@ export function Game() {
       {/* Grade de referência: torna velocidade e derrapagem perceptíveis.
           Recolorida pro dia (sutil, não gritante); fica até as faixas de rua
           da Fatia C herdarem o papel. */}
-      <Grid
+      {detalhesVisuais && <Grid
         position={[0, 0.01, 0]}
         args={[200, 200]}
         cellSize={2}
@@ -65,7 +67,7 @@ export function Game() {
         fadeDistance={120}
         fadeStrength={1}
         infiniteGrid
-      />
+      />}
 
       {/* Cidade em bairros temáticos contíguos (Fatia 7) — fonte única em
           src/city/bairros.js; render e sensores do GPS derivam dos mesmos dados */}
@@ -85,7 +87,7 @@ export function Game() {
       {/* Decoração EXTRA (cidade viva — detalhe urbano terrestre) — camada
           ISOLADA e removível: tudo <mesh>/<Instances> sem colisão, nas bordas
           dos bairros. Desligar = comentar esta linha. (DecoracaoExtra.jsx) */}
-      <DecoracaoExtra />
+      {detalhesVisuais && <DecoracaoExtra />}
 
       {/* Bichos no mundo (frente "Bichos no mundo") — fauna sticker
           estática, sem colisão; posições em city/bichos.js (a missão de

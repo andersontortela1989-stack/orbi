@@ -58,6 +58,17 @@ test('painel não interrompível só cede à pausa', () => {
   assert.equal(c.estado().foco, 'garagem');
 });
 
+test('configurações congelam a cidade e devolvem o foco anterior ao fechar', () => {
+  const c = criarCoordenadorAtividade();
+  c.pedirFoco('em_missao');
+  assert.equal(c.pedirFoco('configuracoes'), true);
+  assert.equal(c.estado().mundo, false);
+  assert.equal(c.estado().voz, false);
+  assert.equal(c.podeDirigir(), false);
+  c.liberar('configuracoes');
+  assert.equal(c.estado().foco, 'em_missao');
+});
+
 test('chamado da aventura congela o mundo e devolve a missão ao continuar', () => {
   const c = criarCoordenadorAtividade();
   c.pedirFoco('em_missao');
@@ -99,4 +110,5 @@ test('tabela de atividades cobre as políticas futuras sem bloquear a base', () 
   assert.equal(ESPEC_ATIVIDADE.resumo.dirigir, false);
   assert.equal(ESPEC_ATIVIDADE.pausado.voz, false);
   assert.equal(ESPEC_ATIVIDADE.historia.mundo, false);
+  assert.equal(ESPEC_ATIVIDADE.configuracoes.hud, 'painel');
 });

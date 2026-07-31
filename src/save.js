@@ -16,8 +16,8 @@
 // Versão atual do save — a MESMA passada ao persist (useGame.js) e o teto que
 // o import aceita (versão do futuro é recusada: não sabemos migrar dela).
 // Bump aqui a cada chave nova aninhada em habilidades/descobertas (ver o
-// histórico v2→v7 no comentário do persist).
-export const SAVE_VERSION = 7;
+// histórico v2→v8 no comentário do persist).
+export const SAVE_VERSION = 8;
 
 export const CHAVE_SAVE = 'cidade-turbo-3d';
 // Cópia do save atual, feita ANTES do import sobrescrever (escrita destrutiva).
@@ -40,6 +40,20 @@ export function migrarEstadoPersistido(persisted, defaults) {
     !Array.isArray(persisted.worldFlags)
       ? persisted.worldFlags
       : {};
+  const preferenciasPersistidas =
+    persisted.preferencias &&
+    typeof persisted.preferencias === 'object' &&
+    !Array.isArray(persisted.preferencias)
+      ? persisted.preferencias
+      : {};
+  const preferencias = Object.fromEntries(
+    Object.entries(defaults.preferencias ?? {}).map(([chave, fallback]) => [
+      chave,
+      typeof preferenciasPersistidas[chave] === 'boolean'
+        ? preferenciasPersistidas[chave]
+        : fallback,
+    ])
+  );
   return {
     ...persisted,
     habilidades: {
@@ -55,6 +69,7 @@ export function migrarEstadoPersistido(persisted, defaults) {
       ...flagsPersistidas,
     },
     recompensas,
+    ...(defaults.preferencias ? { preferencias } : {}),
   };
 }
 

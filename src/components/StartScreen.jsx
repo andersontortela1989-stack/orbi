@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Orbi } from './Orbi.jsx';
 import { AreaPais } from './AreaPais.jsx';
+import { SensorySettings } from './SensorySettings.jsx';
 import { useGame } from '../store/useGame.js';
 
 /**
@@ -96,7 +97,7 @@ function Raw({ html, className, style }) {
   return <div className={className} style={style} aria-hidden="true" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-export function StartScreen({ onPlay, onVerHistoria }) {
+export function StartScreen({ onPlay, onVerHistoria, onPrepararJogo }) {
   const introVista = useGame((s) => s.introVista);
   const [scale, setScale] = useState(1);
   const [pose, setPose] = useState('acenando');
@@ -119,6 +120,8 @@ export function StartScreen({ onPlay, onVerHistoria }) {
   const jogar = () => {
     if (busy.current) return;
     busy.current = true;
+    // Usa o respiro visual da comemoração para baixar a experiência 3D.
+    onPrepararJogo?.();
 
     const reduz =
       typeof window !== 'undefined' &&
@@ -206,6 +209,7 @@ export function StartScreen({ onPlay, onVerHistoria }) {
           que tem transform: scale()): position:fixed lá dentro seria escalado.
           Fica FORA da moldura escalada, ocupando a viewport inteira. */}
       {paisAberto && <AreaPais onFechar={() => setPaisAberto(false)} />}
+      {!paisAberto && <SensorySettings variant="start" />}
     </div>
   );
 }

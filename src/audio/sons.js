@@ -6,6 +6,8 @@
  *   - neutro  → tom único curto e BAIXO de volume (feedback de erro sem punir).
  */
 
+import { useGame } from '../store/useGame.js';
+
 let ctx = null;
 
 function getCtx() {
@@ -21,6 +23,7 @@ function getCtx() {
 }
 
 function tom({ freq = 800, dur = 0.15, type = 'sine', gain = 0.18, delay = 0 }) {
+  if (useGame.getState().preferencias?.sons === false) return;
   const a = getCtx();
   if (!a) return;
   const t0 = a.currentTime + delay;

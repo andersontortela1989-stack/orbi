@@ -11,6 +11,11 @@ import { sortearAnimal } from '../missions/missoes-ciencias.js';
 import { sortearChegadaViva } from '../missions/missoes.js';
 import { sortearBicho } from '../missions/busca.js';
 import { COR_POR_ID } from '../city/garagem.js';
+import {
+  PREFERENCIAS_PADRAO,
+  PRESET_TRANQUILO,
+  personalizarPreferencia,
+} from '../preferences.js';
 
 /**
  * Estado global da Cidade Turbo 3D — shape espelhando a §6 do handoff.
@@ -28,6 +33,9 @@ const ESTADO_INICIAL = {
   // narrativa "A Chegada" (adendo de narrativa)
   nome: '',           // nome da criança (capturado na intro; primeiro ato de letramento)
   introVista: false,  // a intro já foi vista/pulada? (não auto-toca de novo)
+
+  // Conforto sensorial — durável e independente do progresso pedagógico.
+  preferencias: { ...PREFERENCIAS_PADRAO },
 
   // veículo
   veiculo: 'carro',
@@ -112,6 +120,24 @@ export const useGame = create(
 
       // Marca a intro como vista (após concluir OU pular) — não auto-toca de novo.
       marcarIntroVista: () => set({ introVista: true }),
+
+      // === Conforto sensorial ===
+      // Modo Tranquilo é um preset de um toque; desligá-lo restaura o perfil
+      // padrão. Alterar uma opção individual cria um perfil personalizado.
+      setModoTranquilo: (ativo) =>
+        set({
+          preferencias: {
+            ...(ativo ? PRESET_TRANQUILO : PREFERENCIAS_PADRAO),
+          },
+        }),
+
+      setPreferencia: (chave, valor) =>
+        set((s) => ({
+          preferencias: personalizarPreferencia(s.preferencias, chave, valor),
+        })),
+
+      restaurarPreferencias: () =>
+        set({ preferencias: { ...PREFERENCIAS_PADRAO } }),
 
       abastecer: (litros) =>
         set((s) => ({
@@ -358,7 +384,11 @@ export const useGame = create(
         return true;
       },
 
-      resetar: () => set(ESTADO_INICIAL),
+      resetar: () =>
+        set({
+          ...ESTADO_INICIAL,
+          preferencias: { ...PREFERENCIAS_PADRAO },
+        }),
     }),
     {
       name: CHAVE_SAVE,
@@ -388,6 +418,8 @@ export const useGame = create(
       // v7 (Aventura 01): + descobertas.objetos, worldFlags e recompensas.
       // Só o resultado durável entra aqui; painel/etapa da aventura seguem
       // transientes até a implementação explícita do snapshot completo.
+      // v8 (conforto sensorial): + preferencias. O normalizador injeta as
+      // opções novas e recusa tipos estranhos vindos de importações manuais.
       // O NÚMERO mora em save.js (SAVE_VERSION): persist e teto do import
       // andam juntos por construção. O bump continua sendo feito lá.
       version: SAVE_VERSION,
@@ -417,6 +449,7 @@ export const useGame = create(
         descobertas: s.descobertas,
         worldFlags: s.worldFlags,
         recompensas: s.recompensas,
+        preferencias: s.preferencias,
       }),
     }
   )

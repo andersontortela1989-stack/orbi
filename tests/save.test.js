@@ -103,12 +103,19 @@ test('versão futura é recusada; até SAVE_VERSION é aceita', () => {
   assert.equal(validarSaveImportado({ state: {}, version: 1 }), true);
 });
 
-test('migração v7 injeta objetos, flags e recompensas sem perder progresso antigo', () => {
+test('migração v8 injeta aventura e preferências sem perder progresso antigo', () => {
   const defaults = {
     habilidades: { contagem: { acertos: 0, tentativas: 0 } },
     descobertas: { lugares: [], objetos: [] },
     worldFlags: {},
     recompensas: [],
+    preferencias: {
+      modoTranquilo: false,
+      voz: true,
+      sons: true,
+      animacoes: true,
+      detalhesVisuais: true,
+    },
   };
   const migrado = migrarEstadoPersistido(
     {
@@ -122,7 +129,42 @@ test('migração v7 injeta objetos, flags e recompensas sem perder progresso ant
   assert.deepEqual(migrado.descobertas.objetos, []);
   assert.deepEqual(migrado.worldFlags, {});
   assert.deepEqual(migrado.recompensas, []);
+  assert.deepEqual(migrado.preferencias, defaults.preferencias);
   assert.equal(migrado.habilidades.contagem.acertos, 2);
+});
+
+test('migração preserva booleanos sensoriais e corrige valores inválidos', () => {
+  const defaults = {
+    habilidades: {},
+    descobertas: {},
+    worldFlags: {},
+    recompensas: [],
+    preferencias: {
+      modoTranquilo: false,
+      voz: true,
+      sons: true,
+      animacoes: true,
+      detalhesVisuais: true,
+    },
+  };
+  const migrado = migrarEstadoPersistido(
+    {
+      preferencias: {
+        modoTranquilo: true,
+        voz: false,
+        sons: 'sim',
+        animacoes: false,
+      },
+    },
+    defaults
+  );
+  assert.deepEqual(migrado.preferencias, {
+    modoTranquilo: true,
+    voz: false,
+    sons: true,
+    animacoes: false,
+    detalhesVisuais: true,
+  });
 });
 
 test('import inválido: sem state, version não-numérica, 0, null, não-objeto', () => {

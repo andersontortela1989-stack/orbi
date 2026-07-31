@@ -19,6 +19,7 @@ export const ATIVIDADES = Object.freeze([
   'pergunta',
   'historia',
   'resumo',
+  'configuracoes',
   'pausado',
 ]);
 
@@ -104,6 +105,14 @@ export const ESPEC_ATIVIDADE = Object.freeze({
     prioridade: 70,
     dirigir: false,
     voz: true,
+    hud: 'painel',
+    mundo: false,
+    interrompivel: false,
+  }),
+  configuracoes: Object.freeze({
+    prioridade: 80,
+    dirigir: false,
+    voz: false,
     hud: 'painel',
     mundo: false,
     interrompivel: false,
