@@ -19,26 +19,41 @@ import { useSyncExternalStore } from 'react';
  */
 export const CEUS = {
   dia: {
-    ambient: 0.9,
-    directional: 0.65,
-    fundo: '#DDF1FA', // == PALETA3D.ceu (dia validado, sem mudança)
-    neblina: '#A7DCF0', // == PALETA3D.neblina
+    ambient: 1.0,
+    directional: 0.9,
+    hemisphere: 0.7,
+    fundo: '#9DDDF5',
+    fundoTranquilo: '#C5E5F0',
+    neblina: '#BEE8F7',
+    ceuLuz: '#D9F5FF',
+    soloLuz: '#8876B3',
+    direcionalCor: '#FFF3D4',
     rotulo: '☀️',
     voz: 'olha, é dia de novo!',
   },
   entardecer: {
-    ambient: 0.78,
-    directional: 0.6,
-    fundo: '#F3C99E', // sol baixo, dourado quente
-    neblina: '#E3A874',
+    ambient: 0.88,
+    directional: 0.95,
+    hemisphere: 0.62,
+    fundo: '#8D70DA',
+    fundoTranquilo: '#AAA0CF',
+    neblina: '#C98FCF',
+    ceuLuz: '#BBA9FF',
+    soloLuz: '#5C4B8F',
+    direcionalCor: '#FFD79B',
     rotulo: '🌆',
     voz: 'olha, o entardecer!',
   },
   noite: {
-    ambient: 0.6, // corpos dos prédios ainda visíveis; placas são meshBasic
-    directional: 0.45,
-    fundo: '#3E4E82', // azul profundo, mas bem mais claro que o navy #1C2746
-    neblina: '#2E3C64',
+    ambient: 0.72,
+    directional: 0.62,
+    hemisphere: 0.52,
+    fundo: '#30366F',
+    fundoTranquilo: '#535B82',
+    neblina: '#4B4380',
+    ceuLuz: '#8178DC',
+    soloLuz: '#252B55',
+    direcionalCor: '#CDBEFF',
     rotulo: '🌙',
     voz: 'olha, anoiteceu!',
   },

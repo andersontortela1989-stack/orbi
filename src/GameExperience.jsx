@@ -18,6 +18,7 @@ import { Buzina } from './components/Buzina.jsx';
 import { OrientationGuard } from './components/OrientationGuard.jsx';
 import { AdventureController } from './components/AdventureController.jsx';
 import { SensorySettings } from './components/SensorySettings.jsx';
+import { CAMERA_2_5D } from './visual/world-style.js';
 
 /**
  * Fronteira pesada do aplicativo. Este arquivo concentra Three.js, Rapier e
@@ -57,7 +58,7 @@ export default function GameExperience() {
           orthographic
           camera={{
             zoom: zoomDoViewport(),
-            position: [0, 44, 24],
+            position: [...CAMERA_2_5D.offset],
             near: 0.1,
             far: 500,
           }}

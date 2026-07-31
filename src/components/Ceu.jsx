@@ -1,4 +1,5 @@
 import { CEUS, useCeuId } from '../ceu.js';
+import { useGame } from '../store/useGame.js';
 
 /**
  * CÉU (3D) — aplica o preset de hora do dia ao mundo, num lugar só: cor de
@@ -12,12 +13,22 @@ import { CEUS, useCeuId } from '../ceu.js';
  */
 export function Ceu() {
   const preset = CEUS[useCeuId()];
+  const tranquilo = useGame((s) => s.preferencias.modoTranquilo);
+  const fundo = tranquilo ? preset.fundoTranquilo : preset.fundo;
+  const fator = tranquilo ? 0.86 : 1;
   return (
     <>
-      <color attach="background" args={[preset.fundo]} />
+      <color attach="background" args={[fundo]} />
       <fog attach="fog" args={[preset.neblina, 80, 180]} />
-      <ambientLight intensity={preset.ambient} />
-      <directionalLight position={[30, 50, 20]} intensity={preset.directional} />
+      <ambientLight intensity={preset.ambient * fator} />
+      <hemisphereLight
+        args={[preset.ceuLuz, preset.soloLuz, preset.hemisphere * fator]}
+      />
+      <directionalLight
+        position={[35, 55, 28]}
+        color={preset.direcionalCor}
+        intensity={preset.directional * fator}
+      />
     </>
   );
 }

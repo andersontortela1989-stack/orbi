@@ -1,6 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { Grid } from '@react-three/drei';
-import { PALETA3D } from '../brand/paleta3d.js';
 import { Car } from './Car.jsx';
 import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
@@ -20,10 +18,14 @@ import { AdventureMarker } from './AdventureMarker.jsx';
 import { BaldesAventura } from './BaldesAventura.jsx';
 import { FloresParque } from './FloresParque.jsx';
 import { useGame } from '../store/useGame.js';
+import { perfilVisual } from '../visual/world-style.js';
+import { RoadNetwork } from './RoadNetwork.jsx';
+import { CityLife } from './CityLife.jsx';
 
 export function Game() {
   const carRef = useRef(null);
-  const detalhesVisuais = useGame((s) => s.preferencias.detalhesVisuais);
+  const preferencias = useGame((s) => s.preferencias);
+  const visual = perfilVisual(preferencias);
 
   // DEV-only: teleporte do carro pelo console — `teleporte(x, z)`.
   // Existe pros GATES: fotografar/inspecionar qualquer ponto do mundo com
@@ -52,26 +54,13 @@ export function Game() {
 
       <Ground />
 
-      {/* Grade de referência: torna velocidade e derrapagem perceptíveis.
-          Recolorida pro dia (sutil, não gritante); fica até as faixas de rua
-          da Fatia C herdarem o papel. */}
-      {detalhesVisuais && <Grid
-        position={[0, 0.01, 0]}
-        args={[200, 200]}
-        cellSize={2}
-        cellThickness={0.5}
-        cellColor={PALETA3D.gradeLinha}
-        sectionSize={10}
-        sectionThickness={1}
-        sectionColor={PALETA3D.gradeSecao}
-        fadeDistance={120}
-        fadeStrength={1}
-        infiniteGrid
-      />}
-
       {/* Cidade em bairros temáticos contíguos (Fatia 7) — fonte única em
           src/city/bairros.js; render e sensores do GPS derivam dos mesmos dados */}
       <City />
+
+      {/* A grade de protótipo dá lugar a ruas curvas com borda e sinalização.
+          É uma pele visual: física e sensores continuam no Ground. */}
+      <RoadNetwork tranquilo={visual.tranquilo} />
 
       {/* Posto de gasolina (Fatia 5) — mesma linguagem visual + sensor de zona */}
       <GasStation />
@@ -87,7 +76,11 @@ export function Game() {
       {/* Decoração EXTRA (cidade viva — detalhe urbano terrestre) — camada
           ISOLADA e removível: tudo <mesh>/<Instances> sem colisão, nas bordas
           dos bairros. Desligar = comentar esta linha. (DecoracaoExtra.jsx) */}
-      {detalhesVisuais && <DecoracaoExtra />}
+      {visual.detalhes && <DecoracaoExtra />}
+
+      {/* Luzes, fonte, brilhos e drone: vida ambiental opcional. O Modo
+          Tranquilo remove a camada inteira de forma previsível. */}
+      {visual.detalhes && <CityLife animar={visual.animacoes} />}
 
       {/* Bichos no mundo (frente "Bichos no mundo") — fauna sticker
           estática, sem colisão; posições em city/bichos.js (a missão de

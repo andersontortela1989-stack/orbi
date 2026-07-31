@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { calcularZoomViewport } from '../ui/responsive.js';
+import { CAMERA_2_5D } from '../visual/world-style.js';
 
 // === Enquadramento (zoom da câmera ortográfica da cidade) ===
 // Ortográfica: o "afastar" é o ZOOM (px por unidade de mundo), NÃO a distância.
@@ -40,8 +41,8 @@ export function zoomDoViewport() {
 // vista tática). Numa ortográfica define só o ÂNGULO (inclinação iso) e qual
 // ponto fica centralizado, não o tamanho na tela. Mais altura vs Z = visão mais
 // "de cima" → placas de telhado mais retas e legíveis.
-const OFFSET = new THREE.Vector3(0, 44, 24);
-const LERP_SPEED = 5;
+const OFFSET = new THREE.Vector3(...CAMERA_2_5D.offset);
+const LERP_SPEED = CAMERA_2_5D.lerp;
 
 // Reutilizados a cada frame (evita alocação no hot path).
 const _targetPos = new THREE.Vector3();
@@ -74,7 +75,7 @@ export function CameraFollow({ targetRef }) {
     if (!rb) return;
 
     const t = rb.translation();
-    _targetPos.set(t.x, t.y, t.z);
+    _targetPos.set(t.x, CAMERA_2_5D.alvoY, t.z);
     _desired.copy(_targetPos).add(OFFSET);
 
     // Lerp frame-rate independente

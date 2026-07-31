@@ -32,6 +32,15 @@ export const TINTAS = {
   blueDeep:  '#3997CC',
   blueSoft:  '#BEE5F8',
 
+  violet:     '#7657D6',
+  violetDeep: '#45318F',
+  violetSoft: '#CDBEF5',
+  magenta:    '#C567D7',
+  glow:       '#FFD978',
+  water:      '#55C9ED',
+  road:       '#545D91',
+  roadDeep:   '#2B345F',
+
   sky:       '#DDF1FA', // superfície principal (céu claro)
   skyDeep:   '#A7DCF0',
   skyHi:     '#F0FAFE',
@@ -49,23 +58,23 @@ export const PALETA3D = {
 
   // chão-base = as RUAS (o negativo entre os chãos coloridos dos bairros):
   // asfalto claro azulado, legível como "rua" contra os bairros
-  asfalto:   TINTAS.inkFaint,
+  asfalto:   TINTAS.roadDeep,
 
   // grade de referência de velocidade (fica até as faixas da Fatia C):
   // presente, não gritante
-  gradeLinha: TINTAS.line,
+  gradeLinha: TINTAS.violetSoft,
   gradeSecao: TINTAS.inkSoft,
 
   // lote/calçada sob cada prédio — "recheio de adesivo" branco
-  calcada:   TINTAS.white,
+  calcada:   '#E7E1F4',
 
   // chãos dos bairros — família -soft da marca + paper: distintos entre si,
   // calmos, e mantêm o papel da Fatia 7 (a cor do chão avisa o bairro)
-  chaoCentro:  TINTAS.paper,    // centro quente
-  chaoMercado: TINTAS.sunSoft,  // feira
-  chaoPorto:   TINTAS.blueSoft, // água
-  chaoParque:  TINTAS.grassSoft, // natureza
-  chaoEstadio: TINTAS.coralSoft, // festa/torcida (Frente 6)
+  chaoCentro:  '#B9B4C8',
+  chaoMercado: '#C8AF72',
+  chaoPorto:   '#83B9CE',
+  chaoParque:  '#80B58B',
+  chaoEstadio: '#C89891',
 
   // sticker dos prédios (Fatia B): contorno navy + placa branca de letreiro
   // com texto navy — TODO letreiro tem a mesma cara (previsibilidade TEA)
@@ -131,6 +140,11 @@ export const PALETA3D = {
   copaEscura: TINTAS.grassDeep,
   poste:      TINTAS.white,
   luminaria:  TINTAS.sun,
+  janela:     TINTAS.glow,
+  agua:       TINTAS.water,
+  rua:        TINTAS.road,
+  ruaBorda:   TINTAS.roadDeep,
+  linhaRua:   TINTAS.glow,
   faixa:      TINTAS.white,
 
   // DECORAÇÃO EXTRA (componente isolado DecoracaoExtra.jsx) — "cidade viva":
