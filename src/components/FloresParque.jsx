@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { TINTAS } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
+import { perfilVisual } from '../visual/world-style.js';
 
 const POSICOES = [
   [-21, 66], [-17, 64], [-11, 64], [-7, 67],
@@ -36,6 +37,8 @@ function Flor({ pos, cor }) {
 /** Consequência visual permanente da aventura do parque. */
 export function FloresParque() {
   const florida = useGame((s) => !!s.worldFlags?.parque_florido);
+  const preferencias = useGame((s) => s.preferencias);
+  const visual = perfilVisual(preferencias);
   const grupo = useRef(null);
   const escala = useRef(florida ? 1 : 0.28);
   const anterior = useRef(florida);
@@ -48,6 +51,11 @@ export function FloresParque() {
   useFrame((_, delta) => {
     if (!grupo.current) return;
     const alvo = florida ? 1 : 0.28;
+    if (!visual.animacoes) {
+      escala.current = alvo;
+      grupo.current.scale.setScalar(alvo);
+      return;
+    }
     escala.current += (alvo - escala.current) * Math.min(1, delta * 2.2);
     grupo.current.scale.setScalar(escala.current);
   });
@@ -64,4 +72,3 @@ export function FloresParque() {
     </group>
   );
 }
-

@@ -42,7 +42,7 @@ const ESCALA_CAO = 1.6; // régua visual dos Bichos ("metade de um carro")
 const EMBARQUE_SIZE = [2, 2, 2];
 const EMBARQUE_PADDING = 3;
 
-// Zona de entrega = o prédio do PARQUE (bairros.js: pos/size do PARQUE).
+// Zona de entrega = a âncora da praça do PARQUE (bairros.js: pos/size).
 const PARQUE_POS = [-14, 72];
 const PARQUE_SIZE = [12, 5, 12];
 

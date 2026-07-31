@@ -35,48 +35,6 @@ function PostesMagicos() {
   );
 }
 
-function FonteDoParque({ animar }) {
-  const agua = useRef(null);
-  useFrame((estado) => {
-    if (!animar || !agua.current) return;
-    agua.current.position.y = 1.55 + Math.sin(estado.clock.elapsedTime * 1.4) * 0.12;
-    agua.current.rotation.y += 0.004;
-  });
-
-  return (
-    <group position={[-1, 0, 72]}>
-      <mesh position={[0, 0.32, 0]}>
-        <cylinderGeometry args={[2.35, 2.6, 0.62, 24]} />
-        <meshStandardMaterial color={TINTAS.violetSoft} roughness={0.82} />
-      </mesh>
-      <mesh position={[0, 0.67, 0]}>
-        <cylinderGeometry args={[1.95, 2.05, 0.24, 24]} />
-        <meshStandardMaterial
-          color={PALETA3D.agua}
-          emissive={PALETA3D.agua}
-          emissiveIntensity={0.25}
-          roughness={0.25}
-        />
-      </mesh>
-      <mesh position={[0, 1.05, 0]}>
-        <cylinderGeometry args={[0.24, 0.34, 1.0, 14]} />
-        <meshStandardMaterial color={TINTAS.white} roughness={0.6} />
-      </mesh>
-      <mesh ref={agua} position={[0, 1.55, 0]}>
-        <sphereGeometry args={[0.48, 16, 12]} />
-        <meshStandardMaterial
-          color={TINTAS.skyHi}
-          emissive={PALETA3D.agua}
-          emissiveIntensity={0.48}
-          transparent
-          opacity={0.86}
-          roughness={0.15}
-        />
-      </mesh>
-    </group>
-  );
-}
-
 function DroneAmigo({ animar }) {
   const grupo = useRef(null);
   useFrame((estado) => {
@@ -158,7 +116,6 @@ export function CityLife({ animar = true }) {
   return (
     <>
       <PostesMagicos />
-      <FonteDoParque animar={animar} />
       <DroneAmigo animar={animar} />
       <Brilhos animar={animar} />
     </>

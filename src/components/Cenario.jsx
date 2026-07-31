@@ -36,8 +36,8 @@ import { Arvores } from './Arvores.jsx';
  */
 
 // ---------------------------------------------------------------- árvores
-// Bordas norte/oeste do chão do PARQUE (x -29..29, z 54..94), longe dos
-// lotes de PARQUE/ZOO/VET e da entrada sul (faixa de travessia).
+// Bordas norte/oeste do bairro PARQUE (x -29..29, z 54..94), contornando
+// a praça aberta, ZOO/VET e a entrada sul (faixa de travessia).
 // Frente 5: a árvore que ficava em [-20,58] foi RELOCADA pra [-27,66] —
 // ela colava no CANTEIRO contável (city/canteiro.js) e a criança contaria
 // 5 em vez de 4; folga ≥8 entre o canteiro e qualquer decorativa.

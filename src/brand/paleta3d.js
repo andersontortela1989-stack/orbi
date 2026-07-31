@@ -59,6 +59,8 @@ export const PALETA3D = {
   // chão-base = as RUAS (o negativo entre os chãos coloridos dos bairros):
   // asfalto claro azulado, legível como "rua" contra os bairros
   asfalto:   TINTAS.roadDeep,
+  terreno:   '#554D7E',
+  terrenoCalmo: '#686485',
 
   // grade de referência de velocidade (fica até as faixas da Fatia C):
   // presente, não gritante

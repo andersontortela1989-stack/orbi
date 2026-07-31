@@ -17,8 +17,8 @@
  * árvore decorativa (a vizinha [-20,58] foi relocada pra [-27,66] nesta
  * frente) — a criança nunca fica em dúvida sobre o que contar.
  *
- * POSIÇÃO: sul do lote do PARQUE (lote x -22..-6, z 64..80). Na chegada,
- * o carro está no lote (z ≈ 70) e o canteiro (z 59 < carro) aparece
+ * POSIÇÃO: ao sul da praça aberta do PARQUE. Na chegada, o carro está
+ * próximo ao jardim (z ≈ 70) e o canteiro (z 59 < carro) aparece
  * ACIMA do painel do quiz na tela (+z do mundo = baixo da tela; o painel
  * ancora embaixo). Conferido contra: faixa de travessia do PARQUE
  * (x 4, z 53±2.6), fileira F de moedas (x 12, z 44..52) e decorativas.

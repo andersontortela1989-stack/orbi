@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { Building } from './Building.jsx';
+import { OpenPark } from './OpenPark.jsx';
 import { BAIRROS } from '../city/bairros.js';
 import { TINTAS } from '../brand/paleta3d.js';
 
@@ -71,13 +72,17 @@ export function City() {
           <IlhaBairro bairro={bairro} />
 
           {bairro.predios.map((p) => (
-            <Building
-              key={p.slug}
-              floorPos={p.pos}
-              size={p.size}
-              color={p.cor}
-              label={p.slug}
-            />
+            p.slug === 'PARQUE' ? (
+              <OpenPark key={p.slug} floorPos={p.pos} />
+            ) : (
+              <Building
+                key={p.slug}
+                floorPos={p.pos}
+                size={p.size}
+                color={p.cor}
+                label={p.slug}
+              />
+            )
           ))}
         </group>
       ))}

@@ -21,6 +21,7 @@ import { useGame } from '../store/useGame.js';
 import { perfilVisual } from '../visual/world-style.js';
 import { RoadNetwork } from './RoadNetwork.jsx';
 import { CityLife } from './CityLife.jsx';
+import { Landscape } from './Landscape.jsx';
 
 export function Game() {
   const carRef = useRef(null);
@@ -53,6 +54,10 @@ export function Game() {
           (SOMBRA_SOLIDA em paleta3d.js; planos em Building.jsx/Cenario.jsx). */}
 
       <Ground />
+
+      {/* Continuidade visual além dos lotes: terreno violeta, manchas suaves
+          e rochas decorativas. Fica abaixo de bairros e ruas. */}
+      <Landscape />
 
       {/* Cidade em bairros temáticos contíguos (Fatia 7) — fonte única em
           src/city/bairros.js; render e sensores do GPS derivam dos mesmos dados */}
