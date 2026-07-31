@@ -51,13 +51,20 @@ const tecla = (type, code) =>
   window.dispatchEvent(new KeyboardEvent(type, { code, bubbles: true, cancelable: true }));
 
 export function TouchControls() {
-  const { dirigir } = useActivity();
+  const { dirigir, foco } = useActivity();
 
   const ativas = useRef(new Set()); // codes pressionados agora (pra soltar)
   // Mesma decisão do teclado. Posto/garagem continuam dirigíveis porque a
   // saída da zona é o fechamento atual desses painéis; pergunta/caderninho
   // escondem e soltam os controles.
   const escondido = !TACTIL || !dirigir;
+  // Posto e garagem fecham ao sair da zona, portanto a direção precisa
+  // continuar disponível. Nesses dois painéis mostramos só o essencial:
+  // virar, acelerar e dar ré. Buzina e drift voltam assim que o painel fecha.
+  const modoPainel = foco === 'abastecendo' || foco === 'garagem';
+  const botoesVisiveis = modoPainel
+    ? BOTOES.filter((b) => b.code !== 'KeyB' && b.code !== 'Space')
+    : BOTOES;
 
   // Perdeu a direção → solta as teclas seguradas, senão o carro continua
   // andando atrás do painel.
@@ -117,16 +124,22 @@ export function TouchControls() {
       onPointerDown={(e) => press(e, b.code)}
       onPointerUp={(e) => solta(e, b.code)}
       onPointerCancel={(e) => solta(e, b.code)}
+      onLostPointerCapture={(e) => solta(e, b.code)}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <span className="tc-ico" aria-hidden="true">{b.ico}</span>
-      {b.rotulo}
+      <span className="tc-label">{b.rotulo}</span>
     </button>
   );
 
   return (
     <>
-      <div className="tc-zona tc-esq">{BOTOES.filter((b) => b.zona === 'esq').map(botao)}</div>
-      <div className="tc-zona tc-dir">{BOTOES.filter((b) => b.zona === 'dir').map(botao)}</div>
+      <div className={'tc-zona tc-esq' + (modoPainel ? ' tc-zona--painel' : '')}>
+        {botoesVisiveis.filter((b) => b.zona === 'esq').map(botao)}
+      </div>
+      <div className={'tc-zona tc-dir' + (modoPainel ? ' tc-zona--painel' : '')}>
+        {botoesVisiveis.filter((b) => b.zona === 'dir').map(botao)}
+      </div>
     </>
   );
 }

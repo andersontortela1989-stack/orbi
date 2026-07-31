@@ -23,7 +23,7 @@ function AdventurePanel() {
   if (painel.tipo === 'mensagem') {
     return (
       <div className="adv-overlay">
-        <div className="adv-painel adv-painel--mensagem" role="dialog">
+        <div className="adv-painel adv-painel--mensagem" role="dialog" aria-modal="true">
           <div className="adv-selo">NOVA AVENTURA</div>
           <div className="adv-titulo">{aventura.titulo}</div>
           <p className="adv-texto">{painel.texto}</p>
@@ -46,7 +46,7 @@ function AdventurePanel() {
     const resolvida = !!painel.respostaRevelada;
     return (
       <div className="adv-overlay">
-        <div className="adv-painel" role="dialog" aria-label="Pergunta da aventura">
+        <div className="adv-painel" role="dialog" aria-modal="true" aria-label="Pergunta da aventura">
           <div className="adv-titulo">{painel.texto}</div>
           <div className="adv-opcoes">
             {painel.opcoes.map((opcao) => (
@@ -87,7 +87,7 @@ function AdventurePanel() {
 
   return (
     <div className="adv-overlay adv-overlay--resumo">
-      <div className="adv-painel adv-painel--resumo" role="dialog">
+      <div className="adv-painel adv-painel--resumo" role="dialog" aria-modal="true">
         <div className="adv-selo">AVENTURA CONCLUÍDA</div>
         <div className="adv-titulo">{painel.titulo}</div>
         <ul className="adv-aprendizados">

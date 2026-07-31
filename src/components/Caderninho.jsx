@@ -106,7 +106,7 @@ export function Caderninho() {
 
   return (
     <div className="cad-overlay">
-      <div className="cad-painel" role="dialog" aria-label="Caderninho do Órbi">
+      <div className="cad-painel" role="dialog" aria-modal="true" aria-label="Caderninho do Órbi">
         <div className="cad-topo">
           <div className="cad-titulo">
             O QUE O ÓRBI DESCOBRIU COM {nome || 'VOCÊ'}
