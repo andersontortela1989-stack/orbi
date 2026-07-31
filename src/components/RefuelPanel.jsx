@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGame } from '../store/useGame.js';
 import { somSucesso, somTique } from '../audio/sons.js';
-import { falar } from '../audio/voz.js';
+import { falarDaAtividade } from '../activity/index.js';
+import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { litrosFaltando, postoAtivo } from '../economia.js';
 
 /**
@@ -38,6 +39,7 @@ export function RefuelPanel() {
   );
   const encherTanque = useGame((s) => s.encherTanque);
   const registrarHabilidade = useGame((s) => s.registrarHabilidade);
+  useRegistrarAtividade('abastecendo', aberto);
 
   const [conta, setConta] = useState(0);
   const [meta, setMeta] = useState(1); // N congelado no momento da abertura
@@ -52,7 +54,9 @@ export function RefuelPanel() {
       const n = litrosFaltando(useGame.getState().combustivel);
       setMeta(n);
       concluido.current = false;
-      falar(`Me ajuda a contar? Faltam ${n}!`, { interrupt: true });
+      falarDaAtividade('abastecendo', `Me ajuda a contar? Faltam ${n}!`, {
+        interrupt: true,
+      });
     }
   }, [aberto]);
 
@@ -69,7 +73,11 @@ export function RefuelPanel() {
       encherTanque();
       registrarHabilidade('contagem', true);
       somSucesso();
-      falar('Conseguimos! Tanque cheio! Você conta muito bem!', { interrupt: true });
+      falarDaAtividade(
+        'abastecendo',
+        'Conseguimos! Tanque cheio! Você conta muito bem!',
+        { interrupt: true }
+      );
     } else {
       somTique();
     }

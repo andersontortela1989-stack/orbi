@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
-import { falar, nomeParaVoz } from '../audio/voz.js';
+import { nomeParaVoz } from '../audio/voz.js';
+import { falarDaAtividade } from '../activity/index.js';
+import { useActivity, useRegistrarAtividade } from '../activity/useActivity.js';
 import { somSucesso } from '../audio/sons.js';
 import {
   frasesDaMissao,
@@ -39,6 +41,11 @@ export function MissionController() {
   const destino = useGame((s) => s.missao?.destino);
   const animal = useGame((s) => s.missao?.animal);
   const concluida = useGame((s) => s.missao?.concluida);
+  const tipo = useGame((s) => s.missao?.tipo);
+  const missaoReconhecida =
+    tipo === 'gps' || tipo === 'ciencias' || tipo === 'busca';
+  useRegistrarAtividade('em_missao', missaoReconhecida);
+  const { foco } = useActivity();
 
   const ultimoNarrado    = useRef(null);
   const ultimoConcluido  = useRef(false);
@@ -67,8 +74,9 @@ export function MissionController() {
         const frases = frasesDaMissao(m);
         const chave = chaveDaMissao(m);
         if (frases && !m.concluida && ultimoNarrado.current !== chave) {
-          falar(frases.pedido);
-          ultimoNarrado.current = chave;
+          if (falarDaAtividade('em_missao', frases.pedido)) {
+            ultimoNarrado.current = chave;
+          }
         }
       }, PRIMEIRA_NARRACAO_MS);
     };
@@ -90,12 +98,13 @@ export function MissionController() {
       const m = useGame.getState().missao;
       const frases = frasesDaMissao(m);
       if (frases && chaveDaMissao(m) === chave && !m.concluida) {
-        falar(frases.pedido);
-        ultimoNarrado.current = chave;
+        if (falarDaAtividade('em_missao', frases.pedido)) {
+          ultimoNarrado.current = chave;
+        }
       }
     }, NOVA_MISSAO_NARRACAO_MS);
     return () => clearTimeout(id);
-  }, [destino, animal, concluida]);
+  }, [destino, animal, concluida, foco]);
 
   // 3b) RE-DICA da BUSCA (Frente 5) — se a busca segue aberta após 45s,
   // a voz repete a MESMA pista UMA única vez (previsível, sem escalada;
@@ -103,17 +112,17 @@ export function MissionController() {
   // re-dica, silêncio — a missão espera o tempo que precisar. O timer
   // limpa sozinho na conclusão/troca (deps + cleanup).
   useEffect(() => {
-    if (concluida || !destino) return;
+    if (concluida || !destino || foco !== 'em_missao') return;
     if (useGame.getState().missao?.tipo !== 'busca') return;
     const id = setTimeout(() => {
       const m = useGame.getState().missao;
       const frases = frasesDaMissao(m);
       if (m?.tipo === 'busca' && m.destino === destino && !m.concluida && frases) {
-        falar(frases.pedido);
+        falarDaAtividade('em_missao', frases.pedido);
       }
     }, REDICA_BUSCA_MS);
     return () => clearTimeout(id);
-  }, [destino, concluida]);
+  }, [destino, concluida, foco]);
 
   // 4) CONCLUÍDA — som + voz + agenda nova missão.
   useEffect(() => {
@@ -129,7 +138,7 @@ export function MissionController() {
         if (nome && chegadas.current % CHEGADAS_POR_ESPECIAL === 0) {
           frase += ` Você guia muito bem, ${nomeParaVoz(nome)}!`;
         }
-        falar(frase, { interrupt: true });
+        falarDaAtividade('em_missao', frase, { interrupt: true });
       }
       clearTimeout(proximaMissaoTO.current);
       proximaMissaoTO.current = setTimeout(() => {

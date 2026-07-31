@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
 import { somSucesso } from '../audio/sons.js';
-import { falar } from '../audio/voz.js';
+import { falarDaAtividade } from '../activity/index.js';
+import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { CORES_CARRO, COR_POR_ID } from '../city/garagem.js';
 
 /**
@@ -32,6 +33,7 @@ export function GaragemPanel() {
   const corCarro = useGame((s) => s.corCarro);
   const coresCompradas = useGame((s) => s.coresCompradas);
   const corPreview = useGame((s) => s.corPreview);
+  useRegistrarAtividade('garagem', aberto);
 
   // Guard de "sem repetição" (ajuste da frente): re-clicar a MESMA swatch
   // já em preview não re-fala — uma fala por clique novo.
@@ -42,9 +44,11 @@ export function GaragemPanel() {
   useEffect(() => {
     if (aberto) {
       ultimaFala.current = null;
-      falar('Uau, uma garagem! Aqui pinta o carro! Qual cor você quer?', {
-        interrupt: true,
-      });
+      falarDaAtividade(
+        'garagem',
+        'Uau, uma garagem! Aqui pinta o carro! Qual cor você quer?',
+        { interrupt: true }
+      );
     }
   }, [aberto]);
 
@@ -64,7 +68,9 @@ export function GaragemPanel() {
       s.comprarCor(cor.id);
       s.setCorPreview(null);
       ultimaFala.current = null;
-      if (trocou) falar(`Carro ${cor.nome}!`, { interrupt: true });
+      if (trocou) {
+        falarDaAtividade('garagem', `Carro ${cor.nome}!`, { interrupt: true });
+      }
       return;
     }
 
@@ -75,14 +81,17 @@ export function GaragemPanel() {
     ultimaFala.current = cor.id;
 
     if (s.moedas >= cor.preco) {
-      falar(`Carro ${cor.nome}! Gostou? São ${cor.preco} moedinhas!`, {
-        interrupt: true,
-      });
+      falarDaAtividade(
+        'garagem',
+        `Carro ${cor.nome}! Gostou? São ${cor.preco} moedinhas!`,
+        { interrupt: true }
+      );
     } else {
       // Micro-pedagogia: subtração contextualizada, tom curioso, zero
       // negação — "ainda não dá" vira plano ("vamos buscar?").
       const faltam = cor.preco - s.moedas;
-      falar(
+      falarDaAtividade(
+        'garagem',
         `Essa custa ${cor.preco}! Faltam ${faltam} moedinhas... vamos buscar?`,
         { interrupt: true }
       );
@@ -97,7 +106,9 @@ export function GaragemPanel() {
       s.setCorPreview(null);
       ultimaFala.current = null;
       somSucesso();
-      falar(`Uau! Carro ${cor.nome}! Ficou lindo!`, { interrupt: true });
+      falarDaAtividade('garagem', `Uau! Carro ${cor.nome}! Ficou lindo!`, {
+        interrupt: true,
+      });
     }
     // false (insuficiente) não acontece por aqui: o botão PINTAR só
     // renderiza quando dá — e se desse, seria no-op silencioso mesmo.

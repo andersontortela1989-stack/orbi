@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useGame } from '../store/useGame.js';
-import { falar, pararFala } from '../audio/voz.js';
+import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
+import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { postoAtivo } from '../economia.js';
 import {
   CATEGORIAS_CADERNINHO,
@@ -36,7 +37,7 @@ import { Bandeira } from './Bandeira.jsx';
  *  fala = conteúdo, não transação — repetição é conforto (TEA); o
  *  interrupt resolve a rajada real (cancela, nunca sobrepõe). Mistério
  *  fala UMA linha curiosa fixa, sem contar nem apontar o que falta.
- *  Fechar corta a fala (pararFala no fechar()).
+ *  Fechar libera o foco e corta a fala imediatamente.
  *
  *  Com o caderninho aberto o input de direção não move o carro (ver
  *  useKeyboard) — previsibilidade > física viva sob overlay.
@@ -45,6 +46,7 @@ export function Caderninho() {
   const aberto = useGame((s) => s.caderninhoAberto);
   const descobertas = useGame((s) => s.descobertas);
   const nome = useGame((s) => s.nome);
+  useRegistrarAtividade('caderninho', aberto);
 
   // Botão suprimido enquanto outro painel está aberto (uma coisa por vez):
   // quiz, posto e garagem.
@@ -58,7 +60,8 @@ export function Caderninho() {
     if (!aberto) return;
     const d = useGame.getState().descobertas;
     const temAlgo = Object.values(d ?? {}).some((lista) => lista.length > 0);
-    falar(
+    falarDaAtividade(
+      'caderninho',
       temAlgo
         ? 'Olha tudo que eu descobri com você!'
         : 'Ainda não anotei nada... me mostra teu mundo?',
@@ -77,7 +80,7 @@ export function Caderninho() {
   }, [aberto]);
 
   const fechar = () => {
-    pararFala(); // fechou = a fala do caderninho também encerra
+    coordenadorAtividade.liberar('caderninho');
     useGame.getState().fecharCaderninho();
   };
 
@@ -143,7 +146,9 @@ export function Caderninho() {
                       tabIndex={-1}
                       onClick={(e) => {
                         const fala = falaDescoberta(cat.id, id);
-                        if (fala) falar(fala, { interrupt: true });
+                        if (fala) {
+                          falarDaAtividade('caderninho', fala, { interrupt: true });
+                        }
                         e.currentTarget.blur();
                       }}
                     >
@@ -178,9 +183,11 @@ export function Caderninho() {
                     tabIndex={-1}
                     aria-label="ainda não descoberto"
                     onClick={(e) => {
-                      falar('Hmm, esse eu ainda não descobri... me mostra?', {
-                        interrupt: true,
-                      });
+                      falarDaAtividade(
+                        'caderninho',
+                        'Hmm, esse eu ainda não descobri... me mostra?',
+                        { interrupt: true }
+                      );
                       e.currentTarget.blur();
                     }}
                   >

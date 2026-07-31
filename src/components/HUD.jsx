@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import { useGame } from '../store/useGame.js';
-import { useCarona } from '../store/useCarona.js';
 import { CEUS, useCeuId, ciclarCeu } from '../ceu.js';
-import { falar } from '../audio/voz.js';
+import { falarNoFoco } from '../activity/index.js';
+import { useActivity } from '../activity/useActivity.js';
 import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
 import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
@@ -32,6 +32,7 @@ export function HUD() {
   const combustivel = useGame((s) => s.combustivel);
   const missao = useGame((s) => s.missao);
   const pct = Math.max(0, Math.min(100, combustivel));
+  const atividade = useActivity();
 
   // Estados da economia (Fatia 5)
   // `abastecendo` (painel aberto) vem do MESMO seletor que o RefuelPanel usa —
@@ -46,10 +47,6 @@ export function HUD() {
   // compete com ela.
   const chegadaViva = useGame((s) => s.chegadaViva);
 
-  // Carona (store próprio): a bordo, a pílula vira "🐶 PARQUE?" e as missões
-  // normais somem do HUD — uma instrução por vez (régua TEA).
-  const caronaBordo = useCarona((s) => s.aBordo);
-
   const temMissao =
     (missao?.tipo === 'gps' ||
       missao?.tipo === 'ciencias' ||
@@ -61,13 +58,18 @@ export function HUD() {
     !abastecendo &&
     !vazio &&
     !chegadaViva &&
-    !caronaBordo;
+    atividade.hud === 'missao';
   const missaoAcabou =
-    temMissao && missao.concluida && !abastecendo && !chegadaViva && !caronaBordo;
+    temMissao &&
+    missao.concluida &&
+    !abastecendo &&
+    !chegadaViva &&
+    atividade.hud === 'missao';
 
   // Pílula da carona — prioridade abaixo do aviso de combustível (segurança
   // primeiro), acima das missões (que já somem a bordo).
-  const caronaAtiva = caronaBordo && !abastecendo && !vazio && !chegadaViva;
+  const caronaAtiva =
+    atividade.hud === 'carona' && !abastecendo && !vazio && !chegadaViva;
 
   // Botão de céu (dia/entardecer/noite) — a criança comanda. Voz curiosa no
   // PRIMEIRO uso de cada preset na sessão (parcimônia; não repete a cada toque).
@@ -77,7 +79,7 @@ export function HUD() {
     const novo = ciclarCeu();
     if (!ceusFalados.current.has(novo)) {
       ceusFalados.current.add(novo);
-      falar(CEUS[novo].voz);
+      falarNoFoco(CEUS[novo].voz);
     }
   };
 
@@ -95,7 +97,7 @@ export function HUD() {
   return (
     <>
       {/* Prioridade 1: tanque vazio fora do posto — aviso calmo pra ir ao posto */}
-      {vazio && !abastecendo && (
+      {vazio && !abastecendo && atividade.hud !== 'painel' && (
         <div className="mission-banner mission-banner--aviso" role="status">
           ⛽ ACABOU! ME LEVA NO POSTO?
         </div>
@@ -121,18 +123,20 @@ export function HUD() {
 
       {/* Botão de céu — a criança comanda dia/entardecer/noite (troca seca no
           toque). tabIndex=-1 + blur(): ESPAÇO (freio) não reativa o botão. */}
-      <button
-        type="button"
-        className="ceu-btn"
-        tabIndex={-1}
-        aria-label="mudar o céu"
-        onClick={(e) => {
-          trocarCeu();
-          e.currentTarget.blur();
-        }}
-      >
-        {CEUS[ceuId].rotulo}
-      </button>
+      {atividade.hud !== 'painel' && atividade.foco !== 'pausado' && (
+        <button
+          type="button"
+          className="ceu-btn"
+          tabIndex={-1}
+          aria-label="mudar o céu"
+          onClick={(e) => {
+            trocarCeu();
+            e.currentTarget.blur();
+          }}
+        >
+          {CEUS[ceuId].rotulo}
+        </button>
+      )}
 
       <div className="hud" aria-live="polite">
         <div className="hud-row">

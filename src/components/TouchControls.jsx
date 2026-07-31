@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useGame } from '../store/useGame.js';
-import { postoAtivo } from '../economia.js';
+import { useActivity } from '../activity/useActivity.js';
 
 /**
  * CONTROLES DE TOQUE — Frente 0 (lançamento celular/tablet), LAYOUT B.
@@ -9,20 +8,18 @@ import { postoAtivo } from '../economia.js';
  * ACELERA ▲ (direita). Alvos grandes, FIXOS, visíveis — régua TEA.
  *
  * OPÇÃO 1 — o toque DISPARA o MESMO evento de teclado que o `useKeyboard` já
- * escuta (keydown/keyup na window). Então herda TODO o guard-rail dele de
- * graça (zero-no-caderninho, zero-no-blur, sincronia dos 2 instances) e
- * `useKeyboard`/`Car`/`FuelController` ficam INTOCADOS — risco zero no núcleo.
+ * escuta (keydown/keyup na window). Assim teclado e toque passam pela mesma
+ * política central de atividade, inclusive zero-no-painel e zero-no-blur.
  *
  * DEDO-ARRASTA (decisão TEA): pointerdown CAPTURA o ponteiro — o dedo escorregar
  * 2px numa curva NÃO solta (tolerante, sem twitch); solta só ao levantar
  * (pointerup) ou cancelar (pointercancel). Rede contra "preso andando":
  * blur/aba-escondida e o efeito de esconder soltam TUDO.
  *
- * SOME COM QUALQUER PAINEL (decisão (b)): no toque o dedo está na MESMA tela do
- * painel — painel aberto = foco no painel, sem dirigir sem querer numa carta.
- * Ao esconder, solta as teclas seguradas (senão o carro vaza dirigindo atrás do
- * painel). Diverge do teclado de propósito (no desktop dirigir no quiz é
- * inofensivo; no celular seria confusão — adaptação consciente ao dispositivo).
+ * O coordenador decide quando esconder: pergunta e caderninho bloqueiam a
+ * direção; posto e garagem mantêm os controles porque hoje fecham quando o
+ * carro sai da zona. Ao esconder, solta tudo para o carro não seguir andando
+ * atrás do painel.
  *
  * SÓ NO TÁCTIL: desktop (mouse) não renderiza nada — a tela do Heitor fica limpa.
  */
@@ -54,17 +51,16 @@ const tecla = (type, code) =>
   window.dispatchEvent(new KeyboardEvent(type, { code, bubbles: true, cancelable: true }));
 
 export function TouchControls() {
-  // some com QUALQUER painel aberto (decisão (b))
-  const quiz = useGame((s) => !!s.chegadaViva);
-  const caderninho = useGame((s) => s.caderninhoAberto);
-  const posto = useGame((s) => postoAtivo(s.combustivel, s.postoPerto));
-  const garagem = useGame((s) => s.garagemPerto);
+  const { dirigir } = useActivity();
 
   const ativas = useRef(new Set()); // codes pressionados agora (pra soltar)
-  const escondido = !TACTIL || quiz || caderninho || posto || garagem;
+  // Mesma decisão do teclado. Posto/garagem continuam dirigíveis porque a
+  // saída da zona é o fechamento atual desses painéis; pergunta/caderninho
+  // escondem e soltam os controles.
+  const escondido = !TACTIL || !dirigir;
 
-  // Esconder (painel abriu) → solta as teclas seguradas, senão o carro continua
-  // dirigindo atrás do painel (o leak).
+  // Perdeu a direção → solta as teclas seguradas, senão o carro continua
+  // andando atrás do painel.
   useEffect(() => {
     if (escondido && ativas.current.size) {
       ativas.current.forEach((code) => tecla('keyup', code));

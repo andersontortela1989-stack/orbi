@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../store/useGame.js';
 import { somSucesso } from '../audio/sons.js';
-import { falar } from '../audio/voz.js';
+import { falarDaAtividade } from '../activity/index.js';
+import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { Bandeira } from './Bandeira.jsx';
 
 // Tempo entre resolver (acerto ou revelação) e fechar o painel — a frase
@@ -37,6 +38,7 @@ const MAX_TENTATIVAS = 2;
 export function ChegadaVivaPanel() {
   const pergunta = useGame((s) => s.chegadaViva);
   const registrarHabilidade = useGame((s) => s.registrarHabilidade);
+  useRegistrarAtividade('pergunta', !!pergunta);
 
   const [tentativas, setTentativas] = useState(0);
   const [acertou, setAcertou] = useState(false);
@@ -51,7 +53,7 @@ export function ChegadaVivaPanel() {
       setAcertou(false);
       setRevelada(false);
       resolvido.current = false;
-      falar(pergunta.frasePergunta);
+      falarDaAtividade('pergunta', pergunta.frasePergunta);
     }
     return () => clearTimeout(fecharTO.current);
   }, [pergunta]);
@@ -84,7 +86,7 @@ export function ChegadaVivaPanel() {
       registrarHabilidade(pergunta.habilidade, true);
       registrarDescoberta();
       somSucesso();
-      falar(pergunta.fraseAcerto, { interrupt: true });
+      falarDaAtividade('pergunta', pergunta.fraseAcerto, { interrupt: true });
       finalizar();
       return;
     }
@@ -101,10 +103,10 @@ export function ChegadaVivaPanel() {
       // descoberto: o Órbi ensinou de qualquer jeito — o adesivo entra no
       // Caderninho sem rastro de falha.
       registrarDescoberta();
-      falar(pergunta.fraseRevela, { interrupt: true });
+      falarDaAtividade('pergunta', pergunta.fraseRevela, { interrupt: true });
       finalizar();
     } else {
-      falar(pergunta.fraseTenteDeNovo, { interrupt: true });
+      falarDaAtividade('pergunta', pergunta.fraseTenteDeNovo, { interrupt: true });
     }
   };
 

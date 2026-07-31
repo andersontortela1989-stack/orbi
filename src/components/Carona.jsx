@@ -1,11 +1,12 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Cachorro } from './Bichos.jsx';
 import { ZoneSensor } from './ZoneSensor.jsx';
 import { useCarona } from '../store/useCarona.js';
 import { useGame } from '../store/useGame.js';
-import { falar } from '../audio/voz.js';
+import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
+import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { somSucesso } from '../audio/sons.js';
 
 /**
@@ -49,7 +50,15 @@ const RECOMPENSA = 3; // +moedas na entrega (decisão do gate)
 
 export function Carona({ targetRef }) {
   const aBordo = useCarona((s) => s.aBordo);
+  useRegistrarAtividade('carona', aBordo);
   const passageiroRef = useRef(null);
+  const entregandoRef = useRef(false);
+  const entregaTO = useRef(null);
+
+  useEffect(
+    () => () => clearTimeout(entregaTO.current),
+    []
+  );
 
   // Passageiro segue o carro — só LÊ a posição (como Moedas/BlobShadow), fora
   // da cadeia load-bearing Car→FuelController. Zero física, zero colisão.
@@ -64,18 +73,40 @@ export function Carona({ targetRef }) {
 
   const embarcar = () => {
     if (useCarona.getState().aBordo) return;
+    // O sensor é evento imperativo: toma o foco antes da fala, sem depender
+    // do useEffect do próximo render. Foco negado = carona espera, sem agir.
+    if (!coordenadorAtividade.pedirFoco('carona')) return;
     useCarona.getState().embarcar();
-    falar('o cachorrinho quer ir ao parque! vamos levar?', { interrupt: true });
+    falarDaAtividade('carona', 'o cachorrinho quer ir ao parque! vamos levar?', {
+      interrupt: true,
+    });
   };
 
   const entregar = () => {
-    if (!useCarona.getState().aBordo) return;
-    useCarona.getState().desembarcar();
+    if (!useCarona.getState().aBordo || entregandoRef.current) return;
+    entregandoRef.current = true;
     somSucesso();
     useGame.getState().ganharMoeda(RECOMPENSA);
-    falar('obrigado por me levar! você é um ótimo motorista!', {
-      interrupt: true,
-    });
+    // Mantém a carona no foco até a frase terminar; liberar antes cortaria a
+    // própria comemoração, pois toda troca de foco agora cala a voz anterior.
+    const concluir = () => {
+      if (!entregandoRef.current) return;
+      clearTimeout(entregaTO.current);
+      entregaTO.current = null;
+      entregandoRef.current = false;
+      useCarona.getState().desembarcar();
+    };
+    const falou = falarDaAtividade(
+      'carona',
+      'obrigado por me levar! você é um ótimo motorista!',
+      {
+        interrupt: true,
+        onEnd: concluir,
+      }
+    );
+    // Alguns navegadores não disparam `end` ao cancelar a síntese. O fallback
+    // garante que pausa/pergunta simultânea nunca deixe o passageiro travado.
+    entregaTO.current = setTimeout(concluir, falou ? 6000 : 900);
   };
 
   return (
