@@ -51,20 +51,59 @@ export default function App() {
       !window.matchMedia ||
       window.matchMedia('(orientation: landscape)').matches
   );
+  // ESPERAR O LAYOUT ASSENTAR — não basta a orientação virar. No celular REAL a
+  // rotação é animada, e o evento de orientação chega NO MEIO dela, com o
+  // viewport ainda em trânsito. Montar nesse instante congela um enquadramento
+  // torto: o mundo abre vazio (só o céu) e NÃO se recupera sozinho — o R3F até
+  // corrige o frustum a cada resize, mas o zoom do CameraFollow é calculado uma
+  // única vez no mount e reafirmado a cada frame, então nasce errado e fica.
+  // Só um F5 em paisagem conserta — foi exatamente o que o gate no aparelho do
+  // Heitor mostrou (2026-08-05).
+  //
+  // Solução: o matchMedia continua sendo o SE; isto é só o QUANDO. Libera
+  // quando o tamanho da tela ficar IGUAL em dois frames seguidos. É condição,
+  // não temporizador — nada de chutar "300ms" e torcer. Enquanto o tamanho
+  // mudar, a checagem se reagenda sozinha, então não existe impasse: qualquer
+  // tela que pare de mudar libera, mesmo reportando dimensões estranhas.
   useEffect(() => {
     if (canvasLiberado) return; // trava: já liberou, nada mais a observar
     if (typeof window === 'undefined' || !window.matchMedia) return;
     const mq = window.matchMedia('(orientation: landscape)');
-    const upd = () => {
-      if (mq.matches) setCanvasLiberado(true); // só liga; nunca desliga
+
+    let rafA = 0;
+    let rafB = 0;
+    const cancelar = () => {
+      cancelAnimationFrame(rafA);
+      cancelAnimationFrame(rafB);
     };
-    upd();
+    const tentar = () => {
+      cancelar();
+      if (!mq.matches) return; // retrato: nem começa (zero loop em espera)
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      rafA = requestAnimationFrame(() => {
+        rafB = requestAnimationFrame(() => {
+          if (!mq.matches) return;
+          if (window.innerWidth === w && window.innerHeight === h) {
+            setCanvasLiberado(true); // assentou — só liga; nunca desliga
+          } else {
+            tentar(); // ainda mudando: recomeça do tamanho novo
+          }
+        });
+      });
+    };
+    tentar();
     // addEventListener é o moderno; addListener é o fallback (Safari antigo).
-    if (mq.addEventListener) mq.addEventListener('change', upd);
-    else mq.addListener(upd);
+    if (mq.addEventListener) mq.addEventListener('change', tentar);
+    else mq.addListener(tentar);
+    window.addEventListener('resize', tentar);
+    window.addEventListener('orientationchange', tentar);
     return () => {
-      if (mq.removeEventListener) mq.removeEventListener('change', upd);
-      else mq.removeListener(upd);
+      cancelar();
+      if (mq.removeEventListener) mq.removeEventListener('change', tentar);
+      else mq.removeListener(tentar);
+      window.removeEventListener('resize', tentar);
+      window.removeEventListener('orientationchange', tentar);
     };
   }, [canvasLiberado]);
 
