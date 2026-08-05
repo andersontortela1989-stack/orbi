@@ -1545,8 +1545,12 @@ canvas {
 
 /* ===== Controles de TOQUE (Frente 0 — celular/tablet, layout B) =====
    Renderizados só em dispositivo táctil (TouchControls.jsx). Botões-adesivo
-   GRANDES e FIXOS nos cantos: ◀ ▶ (esq) · DRIFT ✋ + ACELERA ▲ (dir). O toque
-   dispara o MESMO evento do teclado — sem física nova. */
+   GRANDES e FIXOS nos cantos. Conjunto COMPLETO (tablet/telas altas):
+   ◀ ▶ + BUZINA 📣 (esq) · DRIFT ✋ + RÉ ▼ + ACELERA ▲ (dir) — seis.
+   No CELULAR em paisagem ficam só os quatro de DIRIGIR (ver o bloco de tela
+   baixa lá embaixo). O toque dispara o MESMO evento do teclado — sem física
+   nova. Mexeu na lista de BOTOES do TouchControls.jsx? Reconfira as contas
+   de largura aqui: foi somar RÉ e BUZINA sem remedir que quebrou o celular. */
 .tc-zona {
   position: fixed;
   bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
@@ -1560,10 +1564,15 @@ canvas {
 .tc-dir { right: calc(var(--space-3) + env(safe-area-inset-right)); }
 
 .tc-btn {
-  /* alvo grande p/ dedo de criança MESMO no celular-paisagem (floor 84px,
-     muito acima do mínimo 44px); cresce no tablet via vmin. */
-  width: clamp(84px, 22vmin, 128px);
-  height: clamp(84px, 22vmin, 128px);
+  /* Alvo grande p/ dedo de criança, dimensionado pros DOIS extremos.
+     A faixa anterior (84–128px via 22vmin) foi calibrada quando o layout
+     tinha 4 botões; com 6 ela passou a travar no PISO no celular e no TETO
+     no tablet — a fileira comia 63% da largura no celular e 68% no tablet.
+     A faixa atual dá 64px no celular e 96px no tablet: segue muito acima do
+     mínimo de 44px e devolve a tela pro mundo. Valores afinados pelo feel
+     no gate — mexeu aqui, remede nos dois aparelhos. */
+  width: clamp(64px, 16vmin, 96px);
+  height: clamp(64px, 16vmin, 96px);
   border-radius: 50%;
   border: var(--outline-bold) solid var(--ink);
   background: var(--surface-card);
@@ -1607,9 +1616,24 @@ canvas {
    Reduz ~25-30% o card de moedas/combustível, a pílula de missão, o botão do
    caderninho e o mascote — pra não competirem com a pílula nem com os botões de
    toque. Só propriedades intrínsecas (nada de transform): a pílula preserva o
-   translateX(-50%) e o mascote o seu transform de entrada/comemoração. Os botões
-   de TOQUE (.tc-btn) NÃO encolhem — alvo grande é regra (régua TEA). */
+   translateX(-50%) e o mascote o seu transform de entrada/comemoração.
+   Os botões de TOQUE seguem GRANDES (64px, bem acima do mínimo de 44px) —
+   alvo grande continua sendo regra; o que muda no celular é QUANTOS cabem. */
 @media (max-height: 500px) and (orientation: landscape) {
+  /* Celular em paisagem: só os QUATRO de dirigir (◀ ▶ ▼ ▲). DRIFT e BUZINA
+     saem — são diversão sem mecânica dependente de ninguém, e a fileira de
+     seis não cabe sem roubar o mundo da criança. Voltam inteiros no tablet.
+     CSS puro DE PROPÓSITO: o TouchControls.jsx fica intocado, então a captura
+     de ponteiro, o release de teclas e as redes de segurança (blur, aba
+     escondida) continuam exatamente como estão — risco zero no núcleo. */
+  .tc-drift,
+  .tc-buzina { display: none; }
+
+  /* Rótulo e ícone recuados pro círculo de 64px: a PALAVRA continua legível
+     (ela é letramento, não decoração) e não estoura o botão. */
+  .tc-btn { font-size: 12px; letter-spacing: 0; }
+  .tc-btn .tc-ico { font-size: 1.6rem; }
+
   .hud {
     padding: var(--space-3) var(--space-4);
     gap: var(--space-2);
