@@ -5,6 +5,9 @@ o Órbi, um alienzinho que acabou de chegar e não conhece nada da Terra.
 
 **Jogar:** https://orbi-kahe.vercel.app
 
+<img width="1292" height="792" alt="image" src="https://github.com/user-attachments/assets/a8decc91-b924-4bf2-8bd0-1fda0c6def19" />
+
+
 ## O que é
 
 A criança não é testada — ela é quem sabe. O Órbi pergunta o que é um hospital,
