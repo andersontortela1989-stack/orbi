@@ -51,8 +51,8 @@ export function Carona({ targetRef }) {
   const aBordo = useCarona((s) => s.aBordo);
   const passageiroRef = useRef(null);
 
-  // Passageiro segue o carro — só LÊ a posição (como Moedas/BlobShadow), fora
-  // da cadeia load-bearing Car→FuelController. Zero física, zero colisão.
+  // Passageiro segue o carro — só LÊ a posição (como Moedas/BlobShadow).
+  // Zero escrita física, zero colisão, zero participação no controlador do carro.
   useFrame(() => {
     if (!aBordo) return;
     const rb = targetRef.current;

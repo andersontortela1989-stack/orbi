@@ -9,9 +9,9 @@ import { postoAtivo } from '../economia.js';
  * ACELERA ▲ (direita). Alvos grandes, FIXOS, visíveis — régua TEA.
  *
  * OPÇÃO 1 — o toque DISPARA o MESMO evento de teclado que o `useKeyboard` já
- * escuta (keydown/keyup na window). Então herda TODO o guard-rail dele de
- * graça (zero-no-caderninho, zero-no-blur, sincronia dos 2 instances) e
- * `useKeyboard`/`Car`/`FuelController` ficam INTOCADOS — risco zero no núcleo.
+ * escuta (keydown/keyup na window). Então herda os guard-rails dele de graça
+ * (zero-no-caderninho e zero-no-blur). O evento chega a UMA instância de input,
+ * consumida pelo controlador único do carro.
  *
  * DEDO-ARRASTA (decisão TEA): pointerdown CAPTURA o ponteiro — o dedo escorregar
  * 2px numa curva NÃO solta (tolerante, sem twitch); solta só ao levantar

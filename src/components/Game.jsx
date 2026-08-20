@@ -96,37 +96,24 @@ export function Game() {
       {/* Sensores invisíveis de chegada (um por prédio) — Fatia 4 */}
       <MissionSensors />
 
+      {/* Car concentra toda a escrita de movimento e rotação do veículo. */}
       <Car rigidBodyRef={carRef} />
 
-      {/* Combustível (Fatia 5) — DEPOIS do <Car> de propósito: seu useFrame roda
-          após o do carro, então o controle de "tanque vazio" tem a palavra final
-          sobre a velocidade sem precisar tocar na física do Car.jsx.
-
-          ⚠️ ORDEM LOAD-BEARING — NÃO REORDENAR: o R3F roda os useFrame de mesma
-          prioridade na ordem de montagem. <Car> precisa montar ANTES de
-          <FuelController> pra que o controle de reserva/parada do tanque vazio
-          sobrescreva a velocidade que o Car acabou de escrever. Inverter os dois
-          faria o Car ter a palavra final e a desaceleração do vazio sumiria.
-          (Não dá pra usar renderPriority > 0 aqui: isso desliga o render
-          automático do R3F. E passar um flag pro Car violaria "não tocar na
-          física do carro". Então a ordem aqui é o mecanismo — mantenha-a.) */}
+      {/* FuelController apenas observa velocidade, consome combustível e narra.
+          O modo reserva é calculado no Car/stepVehicle; não há mais uma segunda
+          escrita de setLinvel dependente da ordem dos useFrame. */}
       <FuelController targetRef={carRef} />
 
-      {/* Sombra sólida do carro (depois do FuelController de propósito —
-          só LÊ a posição; não entra na cadeia Car→FuelController) */}
+      {/* Sombra sólida do carro: só LÊ a posição. */}
       <BlobShadow targetRef={carRef} />
 
-      {/* Moedas coletáveis (frente "Moedas na rua") — como o BlobShadow,
-          só LÊ a posição do carro: coleta por distância, zero física, fora
-          da cadeia load-bearing Car→FuelController */}
+      {/* Moedas coletáveis: só LÊ a posição do carro. */}
       <Moedas targetRef={carRef} />
 
-      {/* Missão de busca (Frente 5) — detecção por proximidade do bicho
-          procurado; mesmo padrão das moedas (só LÊ a posição do carro) */}
+      {/* Missão de busca: só LÊ a posição do carro. */}
       <BuscaSensor targetRef={carRef} />
 
-      {/* Carona (piloto: 1 passageiro) — o cachorrinho quer ir ao PARQUE.
-          Estado em store próprio (useCarona); só LÊ a posição do carro */}
+      {/* Carona (piloto: 1 passageiro) — o cachorrinho quer ir ao PARQUE. */}
       <Carona targetRef={carRef} />
 
       <CameraFollow targetRef={carRef} />

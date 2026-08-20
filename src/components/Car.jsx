@@ -6,18 +6,7 @@ import { useKeyboard } from '../hooks/useKeyboard.js';
 import { PALETA3D } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
 import { tintaDoCarro } from '../city/garagem.js';
-
-// =====================================================================
-//  PARÂMETROS DE GAME FEEL  —  AJUSTE AQUI, SENTINDO.
-//  Tudo que define "como é dirigir" mora neste bloco.
-// =====================================================================
-const ACEL            = 18;    // força de aceleração (m/s² alvo)
-const V_MAX           = 14;    // velocidade máxima frente (m/s) — ré usa metade
-const GIRO            = 2.4;   // rad/s de rotação em velocidade plena
-const GRIP            = 0.90;  // aderência lateral normal: 1 = sobre trilhos, ~0.85 = drift gostoso
-const ATRITO          = 0.98;  // rolamento ao soltar o acelerador (fração mantida por 1/60s)
-const FREIO_MAO_GRIP  = 0.6;   // grip reduzido com ESPAÇO (handbrake = derrapa mais)
-// =====================================================================
+import { stepVehicle, VEHICLE_TUNING } from '../game/vehiclePhysics.js';
 
 // Dimensões do carro (visual + colisão)
 const CAR_W = 1.8;
@@ -46,56 +35,22 @@ export function Car({ rigidBodyRef }) {
     const rb = ref.current;
     if (!rb) return;
 
-    // Clamp do dt para sobreviver a freezes / tab pausada
-    const dt = Math.min(deltaRaw, 1 / 30);
+    // stepVehicle faz o clamp de dt e toda a matemática fora do React.
+    // Car é o ÚNICO componente que escreve movimento no RigidBody.
+    const modo = useGame.getState().combustivel > 0 ? 'normal' : 'reserve';
+    const proximo = stepVehicle({
+      velocity: rb.linvel(),
+      heading: heading.current,
+      input: input.current,
+      dt: deltaRaw,
+      mode: modo,
+      tuning: VEHICLE_TUNING,
+    });
 
-    const v = rb.linvel();
-    const h = heading.current;
+    heading.current = proximo.heading;
+    rb.setLinvel(proximo.velocity, true);
 
-    // Eixos locais do carro no plano XZ
-    const fwdX   = Math.sin(h);
-    const fwdZ   = Math.cos(h);
-    const rightX = fwdZ;
-    const rightZ = -fwdX;
-
-    // Decompõe velocidade em componente "para frente" e "lateral"
-    let vF = v.x * fwdX   + v.z * fwdZ;
-    let vL = v.x * rightX + v.z * rightZ;
-
-    // Aceleração / ré
-    if (input.current.up)   vF += ACEL * dt;
-    if (input.current.down) vF -= ACEL * dt;
-
-    // Sem input longitudinal → rolamento (frame-rate independente)
-    if (!input.current.up && !input.current.down) {
-      vF *= Math.pow(ATRITO, dt * 60);
-    }
-
-    // Limites de velocidade (ré mais lenta que frente)
-    vF = Math.max(-V_MAX * 0.5, Math.min(V_MAX, vF));
-
-    // Direção: só vira em movimento; inverte com ré
-    const fator = Math.min(1, Math.abs(vF) / V_MAX);
-    const sgn = Math.sign(vF) || 1;
-    if (input.current.left)  heading.current += GIRO * dt * fator * sgn;
-    if (input.current.right) heading.current -= GIRO * dt * fator * sgn;
-
-    // Grip lateral — A DERRAPAGEM MORA AQUI.
-    // Espaço pressionado = handbrake = grip menor = drift maior.
-    const grip = input.current.space ? FREIO_MAO_GRIP : GRIP;
-    vL *= Math.pow(grip, dt * 60);
-
-    // Recompõe a velocidade (preserva Y para a gravidade continuar agindo)
-    rb.setLinvel(
-      {
-        x: fwdX * vF + rightX * vL,
-        y: v.y,
-        z: fwdZ * vF + rightZ * vL,
-      },
-      true
-    );
-
-    // Rotação aplicada como quaternion apenas no eixo Y
+    // Rotação aplicada como quaternion apenas no eixo Y.
     _q.setFromAxisAngle(_yAxis, heading.current);
     rb.setRotation(_q, true);
   });
