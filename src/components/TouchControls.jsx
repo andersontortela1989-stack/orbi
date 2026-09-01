@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
 import { postoAtivo } from '../economia.js';
+import { CONTROLES_TOUCH_BUILD_01 } from '../ui/build01.js';
 
 /**
  * CONTROLES DE TOQUE — Frente 0 (lançamento celular/tablet), LAYOUT B.
  *
- * Layout B (validado no mockup, no celular real): ◀ ▶ (esquerda) + DRIFT ✋ e
- * ACELERA ▲ (direita). Alvos grandes, FIXOS, visíveis — régua TEA.
+ * Golden v1: ◀ ▶ adjacentes à esquerda + RÉ pequena e IR dominante à direita.
+ * Alvos grandes, FIXOS, visíveis — régua TEA.
  *
  * OPÇÃO 1 — o toque DISPARA o MESMO evento de teclado que o `useKeyboard` já
  * escuta (keydown/keyup na window). Então herda TODO o guard-rail dele de
@@ -34,21 +35,6 @@ const TACTIL =
     (typeof window !== 'undefined' &&
       window.matchMedia &&
       window.matchMedia('(pointer: coarse)').matches));
-
-// Botão → `code` de tecla (o mesmo que o teclado manda).
-const BOTOES = [
-  { code: 'ArrowLeft',  zona: 'esq', classe: 'tc-steer',  ico: '◀', rotulo: 'VIRA' },
-  { code: 'ArrowRight', zona: 'esq', classe: 'tc-steer',  ico: '▶', rotulo: 'VIRA' },
-  // Buzina no cluster ESQUERDO (o direito já tem 3): dispara 'KeyB', a mesma
-  // tecla do desktop — o <Buzina> ouve e toca o som. Sem física, sem save.
-  { code: 'KeyB',       zona: 'esq', classe: 'tc-buzina', ico: '📣', rotulo: 'BUZINA' },
-  { code: 'Space',      zona: 'dir', classe: 'tc-drift', ico: '✋', rotulo: 'DRIFT' },
-  // RÉ entre DRIFT e ACELERA: ACELERA fica na borda direita (posição validada
-  // do Layout B) e a ré nasce ao lado dela. Dispara ArrowDown — a mesma tecla
-  // de ré do teclado (Car.jsx: input.down → recuo, desencosta da parede).
-  { code: 'ArrowDown',  zona: 'dir', classe: 'tc-re',    ico: '▼', rotulo: 'RÉ' },
-  { code: 'ArrowUp',    zona: 'dir', classe: 'tc-go',    ico: '▲', rotulo: 'ACELERA' },
-];
 
 const tecla = (type, code) =>
   window.dispatchEvent(new KeyboardEvent(type, { code, bubbles: true, cancelable: true }));
@@ -116,21 +102,25 @@ export function TouchControls() {
       key={b.code}
       type="button"
       tabIndex={-1}
-      aria-label={b.rotulo.toLowerCase()}
+      aria-label={b.ariaLabel}
       className={`tc-btn ${b.classe}`}
       onPointerDown={(e) => press(e, b.code)}
       onPointerUp={(e) => solta(e, b.code)}
       onPointerCancel={(e) => solta(e, b.code)}
     >
       <span className="tc-ico" aria-hidden="true">{b.ico}</span>
-      {b.rotulo}
+      {b.rotulo && <span className="tc-label">{b.rotulo}</span>}
     </button>
   );
 
   return (
     <>
-      <div className="tc-zona tc-esq">{BOTOES.filter((b) => b.zona === 'esq').map(botao)}</div>
-      <div className="tc-zona tc-dir">{BOTOES.filter((b) => b.zona === 'dir').map(botao)}</div>
+      <div className="tc-zona tc-esq">
+        {CONTROLES_TOUCH_BUILD_01.filter((b) => b.zona === 'esq').map(botao)}
+      </div>
+      <div className="tc-zona tc-dir">
+        {CONTROLES_TOUCH_BUILD_01.filter((b) => b.zona === 'dir').map(botao)}
+      </div>
     </>
   );
 }

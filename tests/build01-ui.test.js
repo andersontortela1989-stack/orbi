@@ -1,7 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { deveExigirLandscape, estadoCombustivelHud } from '../src/ui/build01.js';
+import {
+  CONTROLES_TOUCH_BUILD_01,
+  deveExigirLandscape,
+  estadoCombustivelHud,
+} from '../src/ui/build01.js';
 
 test('orientation gate aparece somente durante gameplay em portrait', () => {
   const casos = [
@@ -18,6 +22,20 @@ test('orientation gate aparece somente durante gameplay em portrait', () => {
       `${caso.fase}/${caso.retrato ? 'portrait' : 'landscape'}`
     );
   }
+});
+
+test('controles touch preservam as setas e deixam drift e buzina fora da superfície', () => {
+  assert.deepEqual(
+    CONTROLES_TOUCH_BUILD_01.map(({ code, zona, rotulo }) => ({ code, zona, rotulo })),
+    [
+      { code: 'ArrowLeft', zona: 'esq', rotulo: '' },
+      { code: 'ArrowRight', zona: 'esq', rotulo: '' },
+      { code: 'ArrowDown', zona: 'dir', rotulo: 'RÉ' },
+      { code: 'ArrowUp', zona: 'dir', rotulo: 'IR' },
+    ]
+  );
+  assert.equal(CONTROLES_TOUCH_BUILD_01.some(({ code }) => code === 'Space'), false);
+  assert.equal(CONTROLES_TOUCH_BUILD_01.some(({ code }) => code === 'KeyB'), false);
 });
 
 test('HUD de combustível fica oculto quando saudável e contextual quando baixo', () => {

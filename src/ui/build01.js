@@ -16,3 +16,38 @@ export function estadoCombustivelHud(combustivel, limiarBaixo) {
     percentual,
   };
 }
+
+export const CONTROLES_TOUCH_BUILD_01 = [
+  {
+    code: 'ArrowLeft',
+    zona: 'esq',
+    classe: 'tc-steer tc-steer--left',
+    ico: '◀',
+    rotulo: '',
+    ariaLabel: 'virar à esquerda',
+  },
+  {
+    code: 'ArrowRight',
+    zona: 'esq',
+    classe: 'tc-steer tc-steer--right',
+    ico: '▶',
+    rotulo: '',
+    ariaLabel: 'virar à direita',
+  },
+  {
+    code: 'ArrowDown',
+    zona: 'dir',
+    classe: 'tc-re',
+    ico: '▼',
+    rotulo: 'RÉ',
+    ariaLabel: 'ré',
+  },
+  {
+    code: 'ArrowUp',
+    zona: 'dir',
+    classe: 'tc-go',
+    ico: '▲',
+    rotulo: 'IR',
+    ariaLabel: 'ir',
+  },
+];

@@ -1631,14 +1631,10 @@ canvas {
   .pais-painel { animation: none; }
 }
 
-/* ===== Controles de TOQUE (Frente 0 — celular/tablet, layout B) =====
-   Renderizados só em dispositivo táctil (TouchControls.jsx). Botões-adesivo
-   GRANDES e FIXOS nos cantos. Conjunto COMPLETO (tablet/telas altas):
-   ◀ ▶ + BUZINA 📣 (esq) · DRIFT ✋ + RÉ ▼ + ACELERA ▲ (dir) — seis.
-   No CELULAR em paisagem ficam só os quatro de DIRIGIR (ver o bloco de tela
-   baixa lá embaixo). O toque dispara o MESMO evento do teclado — sem física
-   nova. Mexeu na lista de BOTOES do TouchControls.jsx? Reconfira as contas
-   de largura aqui: foi somar RÉ e BUZINA sem remedir que quebrou o celular. */
+/* ===== Controles de TOQUE — Golden v1 =====
+   ◀ ▶ formam uma única zona de direção. À direita, IR domina e RÉ permanece
+   menor e sempre disponível. O toque continua emitindo os mesmos eventos de
+   teclado; drift e buzina seguem no desktop, fora da superfície touch. */
 .tc-zona {
   position: fixed;
   bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
@@ -1648,8 +1644,19 @@ canvas {
   align-items: flex-end;
   touch-action: none;
 }
-.tc-esq { left: calc(var(--space-3) + env(safe-area-inset-left)); }
-.tc-dir { right: calc(var(--space-3) + env(safe-area-inset-right)); }
+.tc-esq {
+  left: calc(var(--space-3) + env(safe-area-inset-left));
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, .78);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--solid-1);
+}
+.tc-dir {
+  right: calc(var(--space-3) + env(safe-area-inset-right));
+  gap: 10px;
+}
 
 .tc-btn {
   /* Alvo grande p/ dedo de criança, dimensionado pros DOIS extremos.
@@ -1683,17 +1690,35 @@ canvas {
               box-shadow var(--dur-quick) var(--ease-soft);
 }
 .tc-btn .tc-ico { font-size: 2rem; line-height: 1; }
+.tc-label { line-height: 1; }
 /* press = degrau encolhe + fill de cor. Feedback, NUNCA punição. */
 .tc-btn.pressed { transform: translateY(2px); box-shadow: var(--solid-press); }
 .tc-steer.pressed { background: var(--accent); }        /* sol */
-.tc-go { background: var(--orbi-grass-soft); }
+.tc-steer {
+  width: clamp(68px, 18vmin, 88px);
+  height: clamp(68px, 18vmin, 88px);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+}
+.tc-steer--left { border-radius: var(--radius-pill) var(--radius-lg) var(--radius-lg) var(--radius-pill); }
+.tc-steer--right { border-radius: var(--radius-lg) var(--radius-pill) var(--radius-pill) var(--radius-lg); }
+.tc-steer .tc-ico { font-size: 2.35rem; }
+.tc-go {
+  width: clamp(82px, 22vmin, 112px);
+  height: clamp(82px, 22vmin, 112px);
+  background: var(--orbi-grass-soft);
+  font-size: 18px;
+}
+.tc-go .tc-ico { font-size: 2.3rem; }
 .tc-go.pressed { background: var(--success); }          /* capim */
-.tc-drift { background: var(--orbi-coral-soft); }
-.tc-drift.pressed { background: var(--warm); }          /* coral */
-.tc-re { background: var(--orbi-blue-soft); }
+.tc-re {
+  width: clamp(52px, 13vmin, 64px);
+  height: clamp(52px, 13vmin, 64px);
+  background: var(--orbi-blue-soft);
+  font-size: 11px;
+}
+.tc-re .tc-ico { font-size: 1.45rem; }
 .tc-re.pressed { background: var(--info); }             /* azul-céu */
-.tc-buzina { background: var(--orbi-sun-soft); }
-.tc-buzina.pressed { background: var(--accent); }       /* sol */
 
 @media (prefers-reduced-motion: reduce) { .tc-btn { transition: none; } }
 
@@ -1708,19 +1733,12 @@ canvas {
    Os botões de TOQUE seguem GRANDES (64px, bem acima do mínimo de 44px) —
    alvo grande continua sendo regra; o que muda no celular é QUANTOS cabem. */
 @media (max-height: 500px) and (orientation: landscape) {
-  /* Celular em paisagem: só os QUATRO de dirigir (◀ ▶ ▼ ▲). DRIFT e BUZINA
-     saem — são diversão sem mecânica dependente de ninguém, e a fileira de
-     seis não cabe sem roubar o mundo da criança. Voltam inteiros no tablet.
-     CSS puro DE PROPÓSITO: o TouchControls.jsx fica intocado, então a captura
-     de ponteiro, o release de teclas e as redes de segurança (blur, aba
-     escondida) continuam exatamente como estão — risco zero no núcleo. */
-  .tc-drift,
-  .tc-buzina { display: none; }
-
-  /* Rótulo e ícone recuados pro círculo de 64px: a PALAVRA continua legível
-     (ela é letramento, não decoração) e não estoura o botão. */
-  .tc-btn { font-size: 12px; letter-spacing: 0; }
-  .tc-btn .tc-ico { font-size: 1.6rem; }
+  .tc-steer { width: 68px; height: 64px; }
+  .tc-steer .tc-ico { font-size: 2rem; }
+  .tc-go { width: 82px; height: 82px; font-size: 16px; letter-spacing: 0; }
+  .tc-go .tc-ico { font-size: 2rem; }
+  .tc-re { width: 52px; height: 52px; font-size: 10px; letter-spacing: 0; }
+  .tc-re .tc-ico { font-size: 1.25rem; }
 
   .hud {
     padding: 5px var(--space-2);
