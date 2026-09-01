@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { deveExigirLandscape } from '../ui/build01.js';
 
 /**
  * TRAVA DE ORIENTAÇÃO — Frente 0 (lançamento celular).
@@ -13,7 +14,7 @@ const consultarRetrato = () =>
   window.matchMedia &&
   window.matchMedia('(orientation: portrait)').matches;
 
-export function OrientationGuard() {
+export function OrientationGuard({ fase }) {
   const [retrato, setRetrato] = useState(consultarRetrato);
 
   useEffect(() => {
@@ -30,13 +31,13 @@ export function OrientationGuard() {
     };
   }, []);
 
-  if (!retrato) return null;
+  if (!deveExigirLandscape(fase, retrato)) return null;
 
   return (
     <div className="orient-guard" role="alertdialog" aria-label="vire o celular">
       <div className="orient-emoji" aria-hidden="true">🔄</div>
-      <div className="orient-msg">Vire o celular na horizontal pra brincar!</div>
-      <div className="orient-sub">não virou? ative o girar automático do celular 🔄</div>
+      <div className="orient-msg">VIRE O CELULAR</div>
+      <div className="orient-sub">ASSIM FICA MAIS GOSTOSO DIRIGIR</div>
     </div>
   );
 }

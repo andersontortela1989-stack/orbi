@@ -173,7 +173,7 @@ export default function App() {
       <MissionController />
       <OrbiCompanion />
       <Buzina />
-      <OrientationGuard />
+      <OrientationGuard fase={fase} />
     </>
   );
 }
