@@ -6,14 +6,15 @@ import { falar } from '../audio/voz.js';
 import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
 import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
+import { estadoCombustivelHud } from '../ui/build01.js';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
  *
  * Camadas:
- *  - Painel inferior-esquerdo: 🪙 moedas + ⛽ barra de combustível
- *    (a barra fica âmbar quando o combustível está baixo — aviso calmo, sem
- *    vermelho de alarme).
+ *  - Indicador superior-esquerdo: combustível somente quando baixo/crítico.
+ *    O contador de moedas não aparece nesta camada; economia e store continuam
+ *    intactos.
  *  - Faixa superior-central: UMA instrução por vez, com prioridade:
  *      1) tanque vazio (e fora do posto) → "ACABOU! ME LEVA NO POSTO?"
  *      2) pedido da missão — GPS ("HOSPITAL?") ou Ciências ("🐱 VET?",
@@ -28,17 +29,15 @@ import { BICHO_POR_SLUG } from '../city/bichos.js';
  * sempre UMA instrução prioritária por vez.
  */
 export function HUD() {
-  const moedas = useGame((s) => s.moedas);
   const combustivel = useGame((s) => s.combustivel);
   const missao = useGame((s) => s.missao);
-  const pct = Math.max(0, Math.min(100, combustivel));
+  const hudCombustivel = estadoCombustivelHud(combustivel, LIMIAR_BAIXO);
 
   // Estados da economia (Fatia 5)
   // `abastecendo` (painel aberto) vem do MESMO seletor que o RefuelPanel usa —
   // fonte única da verdade, pra banner e painel nunca desincronizarem.
   const abastecendo = useGame((s) => postoAtivo(s.combustivel, s.postoPerto));
   const vazio = combustivel <= 0;
-  const baixo = combustivel <= LIMIAR_BAIXO;
 
   // Missão (GPS ou Ciências) só aparece quando NÃO há aviso de combustível
   // prioritário. Continua UMA instrução por vez: ou aviso, ou missão — e
@@ -134,12 +133,8 @@ export function HUD() {
         {CEUS[ceuId].rotulo}
       </button>
 
-      <div className="hud" aria-live="polite">
-        <div className="hud-row">
-          <span className="hud-icon" aria-hidden="true">🪙</span>
-          <span className="hud-value">{moedas}</span>
-        </div>
-
+      {hudCombustivel.visivel && (
+      <div className={`hud hud--${hudCombustivel.nivel}`} aria-live="polite">
         <div className="hud-row">
           <span className="hud-icon" aria-hidden="true">⛽</span>
           <div
@@ -147,16 +142,17 @@ export function HUD() {
             role="progressbar"
             aria-valuemin="0"
             aria-valuemax="100"
-            aria-valuenow={Math.round(pct)}
+            aria-valuenow={Math.round(hudCombustivel.percentual)}
             aria-label="combustível"
           >
             <div
-              className={'hud-bar-fill' + (baixo ? ' hud-bar-fill--baixo' : '')}
-              style={{ width: `${pct}%` }}
+              className="hud-bar-fill hud-bar-fill--baixo"
+              style={{ width: `${hudCombustivel.percentual}%` }}
             />
           </div>
         </div>
       </div>
+      )}
     </>
   );
 }

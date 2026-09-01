@@ -55,20 +55,20 @@ canvas {
 }
 
 /* ===== HUD ===== */
-/* Cartão-adesivo: branco, contorno navy, sombra sólida. Poucas infos. */
+/* Indicador contextual: só existe quando o combustível pede atenção. */
 .hud {
   position: fixed;
   top: var(--space-4);
   left: var(--space-4);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-2) var(--space-3);
   background: var(--surface-card);
-  border: var(--outline) solid var(--outline-color);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--solid-3);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--solid-1);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  min-width: 220px;
+  gap: var(--space-2);
+  min-width: 118px;
   pointer-events: none;
   user-select: none;
   z-index: 10;
@@ -77,29 +77,18 @@ canvas {
 .hud-row {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .hud-icon {
-  font-size: 28px;
+  font-size: 18px;
   line-height: 1;
-}
-
-/* Valor (moedas): navy de alto contraste sobre branco, Fredoka. */
-.hud-value {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: var(--weight-display-bold);
-  letter-spacing: 0.04em;
-  color: var(--text-strong);
-  font-variant-numeric: tabular-nums;
-  min-width: 2ch;
 }
 
 /* Barra de combustível: trilho céu com contorno navy fino. */
 .hud-bar {
-  flex: 1;
-  height: 16px;
+  width: 82px;
+  height: 10px;
   background: var(--surface-base);
   border: var(--outline-thin) solid var(--outline-color);
   border-radius: var(--radius-pill);
@@ -117,6 +106,8 @@ canvas {
   background: var(--orbi-sun);
 }
 
+.hud--critico { background: var(--orbi-sun-soft); }
+
 /* ===== Banner de missão ===== */
 /* Etiqueta-adesivo superior central — UMA missão por vez. Texto navy
    sobre cor de brincar, contorno navy grosso, sombra sólida. */
@@ -125,12 +116,12 @@ canvas {
   top: var(--space-4);
   left: 50%;
   transform: translateX(-50%);
-  padding: var(--space-4) var(--space-6);
-  border: var(--outline-bold) solid var(--outline-color);
+  padding: var(--space-2) var(--space-4);
+  border: var(--outline) solid var(--outline-color);
   border-radius: var(--radius-pill);
-  box-shadow: var(--solid-3);
+  box-shadow: var(--solid-2);
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 21px;
   font-weight: var(--weight-display-bold);
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -616,9 +607,9 @@ canvas {
   top: var(--space-4);
   right: var(--space-4);
   z-index: 15;
-  width: 56px;
-  height: 56px;
-  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
   line-height: 1;
   background: var(--surface-card);
   border: var(--outline) solid var(--outline-color);
@@ -641,11 +632,11 @@ canvas {
 .ceu-btn {
   position: fixed;
   top: var(--space-4);
-  right: calc(var(--space-4) + 56px + var(--space-3));
+  right: calc(var(--space-4) + 48px + var(--space-3));
   z-index: 15;
-  width: 56px;
-  height: 56px;
-  font-size: 26px;
+  width: 48px;
+  height: 48px;
+  font-size: 23px;
   line-height: 1;
   background: var(--surface-card);
   border: var(--outline) solid var(--outline-color);
@@ -1732,17 +1723,16 @@ canvas {
   .tc-btn .tc-ico { font-size: 1.6rem; }
 
   .hud {
-    padding: var(--space-3) var(--space-4);
-    gap: var(--space-2);
-    min-width: 160px;
+    padding: 5px var(--space-2);
+    min-width: 104px;
   }
   .hud-icon,
-  .hud-value { font-size: 20px; }
-  .hud-bar { height: 12px; }
+  .hud-value { font-size: 17px; }
+  .hud-bar { width: 68px; height: 8px; }
 
   .mission-banner {
-    padding: var(--space-3) var(--space-4);
-    font-size: 20px;
+    padding: 6px var(--space-3);
+    font-size: 17px;
   }
 
   .cad-btn { width: 42px; height: 42px; font-size: 21px; }

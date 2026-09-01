@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { deveExigirLandscape } from '../src/ui/build01.js';
+import { deveExigirLandscape, estadoCombustivelHud } from '../src/ui/build01.js';
 
 test('orientation gate aparece somente durante gameplay em portrait', () => {
   const casos = [
@@ -18,4 +18,22 @@ test('orientation gate aparece somente durante gameplay em portrait', () => {
       `${caso.fase}/${caso.retrato ? 'portrait' : 'landscape'}`
     );
   }
+});
+
+test('HUD de combustível fica oculto quando saudável e contextual quando baixo', () => {
+  assert.deepEqual(estadoCombustivelHud(100, 25), {
+    visivel: false,
+    nivel: 'saudavel',
+    percentual: 100,
+  });
+  assert.deepEqual(estadoCombustivelHud(25, 25), {
+    visivel: true,
+    nivel: 'baixo',
+    percentual: 25,
+  });
+  assert.deepEqual(estadoCombustivelHud(0, 25), {
+    visivel: true,
+    nivel: 'critico',
+    percentual: 0,
+  });
 });
