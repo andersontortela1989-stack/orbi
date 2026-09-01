@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Orbi } from './Orbi.jsx';
 import { AreaPais } from './AreaPais.jsx';
 import { useGame } from '../store/useGame.js';
@@ -9,8 +9,8 @@ import { useGame } from '../store/useGame.js';
  * Logo (wordmark adesivo + planeta no "Ó") + tagline "um mundo pra descobrir"
  * + Órbi acenando + botão JOGAR grande + cantinho "Área dos pais".
  *
- * Composição em "canvas fixo" 1280×800 escalado pra caber em qualquer janela
- * (mesma técnica do mock: garante que o enquadramento aprovado nunca quebre).
+ * Composição fluida que preserva a hierarquia do mock em portrait, landscape
+ * e desktop sem reduzir a aplicação inteira como um canvas fixo.
  *
  * JOGAR: Órbi comemora + balãozinho ("Vamos explorar!") num respiro curtinho,
  * depois entra na cidade. Guard-rail TEA+TDAH: resposta clara a UMA ação,
@@ -63,17 +63,17 @@ const GROUND_SVG = `
 const STAR_SVG = (s) =>
   `<svg width="${s}" height="${s}" viewBox="0 0 34 34"><path d="M17 1 l4 12 12 4 -12 4 -4 12 -4 -12 -12 -4 12 -4 z" fill="#FFFFFF" stroke="#1C2746" stroke-width="2.6"/></svg>`;
 
-// campo de estrelas discretas — posições FIXAS (calmas), longe do centro
+// campo de estrelas discretas — posições proporcionais (calmas), longe do centro
 // (onde ficam logo/Órbi/JOGAR). Pulso suave e escalonado no CSS.
 const ESTRELAS = [
-  { left: 470, top: 96, s: 20 },
-  { left: 760, top: 70, s: 14 },
-  { left: 980, top: 150, s: 22 },
-  { left: 250, top: 250, s: 16 },
-  { left: 1130, top: 240, s: 18 },
-  { left: 150, top: 430, s: 13 },
-  { left: 1080, top: 430, s: 15 },
-  { left: 600, top: 56, s: 12 },
+  { left: '36.7%', top: '12%', s: 20 },
+  { left: '59.4%', top: '8.75%', s: 14 },
+  { left: '76.6%', top: '18.75%', s: 22 },
+  { left: '19.5%', top: '31.25%', s: 16 },
+  { left: '88.3%', top: '30%', s: 18 },
+  { left: '11.7%', top: '53.75%', s: 13 },
+  { left: '84.4%', top: '53.75%', s: 15 },
+  { left: '46.9%', top: '7%', s: 12 },
 ];
 
 // planeta grande e ESTÁVEL — redondo, lavanda, com faixas suaves recortadas
@@ -98,23 +98,11 @@ function Raw({ html, className, style }) {
 
 export function StartScreen({ onPlay, onVerHistoria }) {
   const introVista = useGame((s) => s.introVista);
-  const [scale, setScale] = useState(1);
   const [pose, setPose] = useState('acenando');
   const [pressed, setPressed] = useState(false);
   const [bubble, setBubble] = useState(false);
   const [paisAberto, setPaisAberto] = useState(false);
   const busy = useRef(false);
-
-  // Escala o canvas fixo 1280×800 pra caber na janela (nunca trava em 0).
-  useEffect(() => {
-    const fit = () => {
-      const s = Math.min(window.innerWidth / 1280, window.innerHeight / 800);
-      if (s > 0) setScale(s);
-    };
-    fit();
-    window.addEventListener('resize', fit);
-    return () => window.removeEventListener('resize', fit);
-  }, []);
 
   const jogar = () => {
     if (busy.current) return;
@@ -134,7 +122,7 @@ export function StartScreen({ onPlay, onVerHistoria }) {
 
   return (
     <div className="orbi-start">
-      <div className="start-screen" style={{ transform: `scale(${scale})` }}>
+      <div className="start-screen">
         {/* DECOR — céu de entardecer espacial: planetas estáveis + estrelas calmas */}
         <div className="start-decor">
           <Raw className="start-big-planet" html={BIG_PLANET_SVG} />
@@ -202,9 +190,8 @@ export function StartScreen({ onPlay, onVerHistoria }) {
         </button>
       </div>
 
-      {/* Overlay da Área dos pais — filho de .orbi-start (NÃO de .start-screen,
-          que tem transform: scale()): position:fixed lá dentro seria escalado.
-          Fica FORA da moldura escalada, ocupando a viewport inteira. */}
+      {/* Overlay da Área dos pais ocupa a viewport inteira e permanece fora da
+          composição visual da abertura. */}
       {paisAberto && <AreaPais onFechar={() => setPaisAberto(false)} />}
     </div>
   );

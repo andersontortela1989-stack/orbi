@@ -885,6 +885,7 @@ canvas {
     var(--orbi-sky-deep) 100%
   );
   transition: background var(--dur-calm) var(--ease-soft);
+  min-height: 100svh;
 }
 
 /* quadro do espaço: navy calmo (a tinta da marca), não preto — narrativa */
@@ -950,6 +951,7 @@ canvas {
 .intro-legenda {
   position: relative;
   z-index: 3;
+  box-sizing: border-box;
   margin-bottom: var(--space-5);
   max-width: min(880px, 88vw);
   text-align: center;
@@ -1045,8 +1047,8 @@ canvas {
 /* PULAR — chip-adesivo discreto, canto sup-dir, sempre visível */
 .intro-pular {
   position: absolute;
-  top: var(--space-5);
-  right: var(--space-5);
+  top: calc(var(--space-5) + env(safe-area-inset-top));
+  right: calc(var(--space-5) + env(safe-area-inset-right));
   z-index: 5;
   font-family: var(--font-display);
   font-weight: var(--weight-display-bold);
@@ -1070,6 +1072,47 @@ canvas {
   .intro-orbi,
   .intro-legenda,
   .intro-dica { animation: none !important; transition: none !important; }
+}
+
+/* A Chegada é parte do app shell: adapta altura e largura sem mudar quadros,
+   narrativa, timers ou persistência. */
+@media (max-width: 600px) and (orientation: portrait) {
+  .intro-colina { height: 31vh; }
+  .intro-foguete { top: 27%; width: clamp(68px, 22vw, 92px); }
+  .intro-foguete--pousa { top: auto; bottom: 27vh; }
+  .intro-orbi-wrap { bottom: 25vh; }
+  .intro-orbi { width: clamp(150px, 50vw, 220px); }
+  .intro-legenda {
+    max-width: calc(100vw - 32px);
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    font-size: clamp(1.2rem, 6vw, 1.75rem);
+  }
+  .intro-dica { margin-bottom: calc(var(--space-6) + env(safe-area-inset-bottom)); }
+  .intro-nome-form { width: calc(100% - 32px); padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom)); }
+  .intro-nome { width: 100%; box-sizing: border-box; }
+  .intro-continuar { margin-bottom: calc(var(--space-6) + env(safe-area-inset-bottom)); }
+  .intro-nome-form .intro-continuar { margin-bottom: 0; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .intro-colina { height: 34vh; }
+  .intro-foguete { width: clamp(54px, 9vh, 76px); top: 25%; }
+  .intro-foguete--pousa { top: auto; bottom: 26vh; }
+  .intro-orbi-wrap { bottom: 23vh; }
+  .intro-orbi { width: clamp(112px, 30vh, 150px); }
+  .intro-legenda {
+    max-width: min(680px, 72vw);
+    margin-bottom: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    font-size: clamp(1rem, 4.4vh, 1.4rem);
+  }
+  .intro-dica { margin-bottom: calc(var(--space-3) + env(safe-area-inset-bottom)); padding: 4px var(--space-3); }
+  .intro-nome-form { flex-direction: row; gap: var(--space-3); margin-bottom: calc(var(--space-3) + env(safe-area-inset-bottom)); }
+  .intro-nome { width: min(360px, 48vw); padding: var(--space-2) var(--space-4); font-size: clamp(1.3rem, 5vh, 1.8rem); }
+  .intro-continuar { margin-bottom: calc(var(--space-3) + env(safe-area-inset-bottom)); padding: var(--space-2) var(--space-5); font-size: clamp(1.1rem, 4.6vh, 1.5rem); }
+  .intro-nome-form .intro-continuar { margin-bottom: 0; }
+  .intro-pular { top: calc(var(--space-3) + env(safe-area-inset-top)); right: calc(var(--space-3) + env(safe-area-inset-right)); }
 }
 
 /* ============================================================
@@ -1112,7 +1155,7 @@ canvas {
 
 /* ============================================================
    TELA DE ABERTURA (StartScreen.jsx) — fiel ao mock da marca.
-   Canvas fixo 1280×800 escalado pra caber (start-screen).
+   Composição fluida: vertical em portrait, duas colunas no landscape baixo.
    ============================================================ */
 .orbi-start {
   position: fixed;
@@ -1120,20 +1163,16 @@ canvas {
   z-index: 50;
   /* moldura/letterbox no celular = tom crepúsculo (não o azul-céu antigo) */
   background: var(--orbi-twilight-deep);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   font-family: var(--font-body);
 }
 
 .start-screen {
-  width: 1280px;
-  height: 800px;
+  width: 100%;
+  height: 100%;
+  min-height: 100svh;
   position: relative;
   overflow: hidden;
-  flex: none;
-  transform-origin: center center;
   /* crepúsculo espacial: lavanda quase branco no topo (logo/Órbi legíveis)
      descendo pro roxo suave onde o JOGAR amarelo grita */
   background: radial-gradient(
@@ -1149,15 +1188,21 @@ canvas {
 
 /* Saturno-sticker que já existia — ampliado e estável no canto sup-esquerdo */
 .start-sun-planet {
-  position: absolute; top: 60px; left: 70px;
-  transform: scale(1.35); transform-origin: top left;
+  position: absolute;
+  top: clamp(28px, 7.5vh, 60px);
+  left: clamp(24px, 5.5vw, 70px);
+  transform: scale(1.15);
+  transform-origin: top left;
 }
 
 /* planeta grande, estável, lado direito do céu. Gira MUITO devagar (90s):
    leitura de rotação calma, nunca agressiva. Bem longe do Órbi/JOGAR. */
 .start-big-planet {
-  position: absolute; top: 392px; right: 86px;
-  width: 260px; height: 260px;
+  position: absolute;
+  top: 49%;
+  right: clamp(-72px, 2vw, 86px);
+  width: clamp(160px, 20vw, 260px);
+  height: clamp(160px, 20vw, 260px);
 }
 .start-big-planet svg {
   width: 100%; height: 100%;
@@ -1179,7 +1224,7 @@ canvas {
 @keyframes startTwinkle { 0%, 100% { opacity: .76; } 50% { opacity: 1; } }
 
 /* ---- colina + cidade ---- */
-.start-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; z-index: 2; }
+.start-ground { position: absolute; left: 0; right: 0; bottom: 0; height: clamp(190px, 37.5vh, 300px); z-index: 2; }
 .start-ground svg { width: 100%; height: 100%; display: block; }
 
 /* ---- conteúdo ---- */
@@ -1190,20 +1235,21 @@ canvas {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 54px 40px 40px;
+  box-sizing: border-box;
+  padding: clamp(32px, 6.75vh, 54px) clamp(20px, 3.2vw, 40px) calc(40px + env(safe-area-inset-bottom));
 }
-.start-logo { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.start-logo { display: flex; flex-direction: column; align-items: center; gap: clamp(10px, 2.25vh, 18px); }
 
 /* wordmark adesivo: preenchimento branco, contorno navy grosso, sombra sólida */
 .start-wm {
   font-family: var(--font-display);
   font-weight: var(--weight-display-bold);
   line-height: 1;
-  font-size: 112px;
+  font-size: clamp(64px, 8.75vw, 112px);
   color: #fff;
-  -webkit-text-stroke: 8px var(--ink);
+  -webkit-text-stroke: clamp(5px, .625vw, 8px) var(--ink);
   paint-order: stroke fill;
-  text-shadow: 0 8px 0 var(--ink);
+  text-shadow: 0 clamp(5px, .625vw, 8px) 0 var(--ink);
   display: inline-block;
   white-space: nowrap;
 }
@@ -1223,12 +1269,12 @@ canvas {
 .start-tagline {
   font-family: var(--font-display);
   font-weight: var(--weight-display-bold);
-  font-size: 27px;
+  font-size: clamp(17px, 2.1vw, 27px);
   color: var(--orbi-ink);
   background: var(--orbi-sun);
   border: var(--outline) solid var(--ink);
   border-radius: var(--radius-pill);
-  padding: 9px 28px;
+  padding: clamp(6px, 1.1vh, 9px) clamp(16px, 2.2vw, 28px);
   box-shadow: var(--solid-2);
   white-space: nowrap;
 }
@@ -1242,7 +1288,7 @@ canvas {
   margin-top: 4px;
   position: relative;
 }
-.start-orbi { width: 300px; animation: orbiBob 4.2s var(--ease-soft) infinite; }
+.start-orbi { width: clamp(170px, min(24vw, 37vh), 300px); animation: orbiBob 4.2s var(--ease-soft) infinite; }
 .start-orbi svg { filter: drop-shadow(0 14px 0 rgba(28, 39, 70, .14)); }
 @keyframes orbiBob {
   0%, 100% { transform: translateY(0) rotate(-1.5deg); }
@@ -1286,13 +1332,13 @@ canvas {
 .start-play {
   font-family: var(--font-display);
   font-weight: var(--weight-display-bold);
-  font-size: 42px;
+  font-size: clamp(30px, 3.3vw, 42px);
   letter-spacing: .02em;
   color: var(--orbi-ink);
   background: var(--orbi-sun);
   border: var(--outline-bold) solid var(--ink);
   border-radius: var(--radius-pill);
-  padding: 20px 68px;
+  padding: clamp(14px, 2.5vh, 20px) clamp(42px, 5.3vw, 68px);
   cursor: pointer;
   box-shadow: 0 9px 0 var(--ink);
   display: inline-flex;
@@ -1338,8 +1384,8 @@ canvas {
    removido); voltam com o tema novo numa atualização futura. */
 .start-parents {
   position: absolute;
-  bottom: 26px;
-  right: 34px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  right: calc(24px + env(safe-area-inset-right));
   z-index: 4;
   display: inline-flex;
   align-items: center;
@@ -1356,6 +1402,57 @@ canvas {
   cursor: pointer;
 }
 .start-parents:hover { color: #fff; border-color: rgba(255, 255, 255, .7); }
+
+/* Portrait é uma composição própria, não uma miniatura do desktop. */
+@media (max-width: 700px) and (orientation: portrait) {
+  .start-content {
+    padding: calc(38px + env(safe-area-inset-top)) 20px calc(88px + env(safe-area-inset-bottom));
+  }
+  .start-wm { font-size: clamp(68px, 23vw, 100px); }
+  .start-tagline { font-size: clamp(16px, 5vw, 22px); }
+  .start-orbi-wrap { margin-top: 0; align-items: center; }
+  .start-orbi { width: clamp(180px, min(58vw, 33vh), 250px); }
+  .start-bubble { left: calc(50% + 62px); top: 10%; font-size: 16px; padding: 8px 12px; }
+  .start-play { font-size: clamp(30px, 9vw, 38px); margin-bottom: 10px; }
+  .start-tri { border-width: 14px 0 14px 24px; }
+  .start-ground { height: clamp(190px, 30vh, 260px); }
+  .start-sun-planet { transform: scale(.82); }
+  .start-big-planet { top: 52%; right: -74px; opacity: .78; }
+  .start-parents {
+    right: 50%;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    transform: translateX(50%);
+  }
+}
+
+/* Celular em landscape: logo/CTA e personagem dividem o viewport de forma
+   intencional, sem reduzir um canvas desktop inteiro. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .start-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "logo orbi"
+      "play orbi"
+      "story orbi";
+    column-gap: clamp(20px, 6vw, 72px);
+    padding: calc(16px + env(safe-area-inset-top)) calc(52px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(52px + env(safe-area-inset-left));
+  }
+  .start-logo { grid-area: logo; gap: 5px; align-self: start; }
+  .start-wm { font-size: clamp(56px, 16vh, 78px); -webkit-text-stroke-width: 5px; text-shadow: 0 5px 0 var(--ink); }
+  .start-tagline { font-size: clamp(14px, 4.4vh, 19px); padding: 5px 14px; }
+  .start-orbi-wrap { grid-area: orbi; margin: 0; align-self: center; }
+  .start-orbi { width: clamp(150px, 48vh, 220px); }
+  .start-bubble { left: calc(50% + 54px); top: 8%; font-size: 14px; padding: 7px 10px; }
+  .start-play { grid-area: play; align-self: end; justify-self: center; font-size: clamp(27px, 8vh, 34px); padding: 10px 38px; margin: 0 0 8px; }
+  .start-tri { border-width: 12px 0 12px 21px; }
+  .start-historia { grid-area: story; justify-self: center; align-self: start; font-size: 13px; }
+  .start-ground { height: 46vh; }
+  .start-big-planet { top: 32%; right: 2%; width: clamp(130px, 38vh, 176px); height: clamp(130px, 38vh, 176px); opacity: .72; }
+  .start-sun-planet { top: 18px; left: 28px; transform: scale(.68); }
+  .start-parents { bottom: calc(10px + env(safe-area-inset-bottom)); right: calc(12px + env(safe-area-inset-right)); padding: 6px 11px; font-size: 13px; }
+}
 
 /* ---- Área dos pais (overlay estático informativo) ----
    Espelha o padrão visual do Caderninho (card claro, contorno navy, FECHAR
