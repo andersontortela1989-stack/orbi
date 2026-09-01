@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { somBuzina } from '../audio/sons.js';
+import { useGame } from '../store/useGame.js';
+import { interacaoContextualBloqueiaInput } from '../interactions/contextual-interactions.js';
 
 /**
  * BUZINA — tecla B (desktop) e botão BUZINA do TouchControls (mobile, que
@@ -19,6 +21,7 @@ export function Buzina() {
     let ultima = 0;
     const onKey = (e) => {
       if (e.code !== 'KeyB' || e.repeat) return;
+      if (interacaoContextualBloqueiaInput(useGame.getState().interacaoContextual)) return;
       const agora = performance.now();
       if (agora - ultima < THROTTLE_MS) return;
       ultima = agora;

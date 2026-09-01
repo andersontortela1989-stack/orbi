@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
+import { interacaoContextualBloqueiaInput } from '../interactions/contextual-interactions.js';
 
 // Hook de teclado: expõe um ref com o estado atual das teclas (não causa re-render).
 // Apenas setas + Space — mantém simples e alinhado ao público-alvo.
@@ -27,7 +28,11 @@ export function useKeyboard() {
       // tecla que já estava pressionada — e não faz preventDefault (o
       // overlay fica livre pro navegador). Ao fechar, o controle volta
       // exatamente como estava: neutro até a próxima tecla.
-      if (useGame.getState().caderninhoAberto) {
+      const estado = useGame.getState();
+      if (
+        estado.caderninhoAberto ||
+        interacaoContextualBloqueiaInput(estado.interacaoContextual)
+      ) {
         zerar();
         return;
       }
@@ -49,7 +54,11 @@ export function useKeyboard() {
     // Abriu o caderninho com tecla segurada → solta na hora (não espera
     // o próximo keydown do auto-repeat).
     const unsub = useGame.subscribe((s, p) => {
-      if (s.caderninhoAberto && !p.caderninhoAberto) zerar();
+      const bloqueado =
+        s.caderninhoAberto || interacaoContextualBloqueiaInput(s.interacaoContextual);
+      const bloqueadoAntes =
+        p.caderninhoAberto || interacaoContextualBloqueiaInput(p.interacaoContextual);
+      if (bloqueado && !bloqueadoAntes) zerar();
     });
 
     window.addEventListener('keydown', onDown);

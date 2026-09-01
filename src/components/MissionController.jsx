@@ -7,6 +7,8 @@ import {
   chaveDaMissao,
   temChegadaViva,
 } from '../missions/missoes.js';
+import { resolverPosCelebracaoContextual } from '../interactions/contextual-interactions.js';
+import { useCarona } from '../store/useCarona.js';
 
 // === Tempos de orquestração — afináveis ===
 const CELEBRACAO_MS         = 2200; // entre completar uma missão e sortear a próxima
@@ -134,11 +136,19 @@ export function MissionController() {
       clearTimeout(proximaMissaoTO.current);
       proximaMissaoTO.current = setTimeout(() => {
         const atual = useGame.getState().missao;
-        if (atual?.tipo === 'gps' && temChegadaViva(atual.destino)) {
-          useGame.getState().abrirChegadaViva(atual.destino);
-        } else {
-          useGame.getState().proximaMissao();
-        }
+        resolverPosCelebracaoContextual(atual?.destino, {
+          ativar: (lugar) =>
+            !useCarona.getState().aBordo &&
+            useGame.getState().ativarInteracaoContextualPendente(lugar),
+          limpar: useGame.getState().descartarInteracaoContextualPendente,
+          fallback: () => {
+            if (atual?.tipo === 'gps' && temChegadaViva(atual.destino)) {
+              useGame.getState().abrirChegadaViva(atual.destino);
+            } else {
+              useGame.getState().proximaMissao();
+            }
+          },
+        });
       }, CELEBRACAO_MS);
     }
     ultimoConcluido.current = !!concluida;

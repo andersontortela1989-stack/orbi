@@ -18,7 +18,9 @@ import { IntroChegada } from './components/IntroChegada.jsx';
 import { TouchControls } from './components/TouchControls.jsx';
 import { Buzina } from './components/Buzina.jsx';
 import { OrientationGuard } from './components/OrientationGuard.jsx';
+import { ContextualInteractionHost } from './components/ContextualInteractionHost.jsx';
 import { useGame } from './store/useGame.js';
+import { interacaoContextualBloqueiaInput } from './interactions/contextual-interactions.js';
 
 export default function App() {
   // Fluxo "A Chegada" (adendo de narrativa): abertura → intro → jogo.
@@ -28,6 +30,7 @@ export default function App() {
   //  - O <Canvas>/Physics só monta na fase 'jogo'; nada da simulação roda atrás
   //    da abertura/intro, e o teclado do jogo não conflita com a captura do nome.
   const introVista = useGame((s) => s.introVista);
+  const contextual = useGame((s) => interacaoContextualBloqueiaInput(s.interacaoContextual));
   const [fase, setFase] = useState('abertura'); // 'abertura' | 'intro' | 'jogo'
 
   // Tema cantado removido (decisão de produto): a intro volta a ser silenciosa
@@ -165,10 +168,11 @@ export default function App() {
       <GaragemPanel />
       <ChegadaVivaPanel />
       <Caderninho />
+      <ContextualInteractionHost />
       <TouchControls />
-      <div className="controls-hint">
+      {!contextual && <div className="controls-hint">
         SETAS = DIRIGIR &nbsp;·&nbsp; ESPAÇO = FREIO DE MÃO (DRIFT)
-      </div>
+      </div>}
       <WelcomeVoice />
       <MissionController />
       <OrbiCompanion />

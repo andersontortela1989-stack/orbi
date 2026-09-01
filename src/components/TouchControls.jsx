@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
 import { postoAtivo } from '../economia.js';
 import { CONTROLES_TOUCH_BUILD_01 } from '../ui/build01.js';
+import { interacaoContextualBloqueiaInput } from '../interactions/contextual-interactions.js';
 
 /**
  * CONTROLES DE TOQUE — Frente 0 (lançamento celular/tablet), LAYOUT B.
@@ -45,9 +46,10 @@ export function TouchControls() {
   const caderninho = useGame((s) => s.caderninhoAberto);
   const posto = useGame((s) => postoAtivo(s.combustivel, s.postoPerto));
   const garagem = useGame((s) => s.garagemPerto);
+  const contextual = useGame((s) => interacaoContextualBloqueiaInput(s.interacaoContextual));
 
   const ativas = useRef(new Set()); // codes pressionados agora (pra soltar)
-  const escondido = !TACTIL || quiz || caderninho || posto || garagem;
+  const escondido = !TACTIL || quiz || caderninho || posto || garagem || contextual;
 
   // Esconder (painel abriu) → solta as teclas seguradas, senão o carro continua
   // dirigindo atrás do painel (o leak).

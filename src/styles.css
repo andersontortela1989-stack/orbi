@@ -1725,6 +1725,41 @@ canvas {
 /* No táctil, a dica de teclado é inútil e colidiria com os botões → some. */
 @media (pointer: coarse) { .controls-hint { display: none; } }
 
+/* BUILD 02.A: host técnico, sem antecipar a MicroScene visual da Padaria. */
+.contextual-host {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: rgb(20 32 62 / 48%);
+}
+.contextual-host__card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  min-width: min(360px, 85vw);
+  padding: var(--space-5);
+  border: 4px solid var(--ink);
+  border-radius: var(--radius-xl);
+  background: var(--surface-base);
+  box-shadow: var(--solid-3);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+}
+.contextual-host__card button {
+  padding: var(--space-3) var(--space-4);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-pill);
+  background: var(--success);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-body);
+  cursor: pointer;
+}
+
 /* ===== HUD compacto em telas baixas (celular em paisagem) =====
    Reduz ~25-30% o card de moedas/combustível, a pílula de missão, o botão do
    caderninho e o mascote — pra não competirem com a pílula nem com os botões de

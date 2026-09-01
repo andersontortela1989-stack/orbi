@@ -7,6 +7,7 @@ import { LIMIAR_BAIXO, postoAtivo } from '../economia.js';
 import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
 import { estadoCombustivelHud } from '../ui/build01.js';
+import { interacaoContextualBloqueiaInput } from '../interactions/contextual-interactions.js';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
@@ -44,6 +45,7 @@ export function HUD() {
   // enquanto a pergunta da chegada viva está aberta, banner nenhum
   // compete com ela.
   const chegadaViva = useGame((s) => s.chegadaViva);
+  const contextual = useGame((s) => interacaoContextualBloqueiaInput(s.interacaoContextual));
 
   // Carona (store próprio): a bordo, a pílula vira "🐶 PARQUE?" e as missões
   // normais somem do HUD — uma instrução por vez (régua TEA).
@@ -90,6 +92,8 @@ export function HUD() {
       : missao?.tipo === 'ciencias'
         ? `${ANIMAL_POR_SLUG[missao.animal]?.emoji ?? '🐾'} ${missao.destino}?`
         : `${missao?.destino}?`;
+
+  if (contextual) return null;
 
   return (
     <>

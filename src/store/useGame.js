@@ -6,6 +6,20 @@ import { sortearAnimal } from '../missions/missoes-ciencias.js';
 import { sortearChegadaViva } from '../missions/missoes.js';
 import { sortearBicho } from '../missions/busca.js';
 import { COR_POR_ID } from '../city/garagem.js';
+import { postoAtivo } from '../economia.js';
+import {
+  criarInteracaoContextual,
+  temInteracaoContextual,
+} from '../interactions/contextual-interactions.js';
+
+const painelIncompativelAtivo = (estado) =>
+  !!estado.chegadaViva ||
+  estado.caderninhoAberto ||
+  estado.garagemPerto ||
+  postoAtivo(estado.combustivel, estado.postoPerto);
+
+const contextoPadariaValido = (interacao) =>
+  interacao?.tipo === 'padaria-paes-v1' && interacao?.lugar === 'PADARIA';
 
 /**
  * Estado global da Cidade Turbo 3D — shape espelhando a §6 do handoff.
@@ -54,6 +68,11 @@ const ESTADO_INICIAL = {
 
   // Caderninho do Órbi aberto? (transiente — NÃO persistido)
   caderninhoAberto: false,
+
+  // BUILD 02 — handoff/overlay contextual do lugar (transiente). O status
+  // aguardando-celebracao transporta uma chegada válida até o Controller sem
+  // antecipar a UI; nenhum campo deste objeto entra no save v6.
+  interacaoContextual: null,
 
   // Descobertas item-a-item — a matéria-prima do Caderninho do Órbi (e a
   // futura interface infantil do relatório BNCC da Fatia 13, que lerá
@@ -161,6 +180,76 @@ export const useGame = create(
         if (pergunta) set({ chegadaViva: pergunta });
       },
       fecharChegadaViva: () => set({ chegadaViva: null }),
+
+      // === Interação contextual (BUILD 02.A — somente estado, zero Learning Data) ===
+      prepararInteracaoContextual: (lugar, origem = 'missao') => {
+        if (get().interacaoContextual) return false;
+        const interacao = criarInteracaoContextual(lugar, origem);
+        if (!interacao || interacao.status !== 'aguardando-celebracao') return false;
+        set({ interacaoContextual: interacao });
+        return true;
+      },
+
+      abrirInteracaoContextual: (lugar, origem = 'exploracao') => {
+        if (get().interacaoContextual || painelIncompativelAtivo(get())) return false;
+        const interacao = criarInteracaoContextual(lugar, origem);
+        if (!interacao || interacao.status !== 'ativa') return false;
+        set({ interacaoContextual: interacao });
+        return true;
+      },
+
+      ativarInteracaoContextualPendente: (lugar) => {
+        const interacao = get().interacaoContextual;
+        if (
+          !temInteracaoContextual(lugar) ||
+          interacao?.lugar !== lugar ||
+          interacao?.origem !== 'missao' ||
+          interacao?.status !== 'aguardando-celebracao' ||
+          painelIncompativelAtivo(get())
+        ) {
+          return false;
+        }
+        set({ interacaoContextual: { ...interacao, status: 'ativa' } });
+        return true;
+      },
+
+      descartarInteracaoContextualPendente: (lugar) => {
+        const interacao = get().interacaoContextual;
+        if (
+          interacao?.lugar !== lugar ||
+          interacao?.status !== 'aguardando-celebracao'
+        ) {
+          return false;
+        }
+        set({ interacaoContextual: null });
+        return true;
+      },
+
+      concluirInteracaoContextual: ({ quantidade } = {}) => {
+        const interacao = get().interacaoContextual;
+        if (
+          !contextoPadariaValido(interacao) ||
+          interacao?.status !== 'ativa' ||
+          quantidade !== interacao.alvo
+        ) {
+          return false;
+        }
+        set({ interacaoContextual: { ...interacao, status: 'concluida' } });
+        return true;
+      },
+
+      encerrarInteracaoContextual: () => {
+        const interacao = get().interacaoContextual;
+        if (!contextoPadariaValido(interacao)) return false;
+        set({ interacaoContextual: null });
+        if (
+          interacao.origem === 'missao' &&
+          interacao.status !== 'aguardando-celebracao'
+        ) {
+          get().proximaMissao();
+        }
+        return true;
+      },
 
       // === Caderninho do Órbi ===
       abrirCaderninho: () => set({ caderninhoAberto: true }),

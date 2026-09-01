@@ -1,6 +1,8 @@
 import { ArrivalSensor } from './ArrivalSensor.jsx';
 import { useGame } from '../store/useGame.js';
 import { PREDIOS_GPS } from '../missions/destinos.js';
+import { encaminharChegadaContextual } from '../interactions/contextual-interactions.js';
+import { useCarona } from '../store/useCarona.js';
 
 /**
  * Coloca um sensor de chegada em cada prédio da cidade.
@@ -12,6 +14,8 @@ import { PREDIOS_GPS } from '../missions/destinos.js';
  */
 export function MissionSensors() {
   const processarChegada = useGame((s) => s.processarChegada);
+  const prepararInteracaoContextual = useGame((s) => s.prepararInteracaoContextual);
+  const abrirInteracaoContextual = useGame((s) => s.abrirInteracaoContextual);
 
   return (
     <>
@@ -20,7 +24,15 @@ export function MissionSensors() {
           key={slug}
           floorPos={floorPos}
           size={size}
-          onArrival={() => processarChegada(slug)}
+          onArrival={() => {
+            const chegadaProcessada = processarChegada(slug);
+            encaminharChegadaContextual(slug, chegadaProcessada, {
+              preparar: prepararInteracaoContextual,
+              abrir: abrirInteracaoContextual,
+            }, {
+              bloqueado: useCarona.getState().aBordo,
+            });
+          }}
         />
       ))}
     </>
