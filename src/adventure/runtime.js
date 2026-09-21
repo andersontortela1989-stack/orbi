@@ -1,5 +1,6 @@
 import { coordenadorAtividade } from '../activity/index.js';
 import { somSucesso } from '../audio/sons.js';
+import { criarHortaEscola } from '../school/horta-aventura.js';
 import { useGame } from '../store/useGame.js';
 import { criarAventura } from './adventure-engine.js';
 import { PARQUE_COM_SEDE } from './parque-com-sede.js';
@@ -179,7 +180,10 @@ function eventoPermitido(evento) {
   if (!ui.ativa || !corredor) return false;
   const atividade = coordenadorAtividade.estado();
 
-  if (['chegou', 'coletou', 'entregou', 'tick'].includes(evento.tipo)) {
+  // `distribuiu` entra aqui, e não num grupo próprio: a etapa `distribuir`
+  // não pede foco em `entrar()` — como `coletar` e `ir_para`, ela acontece
+  // com o mundo à vista e a missão no topo da pilha.
+  if (['chegou', 'coletou', 'entregou', 'distribuiu', 'tick'].includes(evento.tipo)) {
     return atividade.foco === 'em_missao' && atividade.mundo;
   }
   if (evento.tipo === 'respondeu' || evento.tipo === 'continuar') {
@@ -196,16 +200,24 @@ function eventoPermitido(evento) {
   return false;
 }
 
-export function iniciarParqueComSede() {
-  if (ui.ativa || useGame.getState().worldFlags?.parque_florido) return false;
-  if (!['explorando', 'em_missao'].includes(coordenadorAtividade.estado().foco)) {
-    return false;
-  }
-  corredor = criarAventura(PARQUE_COM_SEDE);
+/**
+ * Só há UM `corredor` por vez, e a aventura fala assim que começa: partir com
+ * um painel aberto seria fala perdida sob ele. Daí as duas condições.
+ */
+function podeComecar() {
+  return (
+    !ui.ativa &&
+    ['explorando', 'em_missao'].includes(coordenadorAtividade.estado().foco)
+  );
+}
+
+/** Fronteira única de partida: monta o corredor e zera a UI da aventura. */
+function comecar(def) {
+  corredor = criarAventura(def);
   ui = {
     ativa: true,
-    id: PARQUE_COM_SEDE.id,
-    titulo: PARQUE_COM_SEDE.titulo,
+    id: def.id,
+    titulo: def.titulo,
     objetivo: null,
     alvo: null,
     contador: null,
@@ -215,6 +227,23 @@ export function iniciarParqueComSede() {
   };
   aplicarEfeitos(corredor.iniciar());
   return true;
+}
+
+export function iniciarParqueComSede() {
+  if (!podeComecar()) return false;
+  if (useGame.getState().worldFlags?.parque_florido) return false;
+  return comecar(PARQUE_COM_SEDE);
+}
+
+/**
+ * A Horta é a primeira aventura PARAMETRIZADA: a definição nasce da faixa
+ * escolhida, não de um arquivo fixo. Faixa desconhecida não começa nada.
+ */
+export function iniciarHortaEscola(band) {
+  if (!podeComecar()) return false;
+  if (useGame.getState().worldFlags?.horta_escola_viva) return false;
+  const def = criarHortaEscola(band);
+  return def ? comecar(def) : false;
 }
 
 export function enviarEventoAventura(evento) {
