@@ -1,0 +1,13 @@
+{
+  "variants": 30,
+  "viewport": [
+    640,
+    233
+  ],
+  "overflow": 0,
+  "portraitOverflow": 0,
+  "portraitGameplay": "existing orientation guard retained",
+  "errors": [],
+  "missionNarrationQuiet": true,
+  "keyboardExit": true
+}

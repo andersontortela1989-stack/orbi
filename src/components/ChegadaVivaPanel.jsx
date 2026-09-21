@@ -3,6 +3,7 @@ import { useGame } from '../store/useGame.js';
 import { somSucesso } from '../audio/sons.js';
 import { falar } from '../audio/voz.js';
 import { Bandeira } from './Bandeira.jsx';
+import { ParkBedView } from './ParkBedView.jsx';
 
 // Tempo entre resolver (acerto ou revelação) e fechar o painel — a frase
 // final começa e a carta certa acende antes de o fluxo seguir.
@@ -110,7 +111,7 @@ export function ChegadaVivaPanel() {
 
   return (
     <div className="viva-overlay">
-      <div className="viva-painel" role="dialog" aria-label="pergunta do Órbi">
+      <div className={'viva-painel' + (pergunta.lugar === 'PARQUE' ? ' viva-painel--parque' : '')} role="dialog" aria-label="pergunta do Órbi">
         <div className="viva-titulo">
           {pergunta.tituloAntes}
           {pergunta.tituloDestaque && (
@@ -132,6 +133,8 @@ export function ChegadaVivaPanel() {
             ))}
           </div>
         )}
+
+        {pergunta.lugar === 'PARQUE' && <ParkBedView />}
 
         <div className="viva-cartas">
           {pergunta.opcoes.map((o) => {

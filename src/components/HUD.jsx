@@ -8,6 +8,8 @@ import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
 import { estadoCombustivelHud } from '../ui/build01.js';
 import { interacaoContextualBloqueiaInput } from '../interactions/contextual-interactions.js';
+import { hortaDestination } from '../adventures/horta.js';
+import {VoiceControls} from './VoiceControls.jsx';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
@@ -46,6 +48,7 @@ export function HUD() {
   // compete com ela.
   const chegadaViva = useGame((s) => s.chegadaViva);
   const contextual = useGame((s) => interacaoContextualBloqueiaInput(s.interacaoContextual));
+  const horta = useGame((s) => s.horta);
 
   // Carona (store próprio): a bordo, a pílula vira "🐶 PARQUE?" e as missões
   // normais somem do HUD — uma instrução por vez (régua TEA).
@@ -97,6 +100,7 @@ export function HUD() {
 
   return (
     <>
+      <div className="orbi-city-voice"><VoiceControls compact repeat/></div>
       {/* Prioridade 1: tanque vazio fora do posto — aviso calmo pra ir ao posto */}
       {vazio && !abastecendo && (
         <div className="mission-banner mission-banner--aviso" role="status">
@@ -110,12 +114,17 @@ export function HUD() {
         </div>
       )}
 
-      {missaoAtiva && (
+      {horta?.active && !abastecendo && !vazio && !caronaBordo && !chegadaViva && (
+        <button className="mission-banner mission-banner--ativa horta-route" onClick={()=>useGame.getState().verCaminhoHorta()} aria-label="Ver caminho da Horta">
+          🌱 {hortaDestination(horta)==='MERCADO'?'SEMENTES NO MERCADO':'HORTA NA ESCOLA'}
+        </button>
+      )}
+      {missaoAtiva && !horta?.active && (
         <div className="mission-banner mission-banner--ativa" role="status">
           {textoBanner}
         </div>
       )}
-      {missaoAcabou && (
+      {missaoAcabou && !horta?.active && (
         <div className="mission-banner mission-banner--ok" role="status">
           {/* busca não é chegada: achou o bicho */}
           {missao?.tipo === 'busca' ? '✓ ACHAMOS!' : '✓ CHEGAMOS!'}

@@ -7,8 +7,10 @@ import {
   chaveDaMissao,
   temChegadaViva,
 } from '../missions/missoes.js';
-import { resolverPosCelebracaoContextual } from '../interactions/contextual-interactions.js';
+import { resolverPosCelebracaoContextual, interacaoContextualBloqueiaInput } from '../interactions/contextual-interactions.js';
 import { useCarona } from '../store/useCarona.js';
+import { hortaDestination } from '../adventures/horta.js';
+import { postoAtivo } from '../economia.js';
 
 // === Tempos de orquestração — afináveis ===
 const CELEBRACAO_MS         = 2200; // entre completar uma missão e sortear a próxima
@@ -41,6 +43,18 @@ export function MissionController() {
   const destino = useGame((s) => s.missao?.destino);
   const animal = useGame((s) => s.missao?.animal);
   const concluida = useGame((s) => s.missao?.concluida);
+  const horta = useGame((s) => s.horta);
+  const contexto = useGame((s) => s.interacaoContextual);
+
+  useEffect(() => {
+    if (!horta?.active || contexto) return;
+    const id=setTimeout(()=>{
+      const s=useGame.getState();
+      if(!s.horta?.active||s.interacaoContextual||s.chegadaViva||s.caderninhoAberto||s.garagemPerto||s.combustivel<=0||postoAtivo(s.combustivel,s.postoPerto)||useCarona.getState().aBordo)return;
+      falar(hortaDestination(s.horta)==='MERCADO'?'Vamos ao mercado buscar sementes para a horta!':'Vamos voltar à escola para cuidar da horta!',{interrupt:true});
+    },250);
+    return()=>clearTimeout(id);
+  },[horta?.active,horta?.stage,contexto]);
 
   const ultimoNarrado    = useRef(null);
   const ultimoConcluido  = useRef(false);
@@ -65,6 +79,7 @@ export function MissionController() {
       if (interagiu.current) return;
       interagiu.current = true;
       narrarTO.current = setTimeout(() => {
+        if (useGame.getState().horta?.active || interacaoContextualBloqueiaInput(useGame.getState().interacaoContextual)) return;
         const m = useGame.getState().missao;
         const frases = frasesDaMissao(m);
         const chave = chaveDaMissao(m);
@@ -89,6 +104,7 @@ export function MissionController() {
     const chave = chaveDaMissao(useGame.getState().missao);
     if (ultimoNarrado.current === chave) return;
     const id = setTimeout(() => {
+      if (useGame.getState().horta?.active || interacaoContextualBloqueiaInput(useGame.getState().interacaoContextual)) return;
       const m = useGame.getState().missao;
       const frases = frasesDaMissao(m);
       if (frases && chaveDaMissao(m) === chave && !m.concluida) {
@@ -97,7 +113,7 @@ export function MissionController() {
       }
     }, NOVA_MISSAO_NARRACAO_MS);
     return () => clearTimeout(id);
-  }, [destino, animal, concluida]);
+  }, [destino, animal, concluida, horta?.active, contexto]);
 
   // 3b) RE-DICA da BUSCA (Frente 5) — se a busca segue aberta após 45s,
   // a voz repete a MESMA pista UMA única vez (previsível, sem escalada;
@@ -108,6 +124,7 @@ export function MissionController() {
     if (concluida || !destino) return;
     if (useGame.getState().missao?.tipo !== 'busca') return;
     const id = setTimeout(() => {
+      if (useGame.getState().horta?.active || interacaoContextualBloqueiaInput(useGame.getState().interacaoContextual)) return;
       const m = useGame.getState().missao;
       const frases = frasesDaMissao(m);
       if (m?.tipo === 'busca' && m.destino === destino && !m.concluida && frases) {

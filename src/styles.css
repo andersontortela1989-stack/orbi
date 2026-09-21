@@ -1725,7 +1725,7 @@ canvas {
 /* No táctil, a dica de teclado é inútil e colidiria com os botões → some. */
 @media (pointer: coarse) { .controls-hint { display: none; } }
 
-/* BUILD 02.A: host técnico, sem antecipar a MicroScene visual da Padaria. */
+/* ===== BUILD 02.B · Padaria Golden MicroScene ===== */
 .contextual-host {
   position: fixed;
   inset: 0;
@@ -1735,29 +1735,367 @@ canvas {
   padding: var(--space-4);
   background: rgb(20 32 62 / 48%);
 }
-.contextual-host__card {
+
+.padaria-scene {
+  box-sizing: border-box;
+  --padaria-mel: #E8A43B;
+  --padaria-miolo: #FFD77A;
+  --padaria-casca: #B96524;
+  --padaria-madeira: #D9954B;
+  width: min(960px, 100%);
+  max-height: calc(100dvh - 2 * var(--space-4));
+  overflow: auto;
   display: grid;
-  justify-items: center;
   gap: var(--space-4);
-  min-width: min(360px, 85vw);
   padding: var(--space-5);
   border: 4px solid var(--ink);
   border-radius: var(--radius-xl);
-  background: var(--surface-base);
+  background:
+    linear-gradient(90deg, transparent 49%, rgb(28 39 70 / 5%) 50%, transparent 51%),
+    var(--surface-paper);
   box-shadow: var(--solid-3);
   color: var(--ink);
-  font-family: var(--font-display);
-  font-size: var(--text-h2);
 }
-.contextual-host__card button {
-  padding: var(--space-3) var(--space-4);
+
+.padaria-scene *,
+.padaria-scene *::before,
+.padaria-scene *::after {
+  box-sizing: border-box;
+}
+
+.padaria-scene__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.padaria-scene__eyebrow {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--text-soft);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: var(--tracking-caps);
+}
+.padaria-scene h1,
+.padaria-scene h2,
+.padaria-scene p { margin: 0; }
+.padaria-scene h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 4vw, 2.5rem);
+  line-height: var(--leading-tight);
+}
+.padaria-scene h1 strong { color: var(--orbi-coral-deep); }
+
+.padaria-alvo {
+  flex: 0 0 auto;
+  min-width: 92px;
+  padding: var(--space-2) var(--space-3);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-lg);
+  background: var(--accent);
+  box-shadow: var(--solid-2);
+  text-align: center;
+}
+.padaria-alvo span,
+.padaria-alvo strong { display: block; }
+.padaria-alvo span {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: var(--tracking-caps);
+}
+.padaria-alvo strong {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.padaria-bancada {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 4px solid var(--ink);
+  border-radius: var(--radius-xl);
+  background:
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 13%) 0 2px, transparent 2px 54px),
+    var(--padaria-madeira);
+  box-shadow: inset 0 -6px 0 rgb(185 101 36 / 24%);
+}
+
+.padaria-estacao {
+  min-width: 0;
+  min-height: 190px;
+  padding: var(--space-3);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-lg);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-2);
+  background: var(--surface-card);
+  text-align: center;
+}
+.padaria-estacao--bandeja {
+  background: linear-gradient(180deg, var(--orbi-blue-soft), var(--surface-card));
+}
+.padaria-estacao--cesta {
+  background: linear-gradient(180deg, var(--orbi-sun-soft), var(--surface-card));
+}
+.padaria-estacao h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-caps);
+}
+.padaria-estacao p {
+  color: var(--text-soft);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: .04em;
+}
+
+.padaria-paes {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+.padaria-cesta {
+  min-height: 116px;
+  padding: var(--space-2);
+  border: 3px solid var(--ink);
+  border-radius: 22px 22px 34px 34px;
+  background:
+    repeating-linear-gradient(45deg, rgb(255 255 255 / 20%) 0 6px, transparent 6px 14px),
+    #C98239;
+  box-shadow: inset 0 -8px 0 rgb(125 63 23 / 20%);
+}
+.padaria-paes--cesta { min-height: 94px; }
+.padaria-vazio {
+  align-self: center;
+  color: var(--text-soft);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: var(--tracking-caps);
+}
+
+.padaria-pao {
+  position: relative;
+  width: 76px;
+  min-width: 60px;
+  height: 54px;
+  padding: 0;
+  border: 3px solid var(--ink);
+  border-radius: 48% 52% 44% 46%;
+  background: var(--padaria-casca);
+  box-shadow: var(--solid-1);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform var(--dur-quick) var(--ease-soft), box-shadow var(--dur-quick) var(--ease-soft);
+}
+.padaria-pao:nth-child(even) { transform: rotate(3deg); }
+.padaria-pao:nth-child(3n) { transform: rotate(-3deg); }
+.padaria-pao:hover { transform: translateY(-2px) rotate(-1deg); }
+.padaria-pao:active { transform: translateY(2px); box-shadow: var(--solid-press); }
+.padaria-pao:disabled { cursor: default; opacity: 1; }
+.padaria-pao__miolo {
+  position: absolute;
+  inset: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: inherit;
+  background: linear-gradient(145deg, #FFF0B8, var(--padaria-miolo));
+}
+.padaria-pao__miolo i {
+  width: 5px;
+  height: 25px;
+  border-radius: var(--radius-pill);
+  background: var(--padaria-mel);
+  transform: rotate(24deg);
+}
+.padaria-pao--na-cesta { width: 66px; height: 48px; }
+
+.padaria-contador {
+  align-self: center;
+  padding: var(--space-3) var(--space-2);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+  box-shadow: var(--solid-2);
+  text-align: center;
+}
+.padaria-contador span,
+.padaria-contador strong,
+.padaria-contador small { display: block; }
+.padaria-contador span,
+.padaria-contador small {
+  color: var(--text-soft);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: .04em;
+}
+.padaria-contador span { font-size: var(--text-xs); }
+.padaria-contador strong {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  line-height: 1;
+}
+.padaria-contador small { font-size: var(--text-sm); }
+
+.padaria-feedback {
+  min-height: 36px;
+  display: grid;
+  place-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--orbi-blue-soft);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-body-bold);
+  letter-spacing: .03em;
+  text-align: center;
+}
+.padaria-feedback--concluida { background: var(--orbi-grass-soft); }
+
+.padaria-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+.padaria-btn {
+  min-height: 52px;
+  padding: var(--space-3) var(--space-5);
   border: 3px solid var(--ink);
   border-radius: var(--radius-pill);
-  background: var(--success);
   color: var(--ink);
-  font: inherit;
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
   font-size: var(--text-body);
   cursor: pointer;
+  box-shadow: var(--solid-2);
+  transition: transform var(--dur-quick) var(--ease-soft), box-shadow var(--dur-quick) var(--ease-soft);
+}
+.padaria-btn--voltar { background: var(--surface-card); }
+.padaria-btn--mostrar {
+  min-width: 250px;
+  background: var(--accent);
+}
+.padaria-btn:hover { transform: translateY(-2px); }
+.padaria-btn:active { transform: translateY(2px); box-shadow: var(--solid-press); }
+.padaria-btn:disabled {
+  background: var(--success);
+  cursor: default;
+}
+.padaria-btn:focus-visible,
+.padaria-pao:focus-visible {
+  outline: 4px solid var(--orbi-blue);
+  outline-offset: 3px;
+}
+
+@keyframes padaria-pedido-pronto {
+  0%, 100% { transform: rotate(0); }
+  35% { transform: rotate(-1.5deg) scale(1.02); }
+  70% { transform: rotate(1.5deg) scale(1.02); }
+}
+.padaria-scene--concluida .padaria-cesta {
+  background:
+    repeating-linear-gradient(45deg, rgb(255 255 255 / 22%) 0 6px, transparent 6px 14px),
+    var(--success);
+  animation: padaria-pedido-pronto 420ms var(--ease-soft) 1;
+}
+
+@media (max-width: 720px) {
+  .padaria-scene { padding: var(--space-3); }
+  .padaria-bancada { grid-template-columns: minmax(0, 1fr) 86px minmax(0, 1fr); }
+  .padaria-pao { width: 64px; height: 48px; }
+  .padaria-pao--na-cesta { width: 58px; height: 44px; }
+  .padaria-contador strong { font-size: 2.5rem; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .contextual-host { padding: 6px; }
+  .padaria-scene {
+    max-height: calc(100dvh - 12px);
+    gap: 7px;
+    padding: 10px;
+    border-width: 3px;
+    border-radius: var(--radius-lg);
+  }
+  .padaria-scene__header { gap: var(--space-2); }
+  .padaria-scene__eyebrow { font-size: 10px; }
+  .padaria-scene h1 { font-size: clamp(1.1rem, 4vw, 1.55rem); }
+  .padaria-alvo {
+    min-width: 70px;
+    padding: 4px 8px;
+    border-width: 2px;
+  }
+  .padaria-alvo span { font-size: 9px; }
+  .padaria-alvo strong { font-size: 1.45rem; }
+  .padaria-bancada {
+    grid-template-columns: minmax(0, 1fr) 68px minmax(0, 1fr);
+    gap: 6px;
+    padding: 6px;
+    border-width: 3px;
+    border-radius: var(--radius-lg);
+  }
+  .padaria-estacao {
+    min-height: 126px;
+    padding: 6px;
+    gap: 3px;
+    border-width: 2px;
+    border-radius: var(--radius-md);
+  }
+  .padaria-estacao h2 { font-size: 14px; }
+  .padaria-estacao p { font-size: 9px; }
+  .padaria-paes { gap: 4px; }
+  .padaria-pao,
+  .padaria-pao--na-cesta {
+    width: 58px;
+    min-width: 58px;
+    height: 44px;
+    border-width: 2px;
+  }
+  .padaria-pao__miolo { inset: 4px; }
+  .padaria-pao__miolo i { height: 19px; width: 4px; }
+  .padaria-cesta {
+    min-height: 82px;
+    padding: 4px;
+    border-width: 2px;
+  }
+  .padaria-paes--cesta { min-height: 70px; }
+  .padaria-contador {
+    padding: 6px 4px;
+    border-width: 2px;
+    border-radius: var(--radius-lg);
+  }
+  .padaria-contador span { font-size: 9px; }
+  .padaria-contador strong { font-size: 2rem; }
+  .padaria-contador small { font-size: 11px; }
+  .padaria-feedback {
+    min-height: 26px;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  .padaria-acoes { gap: 8px; }
+  .padaria-btn {
+    min-height: 44px;
+    padding: 7px 14px;
+    border-width: 2px;
+    font-size: 13px;
+  }
+  .padaria-btn--mostrar { min-width: 190px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .padaria-pao,
+  .padaria-btn { transition: none; }
+  .padaria-scene--concluida .padaria-cesta { animation: none; }
 }
 
 /* ===== HUD compacto em telas baixas (celular em paisagem) =====
@@ -1797,6 +2135,65 @@ canvas {
   }
 
   .orbi-companion { width: 88px; }
+}
+
+/* Revisão no celular real: considerar a altura útil com as barras do navegador. */
+.posto-overlay, .viva-overlay {
+  max-width: calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right));
+  bottom: calc(12px + env(safe-area-inset-bottom));
+}
+.posto-painel, .viva-painel {
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.viva-titulo, .viva-dica { text-align: center; }
+.park-bed-view { display: block; width: min(320px, 100%); height: auto; flex-shrink: 0; }
+
+/* Reserva o espaço real do acelerador somente quando os controles existem. */
+body:has(.tc-dir) .orbi-companion {
+  bottom: calc(clamp(82px, 22vmin, 112px) + 24px + env(safe-area-inset-bottom));
+  width: 78px;
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .posto-painel {
+    width: min(450px, calc(100vw - 24px));
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    justify-items: center;
+    gap: 6px 12px;
+    padding: 10px 16px 12px;
+    border-radius: 22px;
+  }
+  .posto-titulo { grid-column: 1 / -1; font-size: 20px; line-height: 1.15; }
+  .posto-n { font-size: 23px; }
+  .posto-pips { grid-column: 1; gap: 4px; }
+  .posto-pip { width: 16px; height: 22px; border-radius: 5px; }
+  .posto-conta { grid-column: 1; font-size: 23px; line-height: 1; }
+  .posto-botao { grid-column: 2; grid-row: 2 / 4; min-height: 54px; font-size: 18px; padding: 8px 12px; }
+  .posto-dica { grid-column: 1 / -1; font-size: 11px; letter-spacing: 0; }
+
+  .viva-painel { padding: 10px 14px 12px; gap: 8px; width: min(560px, calc(100vw - 24px)); border-radius: 22px; }
+  .viva-titulo { font-size: 18px; line-height: 1.2; letter-spacing: 0; }
+  .viva-cartas { gap: 10px; }
+  .viva-carta { min-width: 64px; min-height: 60px; padding: 6px 10px; gap: 4px; border-radius: 18px; }
+  .viva-numero { font-size: 32px; }
+  .viva-nome { font-size: 14px; }
+  .viva-emoji { font-size: 30px; }
+  .viva-bandeira { width: 60px; height: 40px; }
+  .viva-mostra { font-size: 30px; gap: 12px; }
+  .viva-dica { font-size: 11px; letter-spacing: 0; }
+
+  .viva-painel--parque { display: grid; grid-template-columns: minmax(150px, 1fr) auto; align-items: center; }
+  .viva-painel--parque .viva-titulo, .viva-painel--parque .viva-dica { grid-column: 1 / -1; }
+  .viva-painel--parque .park-bed-view { width: 100%; }
+  .viva-painel--parque .viva-cartas { gap: 8px; }
+
+  body:has(.tc-dir) .orbi-companion { bottom: calc(104px + env(safe-area-inset-bottom)); width: clamp(48px, 20dvh, 72px); }
 }
 
 /* ===== Trava de orientação (retrato → vire o celular) ===== */

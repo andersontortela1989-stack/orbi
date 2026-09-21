@@ -25,6 +25,10 @@ export function MissionSensors() {
           floorPos={floorPos}
           size={size}
           onArrival={() => {
+            if (useGame.getState().horta?.active) {
+              if (!useCarona.getState().aBordo) useGame.getState().chegarHorta(slug);
+              return;
+            }
             const chegadaProcessada = processarChegada(slug);
             encaminharChegadaContextual(slug, chegadaProcessada, {
               preparar: prepararInteracaoContextual,

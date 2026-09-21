@@ -24,6 +24,8 @@
  *   as neurais do Edge (Natural) IGNORAM pitch — então subir o pitch só
  *   piorava o Chrome sem mudar nada no Edge (o browser oficial do Órbi).
  */
+import {voiceState,rememberVoice,clearVoice} from './voice-state.js';
+
 export const VOZ_ORBI = {
   rate: 0.95,
   pitch: 1.0,
@@ -133,6 +135,8 @@ function bestVoice() {
  *   (quem depende do onEnd pra avançar usa o retorno pra cair num timeout).
  */
 export function falar(texto, opts = {}) {
+  rememberVoice(String(texto),()=>falar(texto,{interrupt:true}));
+  if (voiceState.getSnapshot().muted) return false;
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false;
   ensureInit();
 
@@ -167,6 +171,7 @@ export function nomeParaVoz(nome) {
 }
 
 export function pararFala() {
+  clearVoice();
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }

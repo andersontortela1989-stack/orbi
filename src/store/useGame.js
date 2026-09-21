@@ -7,6 +7,8 @@ import { sortearChegadaViva } from '../missions/missoes.js';
 import { sortearBicho } from '../missions/busca.js';
 import { COR_POR_ID } from '../city/garagem.js';
 import { postoAtivo } from '../economia.js';
+import { criarAcoesHorta } from './horta-actions.js';
+import { copySchoolArt } from '../components/school/school-living-model.js';
 import {
   criarInteracaoContextual,
   temInteracaoContextual,
@@ -20,6 +22,8 @@ const painelIncompativelAtivo = (estado) =>
 
 const contextoPadariaValido = (interacao) =>
   interacao?.tipo === 'padaria-paes-v1' && interacao?.lugar === 'PADARIA';
+const contextoEscolaValido = (interacao) =>
+  interacao?.tipo === 'escola-atividades-v1' && interacao?.lugar === 'ESCOLA';
 
 /**
  * Estado global da Cidade Turbo 3D — shape espelhando a §6 do handoff.
@@ -73,6 +77,8 @@ const ESTADO_INICIAL = {
   // aguardando-celebracao transporta uma chegada válida até o Controller sem
   // antecipar a UI; nenhum campo deste objeto entra no save v6.
   interacaoContextual: null,
+  horta: null, // aventura transitória: save e caderninho permanecem inalterados
+  arteEscola: null, // mural da sessão: publicado pela criança, fora do save
 
   // Descobertas item-a-item — a matéria-prima do Caderninho do Órbi (e a
   // futura interface infantil do relatório BNCC da Fatia 13, que lerá
@@ -112,6 +118,11 @@ export const useGame = create(
   persist(
     (set, get) => ({
       ...ESTADO_INICIAL,
+      ...criarAcoesHorta(set,get),
+      publicarArteEscola: (board) => {
+        const art=copySchoolArt(board);if(!art)return false;
+        set({arteEscola:art});return true;
+      },
 
       // === Narrativa "A Chegada" ===
       // Nome da criança — capturado na intro, persiste. `trim()` evita espaços
@@ -240,7 +251,7 @@ export const useGame = create(
 
       encerrarInteracaoContextual: () => {
         const interacao = get().interacaoContextual;
-        if (!contextoPadariaValido(interacao)) return false;
+        if (!contextoPadariaValido(interacao) && !contextoEscolaValido(interacao)) return false;
         set({ interacaoContextual: null });
         if (
           interacao.origem === 'missao' &&
@@ -385,6 +396,7 @@ export const useGame = create(
       // +1 por conclusão garantido: o guard de `concluida` impede contar duas
       // vezes, e a chamada vem de evento de física (não de effect/StrictMode).
       processarChegada: (slug) => {
+        if (get().horta?.active) return false;
         const m = get().missao;
         if (!m || m.concluida || m.destino !== slug) return false;
         const habilidade =
@@ -412,6 +424,7 @@ export const useGame = create(
       // NAVEGAÇÃO (a pista é linguagem→espaço; cienciasVida fica com o
       // VET/quiz); o bicho achado vira adesivo do caderninho.
       processarBusca: (slug) => {
+        if (get().horta?.active) return false;
         const m = get().missao;
         if (!m || m.tipo !== 'busca' || m.concluida || m.destino !== slug) {
           return false;

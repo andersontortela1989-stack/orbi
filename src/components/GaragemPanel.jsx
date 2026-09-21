@@ -9,7 +9,7 @@ import { CORES_CARRO, COR_POR_ID } from '../city/garagem.js';
  *
  * Mesmo padrão do RefuelPanel: overlay 2D fora do <Canvas>, ancorado
  * embaixo (NÃO cobre a cena — o carro fica visível ali em cima, e é nele
- * que o preview acontece), abre na zona, fecha ao sair dirigindo. Espera
+ * que o preview acontece), abre na zona, fecha pelo botão ou ao sair dirigindo. Espera
  * o caderninho fechar (uma coisa por vez), e o botão do caderninho some
  * enquanto este painel está aberto (Caderninho.jsx).
  *
@@ -109,7 +109,20 @@ export function GaragemPanel() {
   return (
     <div className="garagem-overlay">
       <div className="garagem-painel" role="dialog" aria-label="garagem">
-        <div className="garagem-titulo">🎨 PINTAR O CARRO</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)', width: '100%' }}>
+          <div className="garagem-titulo">🎨 PINTAR O CARRO</div>
+          <button
+            type="button"
+            className="garagem-botao"
+            style={{ fontSize: 'var(--text-sm)', minHeight: 48, padding: 'var(--space-2) var(--space-3)', background: 'var(--surface-card)' }}
+            onClick={(e) => {
+              useGame.getState().setGaragemPerto(false);
+              e.currentTarget.blur();
+            }}
+          >
+            VOLTAR À CIDADE
+          </button>
+        </div>
 
         <div className="garagem-cores">
           {CORES_CARRO.map((cor) => {

@@ -1,14 +1,13 @@
 import { QUANTIDADES } from '../missions/chegadas-vivas.js';
 
-// BUILD 02.A — capability mínima e estática. A única interação contextual
-// autorizada nesta etapa é a PADARIA; desligar este boolean restaura o
-// roteamento legado sem criar configuração persistida ou sistema de flags.
+// Capacidades locais; sem configuração persistida ou migração de save.
 export const CAPACIDADES_CONTEXTUAIS = {
   PADARIA: true,
+  ESCOLA: true,
 };
 
 export function temInteracaoContextual(lugar) {
-  return lugar === 'PADARIA' && CAPACIDADES_CONTEXTUAIS.PADARIA === true;
+  return (lugar === 'PADARIA' || lugar === 'ESCOLA') && CAPACIDADES_CONTEXTUAIS[lugar] === true;
 }
 
 export function interacaoContextualBloqueiaInput(interacao) {
@@ -18,6 +17,10 @@ export function interacaoContextualBloqueiaInput(interacao) {
 export function criarInteracaoContextual(lugar, origem, random = Math.random) {
   if (!temInteracaoContextual(lugar)) return null;
   if (origem !== 'missao' && origem !== 'exploracao') return null;
+  if (lugar === 'ESCOLA') return {
+    tipo: 'escola-atividades-v1', lugar, origem,
+    status: origem === 'missao' ? 'aguardando-celebracao' : 'ativa',
+  };
   const indice = Math.min(
     QUANTIDADES.length - 1,
     Math.floor(Math.max(0, random()) * QUANTIDADES.length)

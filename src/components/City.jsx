@@ -1,4 +1,5 @@
 import { Building } from './Building.jsx';
+import { SchoolEnvironment } from './school/SchoolEnvironment.jsx';
 import { BAIRROS } from '../city/bairros.js';
 
 /**
@@ -34,13 +35,15 @@ export function City() {
           </mesh>
 
           {bairro.predios.map((p) => (
-            <Building
-              key={p.slug}
-              floorPos={p.pos}
-              size={p.size}
-              color={p.cor}
-              label={p.slug}
-            />
+            <group key={p.slug}>
+              <Building
+                floorPos={p.pos}
+                size={p.size}
+                color={p.cor}
+                label={p.slug}
+              />
+              {p.slug === 'ESCOLA' && <SchoolEnvironment building={p} />}
+            </group>
           ))}
         </group>
       ))}

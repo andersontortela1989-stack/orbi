@@ -51,6 +51,8 @@ function star(cx, cy, r, fill) {
 
 // ---- pose → humor do rosto -------------------------------------
 function moodFor(pose) {
+  if (pose === 'admirando') return 'calmo';
+  if (pose === 'apontando') return 'curioso';
   if (pose === 'comemorando') return 'uau';
   if (pose === 'curioso') return 'curioso';
   return 'feliz'; // acenando, parado
@@ -94,12 +96,16 @@ function head(mood) {
 }
 
 function arms(pose) {
+  if (pose === 'apontando') return limb('M74 162 L50 210') + limb('M146 160 L192 143');
+  if (pose === 'admirando') return limb('M74 160 L89 181') + limb('M146 160 L131 181');
   if (pose === 'comemorando') return limb('M74 160 L46 120') + limb('M146 160 L174 120');
   if (pose === 'curioso') return limb('M74 162 L50 210') + limb('M146 162 L132 126');
   if (pose === 'parado') return limb('M74 160 L60 208') + limb('M146 160 L160 208');
   return limb('M74 162 L50 210') + limb('M146 158 L176 118'); // acenando
 }
 function hands(pose) {
+  if (pose === 'apontando') return hand(48,216) + hand(194,141);
+  if (pose === 'admirando') return hand(88,180) + hand(132,180);
   if (pose === 'comemorando') return hand(44, 116) + hand(176, 116);
   if (pose === 'curioso') return hand(48, 216) + hand(130, 122);
   if (pose === 'parado') return hand(58, 214) + hand(162, 214);
@@ -125,7 +131,7 @@ export function orbiInner(pose) {
     '<ellipse cx="110" cy="180" rx="26" ry="9" transform="rotate(-20 110 180)" fill="none" stroke="' + NAVY + '" stroke-width="4.5"/>' +
     '<circle cx="110" cy="180" r="15" fill="' + SUN + '" stroke="' + NAVY + '" stroke-width="5"/>' +
     hands(pose) +
-    head(moodFor(pose)) +
+    '<g class="orbi-head">' + head(moodFor(pose)) + '</g>' +
     extras(pose)
   );
 }

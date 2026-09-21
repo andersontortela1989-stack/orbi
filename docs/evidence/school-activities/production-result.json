@@ -1,0 +1,13 @@
+{
+  "url": "http://192.168.100.93:4176/",
+  "assets": [
+    "http://192.168.100.93:4176/assets/index-D1j6n-YL.js"
+  ],
+  "errors": [],
+  "savedFields": 11,
+  "entry": "keyboard driving through real sensor",
+  "math": true,
+  "studio": true,
+  "exit": true,
+  "cityBalloonHidden": true
+}

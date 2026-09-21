@@ -17,7 +17,7 @@ beforeEach(() => {
   useGame.getState().resetar();
 });
 
-test('registry contextual reconhece somente a PADARIA', async () => {
+test('registry contextual reconhece os lugares habilitados e preserva os legados', async () => {
   let registry = null;
   try {
     registry = await import('../src/interactions/contextual-interactions.js');
@@ -27,6 +27,7 @@ test('registry contextual reconhece somente a PADARIA', async () => {
 
   assert.ok(registry, 'registry contextual ainda não foi implementado');
   assert.equal(registry.temInteracaoContextual('PADARIA'), true);
+  assert.equal(registry.temInteracaoContextual('ESCOLA'), true);
   assert.equal(registry.temInteracaoContextual('MERCADO'), false);
   assert.equal(registry.temInteracaoContextual('ZOO'), false);
 });

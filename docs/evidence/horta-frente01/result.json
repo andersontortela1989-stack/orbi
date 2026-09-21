@@ -1,0 +1,107 @@
+{
+  "bands": 3,
+  "complete": true,
+  "actualSensors": true,
+  "pauseResume": true,
+  "missionPreserved": true,
+  "layouts": [
+    {
+      "size": [
+        844,
+        390
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        640,
+        233
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        640,
+        233
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        1366,
+        900
+      ],
+      "overflow": 0,
+      "exitBottom": 132
+    },
+    {
+      "size": [
+        844,
+        390
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        640,
+        233
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        640,
+        233
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        1366,
+        900
+      ],
+      "overflow": 0,
+      "exitBottom": 132
+    },
+    {
+      "size": [
+        844,
+        390
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        640,
+        233
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        640,
+        233
+      ],
+      "overflow": 0,
+      "exitBottom": 59
+    },
+    {
+      "size": [
+        1366,
+        900
+      ],
+      "overflow": 0,
+      "exitBottom": 132
+    }
+  ],
+  "errors": [],
+  "saveFields": 11
+}

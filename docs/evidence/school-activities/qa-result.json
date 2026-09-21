@@ -1,0 +1,96 @@
+{
+  "visited": [
+    "3-5-math",
+    "3-5-words",
+    "3-5-history",
+    "3-5-arts",
+    "6-7-math",
+    "6-7-words",
+    "6-7-history",
+    "6-7-arts",
+    "8-10-math",
+    "8-10-words",
+    "8-10-history",
+    "8-10-arts"
+  ],
+  "layouts": [
+    {
+      "viewport": [
+        640,
+        233
+      ],
+      "room": [
+        6,
+        6,
+        634,
+        227
+      ],
+      "exit": [
+        15,
+        59
+      ],
+      "overflow": 0,
+      "scroll": 463
+    },
+    {
+      "viewport": [
+        740,
+        262
+      ],
+      "room": [
+        6,
+        6,
+        734,
+        256
+      ],
+      "exit": [
+        15,
+        59
+      ],
+      "overflow": 0,
+      "scroll": 434
+    },
+    {
+      "viewport": [
+        844,
+        390
+      ],
+      "room": [
+        6,
+        6,
+        838,
+        384
+      ],
+      "exit": [
+        15,
+        59
+      ],
+      "overflow": 0,
+      "scroll": 306
+    },
+    {
+      "viewport": [
+        1366,
+        900
+      ],
+      "room": [
+        153,
+        70,
+        1213,
+        830
+      ],
+      "exit": [
+        88,
+        132
+      ],
+      "overflow": 0,
+      "scroll": 0
+    }
+  ],
+  "errors": [],
+  "canvasPreserved": true,
+  "explorationPreserved": true,
+  "missionAdvancedOnce": true,
+  "bakery": true,
+  "voiceCalls": 152
+}

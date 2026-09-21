@@ -42,6 +42,9 @@ export const TINTAS = {
 
 /** Aliases semânticos do MUNDO — use estes nos componentes 3D. */
 export const PALETA3D = {
+  // Terra do canteiro educativo, com contraste entre seca e regada.
+  terraHorta: '#94653F',
+  terraHortaMolhada: '#4F4239',
   // céu e distância (o fog "engole" o horizonte na cor do céu profundo,
   // sem parede preta)
   ceu:       TINTAS.sky,
