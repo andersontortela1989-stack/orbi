@@ -7,6 +7,21 @@
 
 const TENTATIVAS_ATE_REVELAR = 3;
 
+/**
+ * Inteiro >= 1, defensivo como o resto do motor (ver o `Math.max(0, Number(…))`
+ * de `coletar` e de `tick`). Uma definição malformada rende uma etapa pobre,
+ * nunca um crash no meio da brincadeira.
+ */
+function inteiroPositivo(valor) {
+  const n = Math.trunc(Number(valor));
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+/** Soma dos slots já preenchidos — o "atual" do contador de `distribuir`. */
+function somar(lista) {
+  return lista.reduce((acumulado, n) => acumulado + n, 0);
+}
+
 function copiarEstado(st) {
   return { ...st };
 }
@@ -33,6 +48,10 @@ export function criarAventura(def) {
     tentativasTotal: 0,
     ajudas: 0,
     coletado: 0,
+    // Progresso por slot da etapa `distribuir`. Vazio fora dela; `entrar()`
+    // o dimensiona quando a etapa começa. Sempre SUBSTITUÍDO, nunca mutado:
+    // `estado()` devolve cópia rasa, então mutar vazaria pro snapshot anterior.
+    distribuido: [],
     esperandoDestaque: 0,
     aguardandoContinuacao: false,
     concluida: false,
@@ -63,6 +82,7 @@ export function criarAventura(def) {
 
     st.tentativasEtapa = 0;
     st.coletado = 0;
+    st.distribuido = [];
     st.esperandoDestaque = 0;
     st.aguardandoContinuacao = false;
 
@@ -109,6 +129,36 @@ export function criarAventura(def) {
           { tipo: 'falar', texto: atual.texto }
         );
         break;
+
+      // DISTRIBUIR — `coletar` generalizado de UM número para N posições.
+      //
+      // `coletar` conta: "pegue quatro baldes". `distribuir` REPARTE: "ponha
+      // seis sementes igualmente em três canteiros". A diferença não é de
+      // implementação — repartir É o conteúdo (a divisão sendo ensinada), e
+      // um contador escalar não sabe representá-la.
+      //
+      // O contador emitido mantém `atual`/`total` no formato que o HUD já lê,
+      // e acrescenta `slots`/`porSlot` para quem quiser desenhar canteiro a
+      // canteiro. Assim o host existente não muda nada.
+      case 'distribuir': {
+        const slots = inteiroPositivo(atual.slots);
+        const porSlot = inteiroPositivo(atual.porSlot);
+        st.distribuido = Array(slots).fill(0);
+        efeitos.push(
+          {
+            tipo: 'objetivo',
+            texto: atual.texto,
+            contador: {
+              atual: 0,
+              total: slots * porSlot,
+              slots: [...st.distribuido],
+              porSlot,
+            },
+          },
+          { tipo: 'falar', texto: atual.texto }
+        );
+        break;
+      }
 
       case 'entregar':
         efeitos.push(
@@ -269,6 +319,43 @@ export function criarAventura(def) {
           { tipo: 'falar', texto: String(st.coletado) },
           ...(st.coletado >= atual.quantidade ? avancar() : []),
         ];
+
+      // Ver a nota em `entrar()`. Esta etapa NÃO TEM caminho de erro, por
+      // construção: não existe resposta errada a dar, só toques que não mudam
+      // nada. Por isso ela não passa por `responder()` — aquela lógica é
+      // acoplada a `opcoes`/`correta` e serve só à `pergunta`.
+      //
+      // Slot já cheio devolve [] — no-op SILENCIOSO, e não o `Math.min` com
+      // refala que `coletar` faz. Repetir "2, 2, 2" a cada toque num canteiro
+      // completo é repetição sem informação; a régua da casa é feedback
+      // assimétrico — o avanço fala, o resto não castiga nem repete.
+      case 'distribuir': {
+        if (evento.tipo !== 'distribuiu' || evento.item !== atual.item) return [];
+        const slots = st.distribuido.length;
+        const porSlot = inteiroPositivo(atual.porSlot);
+        const slot = Number(evento.slot);
+        if (!Number.isInteger(slot) || slot < 0 || slot >= slots) return [];
+        if (st.distribuido[slot] >= porSlot) return [];
+
+        st.distribuido = st.distribuido.map((n, i) => (i === slot ? n + 1 : n));
+        const completo = st.distribuido.every((n) => n >= porSlot);
+        return [
+          {
+            tipo: 'objetivo',
+            texto: atual.texto,
+            contador: {
+              atual: somar(st.distribuido),
+              total: slots * porSlot,
+              slots: [...st.distribuido],
+              porSlot,
+            },
+          },
+          // Fala a conta DO canteiro tocado, não o total acumulado: o que se
+          // aprende aqui é que cada um recebe a mesma quantidade.
+          { tipo: 'falar', texto: String(st.distribuido[slot]) },
+          ...(completo ? avancar() : []),
+        ];
+      }
 
       case 'entregar':
         if (evento.tipo !== 'chegou' || evento.lugar !== atual.lugar) return [];
