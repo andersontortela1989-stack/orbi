@@ -189,18 +189,115 @@ test('faixa desconhecida ou divisão quebrada não cria aventura nenhuma', () =>
   }
 });
 
-test('uma aventura por vez, e a horta já viva não recomeça', () => {
+/** Conclui a aventura em curso e fecha o resumo. */
+function concluir(band) {
+  jogarAteOResumo(band);
+  enviarEventoAventura({ tipo: 'toque' });
+}
+
+test('uma aventura por vez — mas a horta já viva RECOMEÇA, e a flag continua', () => {
   mesaLimpa();
   assert.equal(iniciarHortaEscola('3-5'), true);
   assert.equal(iniciarHortaEscola('6-7'), false, 'já tem uma em curso');
 
-  jogarAteOResumo('3-5');
+  concluir('3-5');
+  assert.equal(aventuraRuntime.estado().ativa, false);
+  assert.equal(useGame.getState().worldFlags.horta_escola_viva, true);
+  // A pilha se desfaz sozinha ao fim: liberar resumo, depois liberar em_missao.
+  assert.equal(coordenadorAtividade.estado().foco, 'explorando');
+
+  // A mudança no mundo é permanente; a brincadeira não é. Plantar de novo vale.
+  assert.equal(iniciarHortaEscola('3-5'), true, 'a horta viva não tranca mais');
+  assert.equal(
+    useGame.getState().worldFlags.horta_escola_viva,
+    true,
+    'e a flag segue ligada durante a repetição'
+  );
+
+  concluir('3-5');
+  mesaLimpa();
+});
+
+test('a segunda conclusão não entrega o adesivo de novo', () => {
+  mesaLimpa();
+
+  iniciarHortaEscola('3-5');
+  concluir('3-5');
+  const aposPrimeira = [...useGame.getState().recompensas];
+  assert.deepEqual(aposPrimeira, ['broto-da-escola'], 'o adesivo é da primeira vez');
+
+  assert.equal(iniciarHortaEscola('3-5'), true);
+  concluir('3-5');
+
+  assert.deepEqual(
+    useGame.getState().recompensas,
+    aposPrimeira,
+    'registrarRecompensa já ignora repetido — nada de adesivo em dobro'
+  );
+  mesaLimpa();
+});
+
+test('a segunda conclusão não duplica descobertas', () => {
+  mesaLimpa();
+
+  iniciarHortaEscola('6-7'); // 4 sementes, 2 canteiros
+  concluir('6-7');
+  const aposPrimeira = structuredClone(useGame.getState().descobertas);
+  assert.ok(aposPrimeira.objetos.includes('semente'));
+  assert.ok(aposPrimeira.lugares.includes('MERCADO'));
+  assert.ok(aposPrimeira.lugares.includes('ESCOLA'));
+  assert.ok(aposPrimeira.contagens.includes('4'));
+
+  assert.equal(iniciarHortaEscola('6-7'), true);
+  concluir('6-7');
+
+  assert.deepEqual(
+    useGame.getState().descobertas,
+    aposPrimeira,
+    'listas idempotentes: nenhuma entrada repetida'
+  );
+  mesaLimpa();
+});
+
+test('concluída numa faixa, recomeça em OUTRA e vai até o fim sem punição', () => {
+  mesaLimpa();
+
+  iniciarHortaEscola('3-5'); // 3 sementes, 3 canteiros, 1 em cada
+  concluir('3-5');
+
+  // Faixa diferente: 6 sementes em 3 canteiros, 2 em cada.
+  assert.equal(iniciarHortaEscola('8-10'), true);
+  assert.equal(aventuraRuntime.estado().id, 'horta-escola-8-10');
+
+  enviarEventoAventura({ tipo: 'toque' });
+  assert.equal(aventuraRuntime.estado().etapa, 'ir-ao-mercado');
+  enviarEventoAventura({ tipo: 'chegou', lugar: 'MERCADO' });
+  for (let n = 0; n < 6; n += 1) {
+    enviarEventoAventura({ tipo: 'coletou', item: 'semente', quantidade: 1 });
+  }
+  assert.equal(
+    aventuraRuntime.estado().etapa,
+    'voltar-a-escola',
+    'a repetição conta 6, não os 3 da faixa anterior'
+  );
+
+  enviarEventoAventura({ tipo: 'chegou', lugar: 'ESCOLA' });
+  for (let canteiro = 0; canteiro < 3; canteiro += 1) {
+    enviarEventoAventura({ tipo: 'distribuiu', item: 'semente', slot: canteiro });
+    enviarEventoAventura({ tipo: 'distribuiu', item: 'semente', slot: canteiro });
+  }
+  assert.equal(aventuraRuntime.estado().etapa, 'regar', '2 em cada um dos 3');
+  for (let canteiro = 0; canteiro < 3; canteiro += 1) {
+    enviarEventoAventura({ tipo: 'distribuiu', item: 'agua', slot: canteiro });
+  }
+
+  assert.equal(aventuraRuntime.estado().etapa, 'fecho');
+  assert.equal(coordenadorAtividade.estado().foco, 'resumo');
+  assert.deepEqual(punicoes(), [], 'repetir não pune');
+  assert.equal(aventuraRuntime.estado().motor.tentativasTotal, 0);
+  assert.ok(useGame.getState().descobertas.contagens.includes('6'), 'contagem nova entra');
+
   enviarEventoAventura({ tipo: 'toque' });
   assert.equal(aventuraRuntime.estado().ativa, false);
-
-  coordenadorAtividade.reiniciar();
-  assert.equal(useGame.getState().worldFlags.horta_escola_viva, true);
-  assert.equal(iniciarHortaEscola('3-5'), false, 'a horta já está viva');
-
   mesaLimpa();
 });

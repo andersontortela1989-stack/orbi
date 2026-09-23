@@ -238,10 +238,18 @@ export function iniciarParqueComSede() {
 /**
  * A Horta é a primeira aventura PARAMETRIZADA: a definição nasce da faixa
  * escolhida, não de um arquivo fixo. Faixa desconhecida não começa nada.
+ *
+ * REPETÍVEL, ao contrário do Parque. `horta_escola_viva` continua sendo gravada
+ * e continua significando a mudança permanente no mundo — ela só não TRANCA
+ * mais a porta. Plantar de novo, em qualquer faixa, é brincar de novo; o mundo
+ * já mudou e segue mudado.
+ *
+ * O adesivo não precisa de guarda aqui: `registrarRecompensa` e
+ * `registrarDescoberta` já ignoram repetido, então a recompensa é da primeira
+ * conclusão e as repetições rendem só a fala e o resumo.
  */
 export function iniciarHortaEscola(band) {
   if (!podeComecar()) return false;
-  if (useGame.getState().worldFlags?.horta_escola_viva) return false;
   const def = criarHortaEscola(band);
   return def ? comecar(def) : false;
 }
