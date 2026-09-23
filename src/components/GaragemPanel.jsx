@@ -120,7 +120,35 @@ export function GaragemPanel() {
   return (
     <div className="garagem-overlay">
       <div className="garagem-painel" role="dialog" aria-label="garagem">
-        <div className="garagem-titulo">🎨 PINTAR O CARRO</div>
+        {/* SAÍDA EXPLÍCITA. Sair dirigindo continua funcionando e continua
+            sendo a régua do coordenador (`garagem` mantém `dirigir: true` de
+            propósito, pra não criar softlock no touch). O botão não muda
+            nada disso — só torna VISÍVEL uma saída que já existia: quem
+            ainda não lê não descobre sozinho que "é só dirigir pra fora".
+
+            Fica sempre no topo, à direita, em TODOS os estados do painel
+            (sem compra, cor já comprada, logo após comprar). O botão de
+            pintar vive embaixo, então os dois nunca trocam de lugar.
+
+            tabIndex=-1 + blur() como nas swatches: aqui o ESPAÇO segue vivo
+            (é o freio de mão) e não pode reativar o botão focado. */}
+        <div className="garagem-topo">
+          <div className="garagem-titulo">🎨 PINTAR O CARRO</div>
+          <button
+            type="button"
+            className="garagem-sair"
+            tabIndex={-1}
+            aria-label="Voltar à cidade e fechar a garagem"
+            onClick={(e) => {
+              // Zera `garagemPerto` e `corPreview` num set só (useGame).
+              // A compra já feita não é tocada: cor vestida e moedas ficam.
+              useGame.getState().setGaragemPerto(false);
+              e.currentTarget.blur();
+            }}
+          >
+            VOLTAR À CIDADE
+          </button>
+        </div>
 
         <div className="garagem-cores">
           {CORES_CARRO.map((cor) => {

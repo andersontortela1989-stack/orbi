@@ -583,6 +583,40 @@ textarea:focus-visible {
   color: var(--text-strong);
 }
 
+/* Cabeçalho do painel: título à esquerda, saída à direita — mesma régua do
+   `.cad-topo` do Caderninho. A posição do botão de sair NUNCA muda, em
+   nenhum estado do painel: previsibilidade antes de economia de espaço. */
+.garagem-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+/* Saída explícita da garagem. Sair dirigindo continua valendo; este botão só
+   diz em voz alta o que já era possível. Mesma linguagem do `.cad-fechar`. */
+.garagem-sair {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: var(--weight-display-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+  background: var(--orbi-grass);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  box-shadow: var(--solid-3);
+  flex-shrink: 0;
+}
+
+.garagem-sair:active {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+
 .garagem-cores {
   display: flex;
   flex-wrap: wrap;
@@ -1903,6 +1937,7 @@ textarea:focus-visible {
   .adv-opcao,
   .adv-continuar,
   .adv-ajuda-painel,
+  .garagem-sair,
   .cad-fechar {
     min-height: 48px;
     touch-action: manipulation;
@@ -1913,11 +1948,13 @@ textarea:focus-visible {
    fechar para fora, e as opções passam naturalmente para a linha seguinte. */
 @media (max-width: 820px) {
   .cad-topo,
+  .garagem-topo,
   .pais-topo {
     align-items: flex-start;
   }
 
   .cad-titulo,
+  .garagem-titulo,
   .pais-titulo {
     font-size: clamp(18px, 4vw, 24px);
     line-height: 1.15;
