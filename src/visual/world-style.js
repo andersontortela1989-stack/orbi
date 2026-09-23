@@ -20,6 +20,25 @@ export const LINGUAGEM_MUNDO = Object.freeze({
   velocidadeAmbiente: 0.55,
 });
 
+/** Piso de z-index da interface: `.hud` e `.mission-banner` em styles.css. */
+export const ZINDEX_PISO_HUD = 10;
+
+/**
+ * Teto de camada dos balões que vivem NO MUNDO (o `<Html>` do drei).
+ *
+ * REGRA: balão do mundo fica SEMPRE abaixo de qualquer elemento do HUD.
+ *
+ * Por que precisa de um teto explícito: o drei projeta o z-index pela
+ * distância à câmera dentro de um intervalo, e o padrão dele é
+ * `[16777271, 0]` — milhões, contra os 10 do HUD. O container do R3F é
+ * `position: relative` SEM z-index, então não cria contexto de empilhamento:
+ * esse número compete direto com a interface, e o balão cobria o "CHEGAMOS!".
+ *
+ * Mexeu em algum z-index do HUD para baixo de ZINDEX_PISO_HUD? Este teto
+ * desce junto — o teste em tests/world-style.test.js guarda a relação.
+ */
+export const ZINDEX_BALAO_MUNDO = Object.freeze([ZINDEX_PISO_HUD - 1, 0]);
+
 /** Resolve a quantidade de estímulo sem conhecer React ou Zustand. */
 export function perfilVisual(preferencias = {}) {
   const tranquilo = preferencias.modoTranquilo === true;

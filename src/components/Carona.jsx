@@ -8,6 +8,7 @@ import { useGame } from '../store/useGame.js';
 import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
 import { useActivity, useRegistrarAtividade } from '../activity/useActivity.js';
 import { somSucesso } from '../audio/sons.js';
+import { ZINDEX_BALAO_MUNDO } from '../visual/world-style.js';
 
 /**
  * CARONA (piloto: 1 passageiro) — o cachorrinho pede pra ir ao PARQUE.
@@ -127,10 +128,19 @@ export function Carona({ targetRef }) {
               do drei Text). pointer-events:none no CSS: nunca rouba um toque
               dos controles. */}
           {/* O wrapper do drei Html usa z-index projetado e pode atravessar
-              overlays React. Painel aberto = balão desmontado, garantindo
-              uma única camada de atenção em configurações, quizzes e álbum. */}
+              overlays React. DUAS defesas, que se somam:
+
+              1. Painel aberto = balão desmontado, garantindo uma única camada
+                 de atenção em configurações, quizzes e álbum.
+              2. `zIndexRange` com teto abaixo do piso do HUD — o padrão do
+                 drei são milhões e cobria até o "CHEGAMOS!", que é banner e
+                 não painel, e por isso escapava da defesa 1. */}
           {atividade.hud !== 'painel' && (
-            <Html position={[ESPERA_POS[0], 3.2, ESPERA_POS[1]]} center>
+            <Html
+              position={[ESPERA_POS[0], 3.2, ESPERA_POS[1]]}
+              center
+              zIndexRange={ZINDEX_BALAO_MUNDO}
+            >
               <div className="carona-balao">🐶 PARQUE?</div>
             </Html>
           )}
