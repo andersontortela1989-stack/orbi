@@ -61,6 +61,25 @@ Não se negociam por conveniência de implementação.
 - **Modo Tranquilo é estrutural**, não um extra. Reduz som, movimento e detalhe
   — e **mantém a voz**, porque a voz é acesso, não estímulo.
 
+### A cidade cresce com a criança
+
+Enquanto a criança ensina o Órbi sobre a Terra, a cidade muda e ganha vida.
+Condições:
+
+1. A cidade só muda por causa de algo que a criança fez. Nada cresce sozinho,
+   com o tempo ou de surpresa, e o Órbi anuncia a mudança na hora.
+2. Uma mudança por vez, e ela nunca some.
+3. Sem esteira de desbloqueio: nada de "complete N missões para abrir", barra
+   de progresso ou "volte amanhã".
+4. Os lugares que já existem continuam visíveis desde o início. O crescimento
+   vem primeiro de transformar lugares existentes; lugares novos pequenos só
+   depois.
+
+Exemplos já no jogo: o parque que floresce e a horta viva da escola.
+
+Observação real (set/2026): as duas crianças da família perceberam as mudanças
+e gostaram.
+
 ---
 
 ## Arquitetura — uma linha por módulo
