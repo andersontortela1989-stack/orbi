@@ -169,6 +169,18 @@ que não se reproduziu e consumiu tempo à toa.
 O que falta: medir no celular, e só então procurar gargalo — com número, não com
 palpite. Enquanto isso, não mexer em céu, física, DPR, antialias nem grid.
 
+**Atualização — 27/09/2026, primeira observação no aparelho alvo.** Build de
+produção num celular Android, pela rede Wi-Fi local, jogado pelo Heitor e pelo
+Higor (registro completo em `docs/TESTES_COM_CRIANCAS.md`). Rodou liso na maior
+parte do tempo e **travou em cerca de 10% do tempo**.
+
+Isso confirma que o problema existe no alvo, mas **ainda não é a medição que
+este item pede**: o medidor de FPS é só de desenvolvimento e não está no build
+de produção, então os 10% são observação durante o jogo, não número de
+ferramenta. Não foi registrado em que momentos as travadas aconteciam (curva,
+chegada, painel aberto, muitos objetos na tela) nem se o Modo Tranquilo estava
+ligado. A regra acima continua valendo; o próximo passo está no item 11.
+
 ---
 
 ## 7. Texto da Área dos Pais sobre monetização
@@ -245,3 +257,57 @@ tom e narrativa, continua válido.
 que neles ainda vale (princípios, guard-rails, tom) do que não vale (instrução
 operacional). Esta entrada existe para que a lista dos trechos fique localizável
 sem precisar reler os três arquivos.
+
+---
+
+## 10. Tela inicial em retrato
+
+**Observado.** Com o celular em pé, a arte da abertura fica numa faixa estreita
+no meio da tela, com muito espaço vazio em cima e embaixo.
+
+**Onde.** `src/components/StartScreen.jsx` — a composição é um canvas fixo de
+1280×800 escalado por `Math.min(largura / 1280, altura / 800)`. Em retrato, o
+limite é a largura; o canvas encolhe até caber de lado a lado e sobra altura. A
+sobra aparece como moldura na cor `--orbi-twilight-deep` (`.orbi-start` em
+`src/styles.css`). Exemplo de conta: numa tela de 360 px de largura, a escala
+fica em 0,28 e a arte ocupa cerca de 225 px de altura.
+
+A trava de orientação (`OrientationGuard`) **não cobre a abertura**: ela só é
+montada dentro de `src/GameExperience.jsx`. Em retrato, a criança vê a abertura
+encolhida; o pedido para virar o celular só aparece depois do JOGAR.
+
+**Quando.** Teste no celular, 27/09/2026.
+
+**O que falta decidir.** Há dois caminhos, e nenhum foi escolhido:
+
+1. levar o aviso de virar o celular também para a abertura, para que a
+   experiência inteira seja em paisagem;
+2. fazer uma composição de abertura própria para retrato.
+
+O primeiro é mais barato e coerente com o jogo, que já é só paisagem. O segundo
+mexe numa tela que foi feita fiel a um mock aprovado.
+
+---
+
+## 11. Desempenho no celular: travadas em ~10% do tempo
+
+**Observado.** No teste de 27/09/2026, o build de produção num celular Android
+rodou liso na maior parte do tempo e **travou em cerca de 10% do tempo**. É a
+primeira observação no aparelho alvo; o histórico do notebook está no item 6.
+
+**Onde.** Ainda não se sabe — esse é o ponto. O medidor de FPS existente
+(`src/GameExperience.jsx:108`) só roda no modo de desenvolvimento e não estava
+presente no teste.
+
+**Quando.** Teste no celular, 27/09/2026 (`docs/TESTES_COM_CRIANCAS.md`).
+
+**O que falta — antes de otimizar.** Medir no aparelho, com número:
+
+- em que momentos trava (andando reto, em curva, na chegada a um lugar, com
+  painel aberto, perto de muitos objetos);
+- se a travada é queda contínua de FPS ou pico isolado (coleta de lixo,
+  carregamento, compilação de shader na primeira aparição de algo);
+- se o Modo Tranquilo muda alguma coisa no celular, como não mudou no notebook.
+
+Só depois disso escolher onde mexer. As proibições do item 6 continuam valendo
+até lá.
