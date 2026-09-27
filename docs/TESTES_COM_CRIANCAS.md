@@ -47,7 +47,7 @@ aberto num celular Android pela rede Wi-Fi local. Branch
 ## Medições de desempenho
 
 Resumos copiados do medidor (`?medir=1`, fatia A3.1a), **exatamente como
-saíram**, com o contexto de cada medição. Da mais recente para a mais antiga.
+saíram**, com o contexto de cada medição. Em ordem cronológica.
 Só medições pela rota padrão do protocolo (`docs/PLANO_MESTRE.md`, A3) servem
 para comparar versões; as demais ficam marcadas como referência.
 

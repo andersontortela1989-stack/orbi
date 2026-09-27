@@ -472,8 +472,14 @@ ao mundo (A2, B1, B2, B4, B7) mede as chamadas de desenho antes e depois.
 - **Tese:** a cidade responde **na hora** ao que a criança faz, e resposta
   imediata é pré-requisito disso.
 - **Já existe:** o Stats, só em desenvolvimento; o Modo Tranquilo; sombras
-  planas; o combustível gravado em lote; as medições do notebook (33–55 FPS) e
-  do celular (cerca de 10% travado).
+  planas; o combustível gravado em lote; a observação no celular (cerca de 10%
+  travado, 27/09).
+- **Notebook — leitura corrigida em 27/09/2026:** os 33–55 FPS medidos antes
+  eram do **modo de desenvolvimento** e não valem como referência. No build de
+  produção, o notebook ficou **liso**: mediana de 16,8 a 16,9 ms e **nenhum
+  quadro acima de 50 ms**, em duas medições de 27/09 com o medidor da A3.1
+  (`docs/TESTES_COM_CRIANCAS.md`, seção "Medições de desempenho"). **A
+  investigação de travadas é só no celular (A3.2).**
 - **Arquitetura:**
   - módulo puro `src/perf/medidor.js` (tempos de quadro, percentis, contagem
     de quadros longos);
@@ -489,7 +495,9 @@ ao mundo (A2, B1, B2, B4, B7) mede as chamadas de desenho antes e depois.
 - **Fatias:**
   - **A3.1 — medidor puro e painel com `?medir=1`.** Aceite: sem o parâmetro,
     o build fica idêntico em comportamento; com ele, mostra e copia o resumo;
-    há teste U do módulo.
+    há teste U do módulo. **CONCLUÍDA** — commit `f17516e` (entregue como
+    A3.1a, com estatística incremental). Os parâmetros de comparação da §1.3
+    (`?dpr`, `?aa`, `?balao`) ficaram fora do escopo e não foram feitos.
   - **A3.2 — medição de base no celular** pelo protocolo da §1.3. É ação do
     Anderson, com cerca de 20 minutos. Aceite: 6 rodadas registradas em
     `docs/TESTES_COM_CRIANCAS.md` (seção de medição) e alvo de fluidez
@@ -567,6 +575,7 @@ ao mundo (A2, B1, B2, B4, B7) mede as chamadas de desenho antes e depois.
   e não rodar `npm audit fix`.
 - **Fatias:** **A6.1.** Aceite: `esbuild` aparece em `devDependencies`,
   `npm ls esbuild` não mostra duplicata, `npm test` e o build passam.
+  **CONCLUÍDA** — commit `71c533d` (`esbuild` 0.21.5, exata).
 - **Testes:** U (suíte inteira), B.
 - **Esforço:** 1 fatia.
 - **Cabe até 04/10? Sim.**
