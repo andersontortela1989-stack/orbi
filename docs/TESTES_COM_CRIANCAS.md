@@ -44,6 +44,32 @@ aberto num celular Android pela rede Wi-Fi local. Branch
 
 ---
 
+## Medições de desempenho
+
+Resumos copiados do medidor (`?medir=1`, fatia A3.1a), **exatamente como
+saíram**, com o contexto de cada medição. Da mais recente para a mais antiga.
+Só medições pela rota padrão do protocolo (`docs/PLANO_MESTRE.md`, A3) servem
+para comparar versões; as demais ficam marcadas como referência.
+
+### 27/09/2026 — referência no notebook
+
+**Contexto.** Notebook, build de produção (`npm run preview`), navegador
+Chrome, cerca de 1 minuto de direção livre. **Não é a rota padrão do
+protocolo.** Commit `f17516e`.
+
+```
+ÓRBI — medição de desempenho
+quando: 27/09/2026, 18:06:42
+sessão: 1 min 15 s (aquecimento de 10 s: 539 quadros ignorados)
+quadros medidos: 3699
+mediana: 16,9 ms · p95: 23,0 ms · maior: 41,0 ms
+acima de 50 ms: 0,0% · acima de 250 ms: 0
+render: 228 chamadas · 34016 triângulos · 401 geometrias · 1 texturas
+tela: 1707×879 · DPR 1,13
+```
+
+---
+
 ## Modelo para os próximos testes
 
 Copie o bloco abaixo para **cima** da sessão mais recente (a ordem é da mais

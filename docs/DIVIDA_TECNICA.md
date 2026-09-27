@@ -148,7 +148,7 @@ foi corrigida em `25b4458`.)*
 
 ---
 
-## 6. Desempenho: 33 a 55 FPS no notebook
+## 6. Desempenho no notebook (os 33 a 55 FPS eram do modo de desenvolvimento)
 
 **Observado.** O medidor de FPS do modo de desenvolvimento marcou entre 33 e 55
 quadros por segundo no notebook. **Ligar o Modo Tranquilo não melhorou o
@@ -156,7 +156,7 @@ número** — o que é a informação útil: o Modo Tranquilo desliga animaçõe
 partículas e detalhes decorativos, então o gargalo provavelmente **não está na
 decoração**.
 
-**Onde.** Medidor em `src/GameExperience.jsx:108`, dev-only
+**Onde.** Medidor em `src/GameExperience.jsx:118`, dev-only
 (`import.meta.env.DEV`, confirmado ausente do build de produção).
 
 **Quando.** Teste no notebook, 23/09/2026.
@@ -180,6 +180,20 @@ de produção, então os 10% são observação durante o jogo, não número de
 ferramenta. Não foi registrado em que momentos as travadas aconteciam (curva,
 chegada, painel aberto, muitos objetos na tela) nem se o Modo Tranquilo estava
 ligado. A regra acima continua valendo; o próximo passo está no item 11.
+
+**Correção — 27/09/2026, medição no build de produção.** Os 33 a 55 FPS medidos
+em 23/09 vieram do **modo de desenvolvimento** (`npm run dev`, com o Stats) e
+**não valem como referência**. O mesmo vale para a conclusão tirada deles sobre
+o Modo Tranquilo e a decoração.
+
+Com o medidor da fatia A3.1a (`?medir=1`), no build de produção
+(`npm run preview`, Chrome), **o notebook ficou liso**: mediana de 16,9 ms e
+**nenhum quadro acima de 50 ms**. Foram cerca de 1 minuto de direção livre,
+fora da rota padrão. O resumo completo está em `docs/TESTES_COM_CRIANCAS.md`,
+seção "Medições de desempenho".
+
+**A investigação de travadas passa a ser só no celular**, pela medição A3.2
+(marcada para 29/09/2026). No notebook não há o que investigar.
 
 ---
 
@@ -296,7 +310,7 @@ rodou liso na maior parte do tempo e **travou em cerca de 10% do tempo**. É a
 primeira observação no aparelho alvo; o histórico do notebook está no item 6.
 
 **Onde.** Ainda não se sabe — esse é o ponto. O medidor de FPS existente
-(`src/GameExperience.jsx:108`) só roda no modo de desenvolvimento e não estava
+(`src/GameExperience.jsx:118`) só roda no modo de desenvolvimento e não estava
 presente no teste.
 
 **Quando.** Teste no celular, 27/09/2026 (`docs/TESTES_COM_CRIANCAS.md`).
