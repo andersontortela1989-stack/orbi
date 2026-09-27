@@ -1,11 +1,36 @@
 # Lançamento — Órbi
 
-> **AGUARDANDO APROVAÇÃO DO ANDERSON.** Este documento é o escopo **proposto**
-> pelo `docs/PLANO_MESTRE.md`. Nada aqui está aprovado, e nenhum push, merge,
-> deploy ou compra de domínio acontece sem autorização expressa.
+> **APROVADO pelo Anderson em 27/09/2026**, com o escopo proposto pelo
+> `docs/PLANO_MESTRE.md`. A aprovação do escopo **não** autoriza por si só
+> nenhum push, merge, deploy ou compra de domínio: cada um continua exigindo
+> autorização expressa no momento.
 
 **Data-alvo: 04/10/2026 (domingo).**
-**Último portão:** o teste com as crianças de 03/10/2026 (data a confirmar).
+**Último portão:** o teste com as crianças de 03/10/2026.
+
+---
+
+## 0. Decisões do Anderson (27/09/2026)
+
+| Código | Decisão |
+|---|---|
+| **E5** | Mesclar `codex/activity-coordinator-p0` na `main` **por PR revisado**. Tem um pré-requisito obrigatório (ver abaixo). |
+| **C1** | Botão fixo no canto do HUD **e** dentro dos painéis de pergunta. Repete a última fala da **atividade em foco**. Fica desabilitado com a voz desligada. |
+| **Testes com as crianças** | **30/09/2026** (curto) e **03/10/2026** (completo). |
+| **C4** | Manter o balão da carona como está. Reabrir só se houver confusão. |
+| **B3** | Entra só se os **nomes dos bichos forem escolhidos pelas crianças** até 30/09/2026. Sem isso, fica para depois do lançamento. |
+
+### Pré-requisito obrigatório de E5.2 (antes do merge)
+
+**Desconectar o repositório no painel da Vercel, ou pausar seus deploys.**
+
+A Vercel está ligada à `main`. Segundo o Anderson, o painel indica que um push
+na `main` atualiza a produção de `orbi-kahe.vercel.app`. Sem esse passo, o
+merge publica a versão nova **antes** do teste de 03/10 e do go/no-go de
+04/10.
+
+**Ação do Anderson no painel.** O merge não acontece enquanto este passo não
+estiver confirmado.
 
 ---
 
@@ -19,7 +44,7 @@
 | A3.1–A3.2 | Medidor `?medir=1` e medição de base no celular | Sem número não há decisão de "go" sobre desempenho |
 | A1.1–A1.3 | Teste de folgas, pares PIZZA↔POSTO e ZOO↔VET separados, zoom de toque 11 | Resposta direta à observação "lugares muito próximos" |
 | A4.1 | Aviso de virar o celular também na abertura e na intro | Primeira tela vista pela criança |
-| E5.1–E5.2 | Branch de produção definida e aplicada | Uma única fonte do que está no ar |
+| E5.1–E5.2 | Branch de produção definida (merge na `main` por PR) e aplicada; **antes do merge, Vercel desconectada ou pausada** (§0) | Uma única fonte do que está no ar |
 | E4.1 | Site na Netlify publicando só a branch de produção | Endereço oficial |
 | E6.1–E6.2 | README e textos públicos coerentes com o jogo | O README atual promete Horta, "repartir" e faixas etárias, que não estão no jogo |
 
@@ -30,7 +55,7 @@ Estão na ordem em que saem:
 | Código | Entrega |
 |---|---|
 | E1.1 | Página do universo, primeira versão, no subdomínio da Netlify |
-| C1.1–C1.2 | Botão de repetir a última fala do Órbi (depende da decisão de design até 29/09) |
+| C1.1–C1.2 | Botão de repetir a última fala do Órbi (design decidido em 27/09, ver §0) |
 | A2.3–A2.4 | Identidade do HOSPITAL (ambulância) e da ESCOLA (balanço) |
 | A2.1–A2.2 | Identidade da PADARIA (pães na vitrine) e do PORTO (barcos) |
 | A3.3 | Correção da maior causa de travada, **se a medição apontar uma causa clara** |
@@ -39,8 +64,10 @@ Estão na ordem em que saem:
 
 ### 1.3 Decisões que acompanham o lançamento, sem código
 
-- **C4:** manter o balão da carona como está. O teste de 27/09 registrou "sem
-  confusão".
+- **C4:** manter o balão da carona como está (decidido em 27/09). O teste de
+  27/09 registrou "sem confusão".
+- **B3:** fora do escopo, a menos que as crianças escolham os nomes dos bichos
+  até 30/09 (decidido em 27/09).
 - **D1:** a regra "a cidade cresce com a criança" vira item obrigatório do
   checklist de toda fatia.
 - **E3.1:** busca preliminar da marca no INPI, feita pelo Anderson.
@@ -70,6 +97,7 @@ Todos precisam ser **sim**:
 - [ ] Tabela de coerência (§3) toda verdadeira.
 - [ ] Save de 27/09 migrado sem perda, se alguma fatia tiver mudado o save.
       Pelo escopo proposto, **nenhuma muda**.
+- [ ] Vercel desconectada ou com deploys pausados **antes** do merge (§0).
 - [ ] Autorização expressa do Anderson para o merge e para o deploy.
 
 **No-go** mantém o que está no ar hoje e remarca a data. Não é fracasso: é a

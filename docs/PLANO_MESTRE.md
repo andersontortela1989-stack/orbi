@@ -263,6 +263,11 @@ Há **três alvos** no repositório:
   --project-name=orbi`). O comentário do arquivo cita a URL
   `orbi-3ge.pages.dev` e um domínio próprio.
 - **Vercel:** o README da `origin/main` aponta `https://orbi-kahe.vercel.app`.
+  **Informado pelo Anderson em 27/09/2026:** o painel da Vercel indica que um
+  push na `main` atualiza a produção de `orbi-kahe.vercel.app`. A Vercel
+  publica automaticamente a partir da `main`, e **isso precisa ser desligado
+  antes do merge** (E5.2). Não há arquivo de configuração da Vercel no
+  repositório; a ligação está no painel.
 
 **Relação entre `origin/main` e esta base:** 5 commits só na `main` e 25 só
 aqui.
@@ -1084,7 +1089,16 @@ ao mundo (A2, B1, B2, B4, B7) mede as chamadas de desenho antes e depois.
   remove o deploy duplicado no Cloudflare. Tudo só com autorização expressa,
   com o diff do PR revisado.
 - **Dependências:** nenhuma técnica; decisão do Anderson.
+- **Decisão do Anderson (27/09/2026):** opção **(a)**, merge na `main` por PR
+  revisado.
+- **Pré-requisito obrigatório de E5.2:** desconectar o repositório no painel da
+  Vercel ou pausar seus deploys. A Vercel publica automaticamente a partir da
+  `main` (§1.5); sem esse passo, o merge publica a versão nova em
+  `orbi-kahe.vercel.app` antes do teste de 03/10 e do go/no-go de 04/10. É
+  ação do Anderson no painel, confirmada antes do merge.
 - **Riscos:**
+  - o merge na `main` publica na Vercel se o pré-requisito acima não for
+    cumprido;
   - o push na `main` hoje dispara o workflow do Cloudflare; o commit de merge
     não terá mais o arquivo, e pelo funcionamento do GitHub Actions não
     deveria disparar (**não verificado**);
@@ -1236,6 +1250,10 @@ crianças precisam ser confirmadas pelo Anderson.**
   se existe domínio próprio no Cloudflare (o comentário do workflow cita um).
 - **Se o commit de merge na `main` deixaria de disparar o workflow do
   Cloudflare.** É o esperado, mas não foi testado.
+- **Se a Vercel também publica outras branches como prévia** (deploys de
+  preview). Que ela publica a `main` em produção foi informado pelo Anderson a
+  partir do painel; o comportamento com as demais branches, inclusive
+  `codex/activity-coordinator-p0`, não foi conferido.
 - **O funcionamento dos painéis da Netlify** (SSL, republicar deploy
   anterior): conhecimento geral, a confirmar no painel.
 - **O conteúdo da pasta `orbi-brand/`.**
