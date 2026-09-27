@@ -68,6 +68,24 @@ render: 228 chamadas · 34016 triângulos · 401 geometrias · 1 texturas
 tela: 1707×879 · DPR 1,13
 ```
 
+### 27/09/2026, 18:10 — segunda referência no notebook
+
+**Contexto.** Notebook, build de produção, navegador Chrome, cerca de 3 minutos
+de direção livre. **Não é a rota padrão do protocolo.** Confirma a medição
+anterior: nenhum quadro acima de 50 ms. **Esta é a referência de notebook para
+comparar com o celular na medição A3.2.**
+
+```
+ÓRBI — medição de desempenho
+quando: 27/09/2026, 18:10:34
+sessão: 3 min 9 s (aquecimento de 10 s: 539 quadros ignorados)
+quadros medidos: 10307
+mediana: 16,8 ms · p95: 20,5 ms · maior: 47,8 ms
+acima de 50 ms: 0,0% · acima de 250 ms: 0
+render: 211 chamadas · 28938 triângulos · 408 geometrias · 1 texturas
+tela: 1707×879 · DPR 1,13
+```
+
 ---
 
 ## Modelo para os próximos testes
