@@ -18,7 +18,17 @@ import { Buzina } from './components/Buzina.jsx';
 import { OrientationGuard } from './components/OrientationGuard.jsx';
 import { AdventureController } from './components/AdventureController.jsx';
 import { SensorySettings } from './components/SensorySettings.jsx';
+import {
+  ColetorDesempenho,
+  MedidorDesempenho,
+} from './components/MedidorDesempenho.jsx';
 import { CAMERA_2_5D } from './visual/world-style.js';
+import { medicaoAtiva } from './perf/medidor.js';
+
+// Lido uma vez, ao carregar o jogo: sem `?medir=1` no endereço, nenhuma peça do
+// medidor monta — zero custo para a criança (fatia A3.1a).
+const MEDIR =
+  typeof window !== 'undefined' && medicaoAtiva(window.location.search);
 
 /**
  * Fronteira pesada do aplicativo. Este arquivo concentra Three.js, Rapier e
@@ -106,6 +116,7 @@ export default function GameExperience() {
         >
           <Ceu />
           {import.meta.env.DEV && <Stats />}
+          {MEDIR && <ColetorDesempenho />}
           <Suspense>
             <Physics gravity={[0, -30, 0]}>
               <Game />
@@ -130,6 +141,7 @@ export default function GameExperience() {
       <OrbiCompanion />
       <Buzina />
       <OrientationGuard />
+      {MEDIR && <MedidorDesempenho />}
     </>
   );
 }
