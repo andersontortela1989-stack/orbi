@@ -75,10 +75,13 @@ Condições:
    vem primeiro de transformar lugares existentes; lugares novos pequenos só
    depois.
 
-Exemplos já no jogo: o parque que floresce e a horta viva da escola.
+Exemplo já no jogo nesta branch: o parque que floresce ao fim da aventura
+da água. A horta viva da escola existe na branch congelada
+`feature/orbi-golden-rebuild` e ainda não está ligada ao mundo nesta base.
 
-Observação real (set/2026): as duas crianças da família perceberam as mudanças
-e gostaram.
+Observação real (set/2026): as duas crianças da família perceberam as
+mudanças na escola e no parque, jogando a versão da branch congelada, e
+gostaram.
 
 ---
 
