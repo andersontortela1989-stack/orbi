@@ -826,13 +826,11 @@ ao mundo (A2, B1, B2, B4, B7) mede as chamadas de desenho antes e depois.
 - **Arquitetura:**
   - o coordenador guarda a **última fala por atividade**, num módulo puro com
     teste;
-  - o botão repete a fala da **atividade em foco**;
-  - **proposta de lugar:** botão fixo num canto do HUD, **e também dentro dos
-    painéis de pergunta**, que é quando mais se precisa; desabilitado com a
-    voz desligada;
+  - **decisão do Anderson (27/09/2026):** botão fixo num canto do HUD **e
+    também dentro dos painéis de pergunta**; repete a última fala da
+    **atividade em foco**; fica desabilitado com a voz desligada;
   - **save não muda.**
-- **Dependências:** a decisão de design do Anderson (lugar, painéis, o que
-  repete).
+- **Dependências:** nenhuma pendente; o design foi decidido em 27/09/2026.
 - **Riscos:**
   - *sensorial:* repetir sem limite pode virar brincadeira de apertar; é
     aceitável, porque não pune;
@@ -841,9 +839,8 @@ ao mundo (A2, B1, B2, B4, B7) mede as chamadas de desenho antes e depois.
   - **C1.1 — última fala no coordenador** (U);
   - **C1.2 — botão no HUD e nos painéis de pergunta** (V, C, O).
 - **Testes:** U, R, B, V, C, O.
-- **Esforço:** 2 fatias, mais a decisão.
-- **Cabe até 04/10? Sim, se a decisão sair até 29/09.** Se não sair, fica para
-  depois.
+- **Esforço:** 2 fatias.
+- **Cabe até 04/10? Sim.** A decisão de design saiu em 27/09.
 
 #### C2. Órbi mais expressivo
 
@@ -1146,7 +1143,7 @@ A3.1 → A3.2 → A3.3 → A3.4 ────────────────
 A1.1 → A1.2 → A1.3 → A2.1…A2.4 ─────────────────┤
 A4.1 ───────────────────────────────────────────┤→ teste 03/10 → lançamento 04/10
 A5.1 (→ A5.2) ──────────────────────────────────┤
-C1 (decisão até 29/09) → C1.1 → C1.2 ───────────┤
+C1 (decidido 27/09) → C1.1 → C1.2 ──────────────┤
 E5.1 → E5.2 → E4.1 ─────────────────────────────┤
 E3.1 → (E4.2 domínio) ──────────────────────────┤
 E6.1 → E6.2 → E1.1 → E1.2 ──────────────────────┘
@@ -1198,13 +1195,14 @@ bloqueia** o lançamento no subdomínio da Netlify.
 
 ## 6. Cronograma dia a dia (28/09 a 04/10) — proposta
 
-Capacidade de 2 a 3 fatias por dia (estimativa). **As datas dos testes com as
-crianças precisam ser confirmadas pelo Anderson.**
+Capacidade de 2 a 3 fatias por dia (estimativa). **Datas dos testes com as
+crianças confirmadas pelo Anderson em 27/09/2026: 30/09 (curto) e 03/10
+(completo).**
 
 | Dia | Fatias (código) | Ações do Anderson |
 |---|---|---|
-| **28/09 (seg)** | A6.1; A3.1 (medidor `?medir=1`); A1.1 (teste de folgas) | Aprovar este plano; decidir E5; iniciar a busca no INPI (E3.1); A5.1 (5 min) |
-| **29/09 (ter)** | A1.2 (separar pares); A1.3 (zoom de toque); A4.1 (retrato) | **A3.2: medição de base no celular (cerca de 20 min)**; decidir o design de C1 |
+| **28/09 (seg)** | A6.1; A3.1 (medidor `?medir=1`); A1.1 (teste de folgas) | Plano e E5 já decididos em 27/09; iniciar a busca no INPI (E3.1); A5.1 (5 min) |
+| **29/09 (ter)** | A1.2 (separar pares); A1.3 (zoom de toque); A4.1 (retrato) | **A3.2: medição de base no celular (cerca de 20 min)** (design de C1 já decidido em 27/09) |
 | **30/09 (qua)** | A3.3 (maior causa medida, se clara); A2.1 (PADARIA) | **TESTE COM AS CRIANÇAS — curto (15 min):** zoom, pares separados, padaria reconhecível. Nomes dos bichos, se B3 for entrar. |
 | **01/10 (qui)** | A2.2 (PORTO); A2.3 (HOSPITAL); C1.1 | Revisão dos diffs |
 | **02/10 (sex)** | A2.4 (ESCOLA); C1.2; E6.1 (README) | Autorizar E5.2 (PR/merge) e E4.1 (site na Netlify) |
