@@ -41,3 +41,48 @@ aberto num celular Android pela rede Wi-Fi local. Branch
   (balão da carona durante missão ativa), que estava pendente exatamente disso.
 - **Travadas em ~10% do tempo** é a primeira medição no aparelho alvo — ver
   item 6 (desempenho).
+
+---
+
+## Modelo para os próximos testes
+
+Copie o bloco abaixo para **cima** da sessão mais recente (a ordem é da mais
+nova para a mais antiga) e preencha. Os pontos são os mesmos do teste de
+27/09, para que as sessões possam ser comparadas entre si. Ponto que não foi
+observado fica como "não observado" — nunca apagado.
+
+Quando a sessão testar algo novo (uma fatia do `docs/PLANO_MESTRE.md`),
+acrescente uma linha ao fim da tabela com o código da iniciativa (ex.: `A1`).
+
+```markdown
+## DD/MM/AAAA — <o que foi testado, em poucas palavras>
+
+**Condições.** <build de produção ou dev> · <aparelho e sistema> ·
+<rede: Wi-Fi local / outra> · branch `<branch>`, commit `<hash>` ·
+Modo Tranquilo <ligado / desligado> · duração aproximada <N> min.
+
+**Com quem.** <nomes e idades>.
+
+**Medição.** <se houver: resultado do medidor (`?medir=1`) ou "sem medição">.
+
+### O que foi visto
+
+| Ponto | Resultado |
+|---|---|
+| **Garagem** | <botão VOLTAR À CIDADE: acertou? precisou de ajuda?> |
+| **Desempenho** | <liso / travou — em que momentos, quanto do tempo> |
+| **Parque** | <flores e parque: notou? foi até lá sozinho?> |
+| **Carona** | <confundiu com a missão ativa?> |
+| **Direção** | <como cada criança dirigiu, uma linha por criança> |
+| **Voltar a jogar** | <quis jogar de novo?> |
+| **<código>** | <o que a fatia testada mudou na experiência> |
+
+### Observações do pai
+
+- <proporções, distâncias, identidade dos lugares, outras>
+
+### Ligações com a dívida técnica e o plano
+
+- <item da `docs/DIVIDA_TECNICA.md` ou iniciativa do plano que esta sessão
+  confirma, contradiz ou deixa em aberto>
+```

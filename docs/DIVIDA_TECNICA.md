@@ -311,3 +311,6 @@ presente no teste.
 
 Só depois disso escolher onde mexer. As proibições do item 6 continuam valendo
 até lá.
+
+As causas prováveis levantadas na leitura do código e o protocolo de medição
+repetível estão na iniciativa **A3** de `docs/PLANO_MESTRE.md`.
