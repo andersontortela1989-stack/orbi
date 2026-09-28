@@ -32,6 +32,13 @@ merge publica a versão nova **antes** do teste de 03/10 e do go/no-go de
 **Ação do Anderson no painel.** O merge não acontece enquanto este passo não
 estiver confirmado.
 
+**Confirmado em 28/09/2026:** o projeto `orbi-kahe` gera prévia automática a
+cada push, em qualquer branch (ex.: deployment `5944kBqzB`, commit `3a1fafa`;
+a branch congelada `feature/orbi-golden-rebuild` tem prévia desde 20/09). O
+push de 28/09 aparece ligado a 2 projetos na Vercel; o segundo ainda não foi
+identificado. Antes do merge, identificar os dois e desconectar ou pausar
+ambos.
+
 ---
 
 ## 1. Escopo proposto

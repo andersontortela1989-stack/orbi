@@ -1217,7 +1217,9 @@ O lançamento depende de quatro correntes. Qualquer atraso nelas atrasa a data:
 1. **Publicação:** decisão E5.1 → PR E5.2 (com autorização) → configuração
    E4.1 → deploy no dia 04/10 (com autorização).
 2. **Desempenho:** A3.1 → medição A3.2 no celular → A3.3, se a causa for
-   clara → nova medição A3.4. Sem A3.2 não há número para decidir "go".
+   clara → nova medição A3.4. A A3.4 acontece em 03/10 com ou sem A3.3: é a
+   medição do build candidato que decide o go/no-go de desempenho
+   (`LANCAMENTO.md` §2). Sem A3.2 não há número para decidir "go".
 3. **Mundo:** A1.1 → A1.2 → A1.3, e então o **teste com as crianças de
    03/10**, que é o último portão.
 4. **Textos:** E6.1, porque o README não pode prometer a Horta.

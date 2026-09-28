@@ -134,6 +134,10 @@ ficha A3.
 - Desviar do cão da carona (perto do início, ao sul da PIZZA); se embarcar,
   anotar na rodada.
 - Anotar à mão o trecho de cada travada.
+- Método de servir o build: registrar em cada rodada se foi a prévia da Vercel
+  (`orbi-kahe-git-codex-activity-coordinator-p0-androm.vercel.app`, deployment
+  `5944kBqzB`, commit `3a1fafa`, código idêntico a `c8aca64`) ou
+  `npm run preview` local. A A3.4 (03/10) usa o **mesmo** método.
 
 ---
 
