@@ -128,3 +128,19 @@ A ser preenchida em E6.2 e conferida a cada lançamento.
   precisa ser **conferido no painel** antes de 04/10.
 - **Código:** o último commit aprovado da branch de produção é a referência.
   Nenhum `push --force`.
+
+---
+
+## 5. Mudança de escopo (28/09/2026)
+
+- **Entra como obrigatório: R1, roteiro "Um dia do Órbi" (peça 1).** A ordem
+  fixa das missões substitui o sorteio que, no teste de 28/09, levou 5 a 6
+  vezes ao VET em cerca de 5 minutos. Lista: PADARIA → ESCOLA → ESTÁDIO → busca
+  do GATO → ZOO → VET → MERCADO → PIZZA, e recomeça. Detalhes na §9 do
+  `PLANO_MESTRE.md`.
+- **Saem do lançamento:** A2.2 (PORTO) e A2.3 (HOSPITAL), porque os dois
+  lugares ficaram fora do dia.
+- **Continua valendo:** C4 (balão da carona como está). Carona, aventura da
+  água e horta funcionam como antes.
+- **Ideias para depois, não aprovadas:** peça 2 (carona, busca e aventura como
+  paradas) e peça 3 (momentos novos e reação a visita livre).

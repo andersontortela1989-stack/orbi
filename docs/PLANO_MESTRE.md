@@ -1267,3 +1267,52 @@ crianças confirmadas pelo Anderson em 27/09/2026: 30/09 (curto) e 03/10
 - **A disponibilidade da marca "Órbi" no INPI.**
 - **As estimativas de esforço e de capacidade.** São estimativas; o limite
   real é o tempo de revisão.
+
+---
+
+## 9. Mudança de escopo aprovada em 28/09/2026
+
+### R1. Roteiro "Um dia do Órbi" (peça 1: sequenciador) — obrigatória no lançamento
+
+- **Origem:** teste do Anderson em 28/09/2026 (`npm run dev`, notebook). Em
+  cerca de 5 minutos o jogo levou 5 a 6 vezes ao VET, numa sequência sem
+  sentido (VET → FAROL → VET). A causa estava no código: a próxima missão era
+  **sorteada** (50% leitura, 25% ciências — sempre no VET — e 25% busca).
+- **Objetivo para a criança:** uma volta pela cidade que conta um dia, do café
+  ao jantar, sempre na mesma ordem. O que varia é o conteúdo dentro de cada
+  parada (pães, bandeira, bicho, fruta, bicho levado ao VET).
+- **Tese:** a criança guia o Órbi por um dia na Terra; a ordem tem sentido
+  para ela ("de manhã a padaria, à noite a pizza").
+- **Lista aprovada (Proposta B), na ordem:** 1 PADARIA (leitura + contar pães)
+  · 2 ESCOLA (leitura) · 3 ESTÁDIO (leitura + bandeiras) · 4 busca do GATO ·
+  5 ZOO (leitura + som do bicho) · 6 VET (ciências) · 7 MERCADO (leitura + cor
+  da fruta) · 8 PIZZA (leitura). Depois da PIZZA, recomeça na PADARIA, sem
+  nenhuma fala de fim.
+- **Fica fora da volta:** PARQUE, PORTO, FAROL, HOSPITAL e as outras quatro
+  buscas. O PARQUE e o PORTO continuam sendo o palco da aventura da água e da
+  entrega da carona.
+- **Arquitetura:** módulo puro `src/missions/roteiro.js` (lista, próxima
+  posição, missão da parada, regra de início e regra de avanço). O store
+  guarda a posição num campo **transitório** (`roteiroPosicao`), fora do save.
+  **O formato de `missao` no save não muda; `SAVE_VERSION` não muda.**
+- **Fronteira:** vira parada só o que o antigo sorteio gerava. Carona, aventura
+  da água e horta seguem funcionando exatamente como antes; quando
+  interrompem, a mesma parada é retomada. **C4 mantido** (o balão da carona
+  continua como está).
+- **Testes:** `tests/roteiro.test.js` (ordem, lugares sem repetição, virada,
+  missões válidas, identificação, início com retomada, variação do bicho do
+  VET, interrupção e chegada errada sem avanço).
+- **Esforço:** 1 fatia. **Cabe até 04/10? Sim.**
+
+### Efeito no cronograma
+
+- **A2.2 (PORTO) e A2.3 (HOSPITAL) passam para depois do lançamento:** os dois
+  lugares ficaram fora do dia.
+
+### Ideias para depois do lançamento (registradas, NÃO aprovadas)
+
+- **Peça 2:** carona, busca e aventura da água como paradas do roteiro.
+  Reabriria o C4.
+- **Peça 3:** momentos novos no dia (por exemplo, o HOSPITAL quando alguém
+  precisa de ajuda, o FAROL acendendo à noite) e uma reação do Órbi quando a
+  criança visita por conta própria um lugar fora do dia (hoje, nada acontece).

@@ -67,8 +67,8 @@ export function ChegadaVivaPanel() {
     if (d) useGame.getState().registrarDescoberta(d.categoria, d.id);
   };
 
-  // Fecha o painel e segue o fluxo normal — só o painel sorteia a próxima
-  // missão quando há chegada viva (o MissionController delega pra cá).
+  // Fecha o painel e segue o fluxo normal — só o painel pede a próxima
+  // parada do roteiro quando há chegada viva (o MissionController delega pra cá).
   const finalizar = () => {
     clearTimeout(fecharTO.current);
     fecharTO.current = setTimeout(() => {

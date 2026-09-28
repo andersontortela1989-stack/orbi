@@ -6,10 +6,8 @@ import {
   migrarEstadoPersistido,
   storageSeguro,
 } from '../save.js';
-import { DESTINOS_GPS } from '../missions/destinos.js';
-import { sortearAnimal } from '../missions/missoes-ciencias.js';
 import { sortearChegadaViva } from '../missions/missoes.js';
-import { sortearBicho } from '../missions/busca.js';
+import { inicioDoRoteiro, avancoDoRoteiro } from '../missions/roteiro.js';
 import { COR_POR_ID } from '../city/garagem.js';
 import {
   PREFERENCIAS_PADRAO,
@@ -67,6 +65,13 @@ const ESTADO_INICIAL = {
 
   // Caderninho do Órbi aberto? (transiente — NÃO persistido)
   caderninhoAberto: false,
+
+  // Roteiro "Um dia do Órbi" (missions/roteiro.js) — posição da parada atual
+  // e bicho levado ao VET na volta anterior. Transientes como postoPerto:
+  // NÃO persistidos. `null` = o roteiro ainda não começou nesta sessão; o
+  // primeiro proximaMissao retoma a partir da `missao` salva.
+  roteiroPosicao: null,
+  roteiroUltimoAnimal: null,
 
   // Descobertas item-a-item — a matéria-prima do Caderninho do Órbi (e a
   // futura interface infantil do relatório BNCC da Fatia 13, que lerá
@@ -266,78 +271,27 @@ export const useGame = create(
           };
         }),
 
-      // === Missão de GPS (Fatia 4) ===
-      // Sorteia um novo destino entre DESTINOS_GPS, evitando o destino atual
-      // pra não repetir consecutivamente. Marca concluida=false.
-      iniciarMissaoGPS: () =>
-        set((s) => {
-          const atual = s.missao?.destino;
-          const candidatos = DESTINOS_GPS.filter((d) => d !== atual);
-          const novo =
-            candidatos[Math.floor(Math.random() * candidatos.length)] ??
-            DESTINOS_GPS[0];
-          return { missao: { tipo: 'gps', destino: novo, concluida: false } };
-        }),
-
-      // === Missão de Ciências (Fatia 8) ===
-      // "Leve o animal ao VET": sorteia um bichinho (evitando o último) e
-      // aponta pro VET. As frases vêm do banco de animais (via o registry
-      // frasesDaMissao), não daqui.
-      iniciarMissaoCiencias: () =>
-        set((s) => {
-          const ultimo = s.missao?.tipo === 'ciencias' ? s.missao.animal : null;
-          return {
-            missao: {
-              tipo: 'ciencias',
-              destino: 'VET',
-              animal: sortearAnimal(ultimo),
-              concluida: false,
-            },
-          };
-        }),
-
-      // === Missão de Busca (Frente 5) ===
-      // "Eu vi um bicho perto da água! Me mostra onde?" — destino é o
-      // SLUG DO BICHO (city/bichos.js): assim o controlador/registry/HUD
-      // tratam a busca pelo mesmo fluxo keyed em `destino`.
-      iniciarMissaoBusca: () =>
-        set((s) => {
-          const ultimo = s.missao?.tipo === 'busca' ? s.missao.destino : null;
-          return {
-            missao: {
-              tipo: 'busca',
-              destino: sortearBicho(ultimo),
-              concluida: false,
-            },
-          };
-        }),
-
-      // Sorteio unificado da PRÓXIMA missão — pesos GPS 2 / Ciências 1 /
-      // Busca 1 (50/25/25), com a regra "nunca duas TEMÁTICAS seguidas":
-      // a temática que acabou de rodar (ciências ou busca) sai do sorteio;
-      // GPS pode repetir, como sempre. A razão original de Ciências segue
-      // valendo: depois dela o destino seria o mesmo VET onde o carro já
-      // está parado (o sensor só dispara ao ENTRAR na zona).
+      // === Roteiro "Um dia do Órbi" (fatia R1) ===
+      // A próxima missão vem da ordem fixa de missions/roteiro.js (antes era
+      // sorteada). Com a posição ainda nula (início da sessão), aplica a
+      // regra de INÍCIO: retoma a missão salva se ela for de uma parada e não
+      // estiver concluída; se concluída, segue para a parada seguinte; senão,
+      // começa na parada 1. Com a posição definida, avança uma parada.
+      // Os três chamadores (MissionController e ChegadaVivaPanel) seguem
+      // usando este mesmo ponto; a decisão mora nas funções puras.
       proximaMissao: () => {
-        const anterior = get().missao?.tipo;
-        const pesos = [
-          ['gps', 2],
-          ['ciencias', anterior === 'ciencias' ? 0 : 1],
-          ['busca', anterior === 'busca' ? 0 : 1],
-        ];
-        const total = pesos.reduce((soma, [, p]) => soma + p, 0);
-        let r = Math.random() * total;
-        let tipo = 'gps';
-        for (const [t, p] of pesos) {
-          r -= p;
-          if (r < 0) {
-            tipo = t;
-            break;
-          }
-        }
-        if (tipo === 'ciencias') get().iniciarMissaoCiencias();
-        else if (tipo === 'busca') get().iniciarMissaoBusca();
-        else get().iniciarMissaoGPS();
+        const s = get();
+        const opcoes = { animalAnterior: s.roteiroUltimoAnimal };
+        const passo =
+          s.roteiroPosicao === null
+            ? inicioDoRoteiro(s.missao, opcoes)
+            : avancoDoRoteiro(s.roteiroPosicao, opcoes);
+        set({
+          missao: passo.missao,
+          roteiroPosicao: passo.posicao,
+          roteiroUltimoAnimal:
+            passo.missao.tipo === 'ciencias' ? passo.missao.animal : s.roteiroUltimoAnimal,
+        });
       },
 
       // Disparado pelo sensor de chegada de qualquer prédio. Se o slug bate

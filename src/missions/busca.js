@@ -13,25 +13,17 @@
  * Consumido via registry (missoes.js, caso 'busca') — o controlador não
  * sabe que a busca existe, como manda a costura do §E.
  */
-import { BICHOS, BICHO_POR_SLUG } from '../city/bichos.js';
+import { BICHO_POR_SLUG } from '../city/bichos.js';
 import { ANIMAL_POR_SLUG } from './missoes-ciencias.js';
 
 const capitalizar = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/**
- * Sorteia o slug do bicho procurado, evitando repetir o último (mesma
- * regra de variedade do sorteio de destinos/animais).
- */
-export function sortearBicho(ultimoSlug) {
-  const candidatos = BICHOS.filter((b) => b.slug !== ultimoSlug);
-  const sorteado =
-    candidatos[Math.floor(Math.random() * candidatos.length)] ?? BICHOS[0];
-  return sorteado.slug;
-}
+// O bicho procurado não é mais sorteado: a busca é uma parada fixa do roteiro
+// "Um dia do Órbi" (missions/roteiro.js).
 
 /**
  * Frases { pedido, chegada } da busca, ou null se o slug não existe mais
- * (save antigo → o controlador descarta e sorteia nova, contrato do
+ * (save antigo → o roteiro recomeça na parada 1, contrato do
  * registry). Tom do adendo: pedido é curiosidade com pista de LUGAR;
  * chegada celebra revelando o bicho com o som do banco — o MESMO som
  * que o quiz do ZOO pergunta (ponte mundo↔conteúdo fechando o ciclo).

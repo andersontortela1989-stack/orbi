@@ -11,9 +11,10 @@ import {
 } from '../missions/missoes.js';
 import { useAdventure } from '../adventure/useAdventure.js';
 import { aventuraAtiva as aventuraEstaAtiva } from '../adventure/runtime.js';
+import { podePedirProxima } from '../missions/roteiro.js';
 
 // === Tempos de orquestração — afináveis ===
-const CELEBRACAO_MS         = 2200; // entre completar uma missão e sortear a próxima
+const CELEBRACAO_MS         = 2200; // entre completar uma missão e pedir a próxima parada
 const PRIMEIRA_NARRACAO_MS  = 1900; // delay após 1ª interação (deixa a saudação tocar)
 const NOVA_MISSAO_NARRACAO_MS = 250; // pequeno respiro entre voz de chegada e nova
 const REDICA_BUSCA_MS       = 45000; // re-dica única da busca (Frente 5)
@@ -23,18 +24,19 @@ const REDICA_BUSCA_MS       = 45000; // re-dica única da busca (Frente 5)
 const CHEGADAS_POR_ESPECIAL = 4;
 
 /**
- * Orquestra o ciclo de missões — GPS e Ciências (Fatia 8):
- *  1) Boot: garante uma missão válida ativa (qualquer tipo que o registry
- *     de missoes.js reconheça; inválida/antiga → sorteia nova).
+ * Orquestra o ciclo de missões do roteiro "Um dia do Órbi" (fatia R1):
+ *  1) Boot: começa o roteiro uma única vez por sessão — retoma a missão salva
+ *     se ela for de uma parada, senão começa na parada 1 (regra em
+ *     missions/roteiro.js, inicioDoRoteiro).
  *  2) Primeira interação: destrava o speechSynthesis (autoplay policy) e narra
  *     a missão atual depois da saudação ("Bem-vindo ao Órbi").
  *  3) Quando a missão muda, narra o novo pedido. A identidade da missão é a
  *     `chaveDaMissao` (destino no GPS; animal em Ciências — lá o destino é
  *     sempre VET e não diferenciaria).
  *  4) Quando a missão é concluída: somSucesso + voz comemorando, e depois
- *     de CELEBRACAO_MS sorteia a próxima (proximaMissao: GPS ou Ciências).
+ *     de CELEBRACAO_MS pede a próxima parada (proximaMissao).
  *     EXCEÇÃO: destino com CHEGADA VIVA (ex.: ZOO) abre a
- *     mini-interação no lugar de sortear — quem fecha o painel é que
+ *     mini-interação no lugar de avançar — quem fecha o painel é que
  *     chama a próxima missão (uma coisa por vez).
  *
  * Render-less (retorna null). Mantém o JSX da cena 3D limpo.
@@ -63,9 +65,11 @@ export function MissionController() {
   const executarProxima = () => {
     proximaMissaoTO.current = null;
     if (
-      !proximaPendente.current ||
-      aventuraEstaAtiva() ||
-      !coordenadorAtividade.temFoco('em_missao')
+      !podePedirProxima({
+        pendente: proximaPendente.current,
+        aventuraAtiva: aventuraEstaAtiva(),
+        temFocoMissao: coordenadorAtividade.temFoco('em_missao'),
+      })
     ) {
       return;
     }
@@ -78,12 +82,12 @@ export function MissionController() {
     }
   };
 
-  // 1) BOOT — garante uma missão válida ao montar (gps OU ciencias; missão
-  // persistida que o registry não reconhece é descartada e sorteia-se nova).
+  // 1) BOOT — começa o roteiro. Só age com a posição ainda nula: o StrictMode
+  // roda este efeito duas vezes em desenvolvimento, e a segunda chamada não
+  // pode avançar uma parada. Com posição nula, proximaMissao aplica a regra de
+  // INÍCIO (retoma a missão salva ou começa na parada 1).
   useEffect(() => {
-    const m = useGame.getState().missao;
-    const valida = m && !m.concluida && !!frasesDaMissao(m);
-    if (!valida) {
+    if (useGame.getState().roteiroPosicao === null) {
       useGame.getState().proximaMissao();
     }
   }, []);

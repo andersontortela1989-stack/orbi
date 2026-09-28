@@ -10,6 +10,40 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 
 ---
 
+## 28/09/2026 — teste do Anderson no notebook (sem as crianças)
+
+**Condições.** `npm run dev` no notebook, Chrome, com a fatia A1.2b aplicada
+(PIZZA, VET e cão da carona nas posições novas). Cerca de 5 minutos.
+
+**Com quem.** Anderson, adulto. Sem as crianças.
+
+### O que foi visto
+
+| Ponto | Resultado |
+|---|---|
+| **Sequência das missões** | **Confusa.** O jogo levou 5 a 6 vezes ao VET em cerca de 5 minutos, numa ordem sem sentido (VET → FAROL → VET). |
+| **Causa** | A próxima missão era sorteada: 50% leitura, 25% ciências (sempre no VET) e 25% busca. |
+| **A1.2b (roteiro manual)** | O início não disparou a carona; chegar à PIZZA pelo sul com a missão PIZZA ativa **não** embarcou o cão; a carona completa funcionou. |
+
+### Decisão que saiu deste teste
+
+O sorteio dá lugar a um **roteiro fixo, "Um dia do Órbi"** (fatia R1):
+PADARIA → ESCOLA → ESTÁDIO → busca do GATO → ZOO → VET → MERCADO → PIZZA, e
+recomeça. Detalhes na §9 do `docs/PLANO_MESTRE.md`.
+
+### O que observar em 30/09, com as crianças
+
+- A **ordem do dia faz sentido** para eles? (café → escola → bola → gatinho →
+  bichos → veterinário → mercado → jantar)
+- **ESCOLA e PIZZA**, que são só leitura, sem atividade na chegada, **prendem a
+  atenção**?
+- Eles **tentam visitar lugares fora do dia** (PARQUE, PORTO, FAROL, HOSPITAL)?
+  Hoje, chegar a um lugar que não foi pedido não produz nenhuma reação.
+- O **VET continua fácil de alcançar**? (item 17 da dívida técnica: ele ficou
+  cerca de 8,6 fora da rua mais próxima)
+
+---
+
 ## 27/09/2026 — build de produção no celular
 
 **Condições.** Build de produção (`npm run build` + `npm run preview -- --host`),
