@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Orbi } from './Orbi.jsx';
 import { AreaPais } from './AreaPais.jsx';
 import { SensorySettings } from './SensorySettings.jsx';
+import { OrientationGuard } from './OrientationGuard.jsx';
 import { useGame } from '../store/useGame.js';
 
 /**
@@ -210,6 +211,11 @@ export function StartScreen({ onPlay, onVerHistoria, onPrepararJogo }) {
           Fica FORA da moldura escalada, ocupando a viewport inteira. */}
       {paisAberto && <AreaPais onFechar={() => setPaisAberto(false)} />}
       {!paisAberto && <SensorySettings variant="start" />}
+
+      {/* A4.1 — o mesmo aviso de virar o celular do jogo, só em aparelho de
+          toque. Some com a Área dos pais aberta: o adulto nunca fica preso
+          atrás do aviso (e ela se abre também em paisagem). */}
+      {!paisAberto && <OrientationGuard somenteToque />}
     </div>
   );
 }

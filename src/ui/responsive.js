@@ -41,3 +41,30 @@ export function calcularZoomViewport({ largura, altura, tactil = false } = {}) {
 
   return limitar(Math.min(porLargura, porAltura), minimo, ZOOM_MAXIMO);
 }
+
+/**
+ * Aparelho de toque? (coarse-pointer OU touch real — espelha o TACTIL do
+ * TouchControls.) Mora aqui, fora dos componentes 3D, para a abertura poder
+ * usar sem carregar o Three.js no pacote inicial.
+ */
+export function aparelhoDeToque() {
+  if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints || 0) > 0)
+    return true;
+  return (
+    typeof window !== 'undefined' &&
+    !!window.matchMedia &&
+    window.matchMedia('(pointer: coarse)').matches
+  );
+}
+
+/**
+ * Aviso de virar o celular (A4.1). `retrato` vem do matchMedia e é null
+ * quando o dado não existe — nesse caso NÃO mostra: falta de dado nunca
+ * trava a tela. `somenteToque` (abertura) exige aparelho de toque, para o
+ * desktop numa janela em pé não receber o aviso; sem ele (jogo), vale o
+ * comportamento de antes: retrato mostra em qualquer aparelho.
+ */
+export function deveMostrarAvisoRetrato({ retrato, tactil, somenteToque = false }) {
+  if (retrato !== true) return false;
+  return somenteToque ? tactil === true : true;
+}

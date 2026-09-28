@@ -461,3 +461,47 @@ teste manual de 28/09/2026, chegar à PIZZA pelo sul com a missão PIZZA ativa
 
 **O que falta.** Proposta futura: o teste (b) exigir distância ≥ largura do
 carro entre sensores de atividades diferentes.
+
+---
+
+## 19. Aviso de virar o celular pode não se explicar para quem não lê
+
+**Observado.** O aviso de orientação é um 🔄 parado com dois textos, sem voz e
+sem animação. Para uma criança que ainda não lê, pode não ficar claro o que
+fazer.
+
+**Onde.** `src/components/OrientationGuard.jsx`.
+
+**Quando.** Fatia A4.1, 28/09/2026.
+
+**O que falta.** Observar no teste com as crianças se elas entendem o aviso
+sozinhas.
+
+---
+
+## 20. A intro não mostra o aviso de retrato
+
+**Observado.** A intro (`IntroChegada`, com o campo do nome) não mostra o aviso
+de virar o celular. Decisão consciente: digitar costuma ser mais fácil com o
+celular em pé.
+
+**Onde.** `src/components/IntroChegada.jsx`.
+
+**Quando.** Fatia A4.1, 28/09/2026.
+
+**O que falta.** Reavaliar se o teste com as crianças mostrar problema.
+
+---
+
+## 21. Aviso de retrato cobre o botão da Área dos Pais na abertura
+
+**Observado.** Em celular em retrato, na abertura, o aviso de orientação cobre
+o botão "Área dos pais". O adulto precisa virar o celular para abri-la. Com a
+Área dos Pais já aberta, o aviso não aparece por cima dela.
+
+**Onde.** `src/components/StartScreen.jsx`; `src/components/OrientationGuard.jsx`.
+
+**Quando.** Fatia A4.1, 28/09/2026.
+
+**O que falta.** Decidir se isso incomoda os pais; hoje não há outro caminho
+para a Área dos Pais em retrato.

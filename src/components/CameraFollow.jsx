@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { calcularZoomViewport } from '../ui/responsive.js';
+import { calcularZoomViewport, aparelhoDeToque } from '../ui/responsive.js';
 import { CAMERA_2_5D } from '../visual/world-style.js';
 
 // === Enquadramento (zoom da câmera ortográfica da cidade) ===
@@ -16,16 +16,9 @@ import { CAMERA_2_5D } from '../visual/world-style.js';
 // de aproximação durante a brincadeira. A matemática pura vive em
 // ui/responsive.js e é coberta por node:test.
 
-// Toque? (coarse-pointer OU touch real — espelha o TACTIL do TouchControls.)
-function ehToque() {
-  if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints || 0) > 0)
-    return true;
-  return (
-    typeof window !== 'undefined' &&
-    !!window.matchMedia &&
-    window.matchMedia('(pointer: coarse)').matches
-  );
-}
+// Toque? A detecção mora em ui/responsive.js (a abertura também usa, sem
+// carregar o Three.js no pacote inicial).
+const ehToque = aparelhoDeToque;
 
 /** Zoom inicial do Canvas para o viewport atual. */
 export function zoomDoViewport() {

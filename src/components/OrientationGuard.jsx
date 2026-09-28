@@ -1,20 +1,28 @@
 import { useEffect, useState } from 'react';
+import { aparelhoDeToque, deveMostrarAvisoRetrato } from '../ui/responsive.js';
 
 /**
  * TRAVA DE ORIENTAÇÃO — Frente 0 (lançamento celular).
  *
  * Em RETRATO mostra um aviso calmo e fixo e ESCONDE o jogo até virar pra
  * paisagem. NÃO usa `screen.orientation.lock()` — não funciona no iOS Safari;
- * o overlay é o baseline confiável em qualquer dispositivo. No desktop (sempre
- * paisagem) nunca dispara. Régua TEA: calmo, sem punição, o Órbi pede gentil.
+ * o overlay é o baseline confiável em qualquer dispositivo. Régua TEA: calmo,
+ * sem punição, o Órbi pede gentil. Some sozinho ao virar, sem toque.
+ *
+ * `somenteToque` (A4.1, tela de abertura): o aviso só aparece em aparelho de
+ * toque — o desktop numa janela em pé continua vendo a abertura. Sem ele
+ * (jogo), vale o comportamento de antes: retrato mostra em qualquer aparelho.
+ * A decisão é a função pura `deveMostrarAvisoRetrato` (ui/responsive.js).
  */
+// true/false pelo matchMedia; null quando não há como saber (não mostra).
 const consultarRetrato = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia &&
-  window.matchMedia('(orientation: portrait)').matches;
+  typeof window !== 'undefined' && window.matchMedia
+    ? window.matchMedia('(orientation: portrait)').matches
+    : null;
 
-export function OrientationGuard() {
+export function OrientationGuard({ somenteToque = false }) {
   const [retrato, setRetrato] = useState(consultarRetrato);
+  const [tactil] = useState(aparelhoDeToque);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
@@ -30,7 +38,7 @@ export function OrientationGuard() {
     };
   }, []);
 
-  if (!retrato) return null;
+  if (!deveMostrarAvisoRetrato({ retrato, tactil, somenteToque })) return null;
 
   return (
     <div className="orient-guard" role="alertdialog" aria-label="vire o celular">

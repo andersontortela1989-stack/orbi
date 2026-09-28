@@ -331,6 +331,12 @@ O alvo de fluidez é **provisório** e será substituído pelo número definido
 depois da primeira medição no aparelho (A3.2). Toda fatia que acrescenta coisas
 ao mundo (A2, B1, B2, B4, B7) mede as chamadas de desenho antes e depois.
 
+**Pacote inicial depois da A4.1 (28/09/2026): 197,98 kB**, com folga de cerca
+de 2 kB até o teto de 200 kB. O aviso de orientação (`OrientationGuard`) passou
+para o pacote inicial (1.088 bytes minificados) e `src/ui/responsive.js` foi
+junto (679 bytes). Qualquer fatia que toque a abertura (`StartScreen`,
+`IntroChegada`, store) deve informar a variação do pacote inicial.
+
 ### 2.5 Política de save
 
 **Sobe `SAVE_VERSION` quando:**
