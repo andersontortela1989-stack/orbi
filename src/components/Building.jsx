@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { PALETA3D, SOMBRA_SOLIDA, TINTAS } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
 import { perfilVisual } from '../visual/world-style.js';
+import { CALCADA_EXTRA } from '../city/geometria.js';
 
 /**
  * Arquitetura-brinquedo do Órbi 2,5D.
@@ -219,7 +220,7 @@ export function Building({ floorPos, size, color, label, fontSize }) {
     <>
       {/* Lote elevado e arredondado pela sobreposição de duas bases. */}
       <mesh position={[x, 0.08, z]}>
-        <boxGeometry args={[w + 4.4, 0.16, l + 4.4]} />
+        <boxGeometry args={[w + CALCADA_EXTRA, 0.16, l + CALCADA_EXTRA]} />
         <meshStandardMaterial color={PALETA3D.calcada} roughness={0.9} />
       </mesh>
       <mesh position={[x, 0.175, z]}>

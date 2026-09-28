@@ -328,3 +328,44 @@ até lá.
 
 As causas prováveis levantadas na leitura do código e o protocolo de medição
 repetível estão na iniciativa **A3** de `docs/PLANO_MESTRE.md`.
+
+---
+
+## 12. Lote fixo de ±10 no teste da planta da escola
+
+**Observado.** O teste "volumes cabem no lote e mantêm aproximação e moedas
+livres" usa um lote fixo de ±10 em volta da ESCOLA, digitado à mão. Esse número
+vem da regra antiga `max(w,l)+4` (16 + 4 = 20, logo ±10). A calçada real da
+ESCOLA é por eixo: ±10,2 em x e **±8,2 em z**. O teste aceita volumes até 1,8
+além da calçada real na profundidade.
+
+**Onde.** `tests/school-layout.test.js:17-42` (a caixa está na linha 29).
+
+**Quando.** Levantado na fatia A1.1, 27/09/2026.
+
+**O que falta.** Sem efeito hoje: `src/school/school-layout.js` não está ligado
+ao jogo nesta base. Corrigir quando a escola com ateliê (B2) entrar no jogo,
+fazendo o teste consumir a geometria compartilhada (`CALCADA_POR_LADO` em
+`src/city/geometria.js`) em vez do 10 fixo.
+
+---
+
+## 13. Pares de calçadas com folga entre 5,6 e 5,7
+
+**Observado.** Com a regra de folga mínima 4 entre calçadas
+(`tests/folgas-cidade.test.js`), três pares passam, mas com pouca sobra:
+
+| Par | Distância entre calçadas |
+|---|---|
+| PORTO ↔ POSTO | 5,60 |
+| HOSPITAL ↔ ESCOLA | 5,63 |
+| ZOO ↔ gramado do PARQUE | 5,72 (limite inferior: o gramado é medido pelo retângulo da elipse) |
+
+**Onde.** Posições em `src/city/bairros.js` e `src/city/posto.js`; gramado em
+`src/city/geometria.js`.
+
+**Quando.** Tabela de distâncias da fatia A1.1, 27/09/2026.
+
+**O que falta.** Nada até o lançamento: é **insumo** para espalhar a cidade
+depois de 04/10 (opção maior da iniciativa A1 em `docs/PLANO_MESTRE.md`). São os
+primeiros pares a conferir se a folga mínima subir.

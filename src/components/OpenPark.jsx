@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { PALETA3D, TINTAS } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
 import { perfilVisual } from '../visual/world-style.js';
+import { GRAMADO_PARQUE_ESCALA, GRAMADO_PARQUE_RAIO } from '../city/geometria.js';
 
 const DEITADO = [-Math.PI / 2, 0, 0];
 
@@ -147,8 +148,8 @@ export function OpenPark({ floorPos }) {
   return (
     <group position={[x, 0, z]}>
       {/* Gramado oval e caminho circular; ambos são apenas visuais. */}
-      <mesh position={[0, 0.037, 0]} rotation={DEITADO} scale={[1.38, 1, 1.02]}>
-        <circleGeometry args={[10.2, 48]} />
+      <mesh position={[0, 0.037, 0]} rotation={DEITADO} scale={GRAMADO_PARQUE_ESCALA}>
+        <circleGeometry args={[GRAMADO_PARQUE_RAIO, 48]} />
         <meshStandardMaterial color={TINTAS.violetDeep} roughness={0.9} />
       </mesh>
       <mesh position={[0, 0.043, 0]} rotation={DEITADO} scale={[1.32, 1, 0.96]}>

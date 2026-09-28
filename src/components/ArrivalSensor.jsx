@@ -1,5 +1,6 @@
 import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import { coordenadorAtividade } from '../activity/index.js';
+import { PADDING_CHEGADA } from '../city/geometria.js';
 
 /**
  * Volume invisível envolvendo um prédio. Dispara `onArrival` quando um corpo
@@ -10,7 +11,7 @@ import { coordenadorAtividade } from '../activity/index.js';
  * O volume é mais alto que o prédio (h em y) pra garantir que o chassi do
  * carro (y ≈ 1) sempre esteja dentro independente da altura do prédio.
  */
-export function ArrivalSensor({ floorPos, size, padding = 3.5, onArrival }) {
+export function ArrivalSensor({ floorPos, size, padding = PADDING_CHEGADA, onArrival }) {
   const [x, z] = floorPos;
   const [w, h, l] = size;
 

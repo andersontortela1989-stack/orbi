@@ -4,6 +4,21 @@ import { TODOS_PREDIOS } from '../src/city/bairros.js';
 import { GARAGEM_POS, GARAGEM_SIZE } from '../src/city/garagem.js';
 import { MOEDAS } from '../src/city/moedas.js';
 import { BICHOS } from '../src/city/bichos.js';
+import { POSTO_POS, POSTO_SIZE } from '../src/city/posto.js';
+import {
+  CALCADA_POR_LADO,
+  PADDING_CHEGADA,
+  PADDING_ZONA,
+  GRAMADO_PARQUE_RAIO as GRAMADO_RAIO,
+  GRAMADO_PARQUE_ESCALA as GRAMADO_ESCALA,
+} from '../src/city/geometria.js';
+import {
+  CARONA_ESPERA_POS as CAO_POS,
+  CARONA_EMBARQUE_SIZE as EMBARQUE_SIZE,
+  CARONA_EMBARQUE_PADDING as EMBARQUE_PADDING,
+  CARONA_ENTREGA_POS as ENTREGA_POS,
+  CARONA_ENTREGA_SIZE as ENTREGA_SIZE,
+} from '../src/city/carona.js';
 
 /**
  * FOLGAS DA CIDADE (fatia A1.1) — mede folgas e sobreposições entre os
@@ -32,52 +47,6 @@ const FOLGA_MINIMA = 4;
 const EXCECOES = [
   { a: 'ENTREGA', b: 'PARQUE', motivo: 'a carona entrega o cão no parque' },
 ];
-
-// ===================================================================
-//  ESPELHOS — geometria que hoje só existe dentro de componentes React.
-//  Bloco único de propósito: a A1.2a promove tudo a dado puro em
-//  src/city/ e remove este bloco de uma vez.
-// ===================================================================
-
-// ESPELHO de src/components/Building.jsx:222 — vira dado puro em src/city/ na A1.2a
-// A calçada é uma caixa de (w + 4.4) × (l + 4.4): 2,2 de cada lado.
-const CALCADA_POR_LADO = 4.4 / 2;
-
-// ESPELHO de src/components/ArrivalSensor.jsx:13 — vira dado puro em src/city/ na A1.2a
-// Padrão da prop, não sobrescrito em src/components/MissionSensors.jsx:32.
-const PADDING_CHEGADA = 3.5;
-
-// ESPELHO de src/components/ZoneSensor.jsx:19 — vira dado puro em src/city/ na A1.2a
-// Padrão da prop, não sobrescrito em GasStation.jsx nem em Garagem.jsx.
-const PADDING_ZONA = 4;
-
-// ESPELHO de src/components/GasStation.jsx:16 — vira dado puro em src/city/ na A1.2a
-const POSTO_POS = [-34, 24];
-// ESPELHO de src/components/GasStation.jsx:17 — vira dado puro em src/city/ na A1.2a
-const POSTO_SIZE = [12, 5, 12];
-
-// ESPELHO de src/components/OpenPark.jsx:150-151 — vira dado puro em src/city/ na A1.2a
-// Gramado: circleGeometry de raio 10.2, escala [1.38, 1, 1.02], girado por
-// DEITADO = [-π/2, 0, 0] (OpenPark.jsx:8). O círculo vive no plano XY local e
-// o giro leva o Y local para −Z do mundo; por isso a escala Y define a
-// profundidade no mundo e a escala Z (1.02) não tem efeito (o círculo tem z = 0).
-const GRAMADO_RAIO = 10.2;
-const GRAMADO_ESCALA = [1.38, 1, 1.02];
-
-// ESPELHO de src/components/Carona.jsx:38 — vira dado puro em src/city/ na A1.2a
-const CAO_POS = [-9, 5];
-// ESPELHO de src/components/Carona.jsx:42 — vira dado puro em src/city/ na A1.2a
-const EMBARQUE_SIZE = [2, 2, 2];
-// ESPELHO de src/components/Carona.jsx:43 — vira dado puro em src/city/ na A1.2a
-const EMBARQUE_PADDING = 3;
-
-// ESPELHO de src/components/Carona.jsx:47 — vira dado puro em src/city/ na A1.2a
-// Zona de ENTREGA da carona (ZoneSensor em Carona.jsx:166, só montada com o cão
-// a bordo, com o padding padrão da zona). Hoje é uma cópia da âncora do PARQUE
-// em bairros.js, não uma leitura dela.
-const ENTREGA_POS = [-14, 72];
-// ESPELHO de src/components/Carona.jsx:48 — vira dado puro em src/city/ na A1.2a
-const ENTREGA_SIZE = [12, 5, 12];
 
 // ===================================================================
 //  Geometria

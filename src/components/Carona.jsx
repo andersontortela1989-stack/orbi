@@ -9,6 +9,13 @@ import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
 import { useActivity, useRegistrarAtividade } from '../activity/useActivity.js';
 import { somSucesso } from '../audio/sons.js';
 import { ZINDEX_BALAO_MUNDO } from '../visual/world-style.js';
+import {
+  CARONA_ESPERA_POS as ESPERA_POS,
+  CARONA_EMBARQUE_SIZE as EMBARQUE_SIZE,
+  CARONA_EMBARQUE_PADDING as EMBARQUE_PADDING,
+  CARONA_ENTREGA_POS as PARQUE_POS,
+  CARONA_ENTREGA_SIZE as PARQUE_SIZE,
+} from '../city/carona.js';
 
 /**
  * CARONA (piloto: 1 passageiro) — o cachorrinho pede pra ir ao PARQUE.
@@ -33,19 +40,10 @@ import { ZINDEX_BALAO_MUNDO } from '../visual/world-style.js';
  * Montado dentro do <Game> (recebe o carRef como targetRef, padrão Moedas).
  */
 
-// Calçada do CENTRO, longe de lotes/moedas/zonas de serviço (cão DEDICADO —
-// não é o CACHORRO da missão de busca, que segue intocado perto da garagem).
-const ESPERA_POS = [-9, 5];
+// Onde o cão espera, a zona de embarque e a zona de entrega (lida do PARQUE
+// em bairros.js) moram em city/carona.js. Aqui ficam só as medidas visuais.
 const ESPERA_HEADING = 0.5;
 const ESCALA_CAO = 1.6; // régua visual dos Bichos ("metade de um carro")
-
-// Zona de embarque: caixinha em volta do cão + padding generoso (chegar perto).
-const EMBARQUE_SIZE = [2, 2, 2];
-const EMBARQUE_PADDING = 3;
-
-// Zona de entrega = a âncora da praça do PARQUE (bairros.js: pos/size).
-const PARQUE_POS = [-14, 72];
-const PARQUE_SIZE = [12, 5, 12];
 
 const RECOMPENSA = 3; // +moedas na entrega (decisão do gate)
 
