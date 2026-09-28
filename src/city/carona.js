@@ -9,9 +9,11 @@
 
 import { TODOS_PREDIOS } from './bairros.js';
 
-// Calçada do CENTRO, longe de lotes/moedas/zonas de serviço (cão DEDICADO —
-// não é o CACHORRO da missão de busca, que segue perto da garagem).
-export const CARONA_ESPERA_POS = [-9, 5];
+// Calçada do CENTRO, ao sul da PIZZA. A zona de embarque não encosta em
+// nenhum lote, sensor de chegada ou zona de serviço — tests/folgas-cidade.test.js
+// confere (cão DEDICADO — não é o CACHORRO da missão de busca, que segue perto
+// da garagem).
+export const CARONA_ESPERA_POS = [-9, 1];
 
 // Zona de embarque: caixinha em volta do cão + padding generoso (chegar perto).
 export const CARONA_EMBARQUE_SIZE = [2, 2, 2];

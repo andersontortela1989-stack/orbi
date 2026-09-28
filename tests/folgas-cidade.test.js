@@ -137,10 +137,6 @@ const SENSORES = [
 //  Testes
 // ===================================================================
 
-// Testes que falham hoje: TODO até a correção da A1.2b. Continuam rodando e
-// imprimindo cada violação, mas não derrubam o `npm test`.
-const FALHA_HOJE = { todo: 'A1.2b' };
-
 test('geometria: distância com sinal entre retângulos e de ponto a retângulo', () => {
   const a = caixa('a', 'A', [0, 0], 1, 1);
   assert.equal(distanciaCaixas(a, caixa('b', 'B', [5, 0], 1, 1)), 3);
@@ -159,7 +155,7 @@ test('inventário carregado: nada medido no vazio', () => {
   assert.ok(PARQUE, 'PARQUE existe em bairros.js');
 });
 
-test('(a) lotes visuais: nenhum par a menos de FOLGA_MINIMA', FALHA_HOJE, () => {
+test('(a) lotes visuais: nenhum par a menos de FOLGA_MINIMA', () => {
   const violacoes = [];
   for (let i = 0; i < LOTES_VISUAIS.length; i += 1) {
     for (let j = i + 1; j < LOTES_VISUAIS.length; j += 1) {
@@ -172,7 +168,7 @@ test('(a) lotes visuais: nenhum par a menos de FOLGA_MINIMA', FALHA_HOJE, () => 
   semViolacoes(violacoes, 'par(es) de lotes abaixo da folga');
 });
 
-test('(b) sensores: nenhum invade o sensor de outro lugar', FALHA_HOJE, () => {
+test('(b) sensores: nenhum invade o sensor de outro lugar', () => {
   const violacoes = [];
   for (let i = 0; i < SENSORES.length; i += 1) {
     for (let j = i + 1; j < SENSORES.length; j += 1) {
@@ -186,7 +182,7 @@ test('(b) sensores: nenhum invade o sensor de outro lugar', FALHA_HOJE, () => {
   semViolacoes(violacoes, 'sobreposição(ões) entre sensores');
 });
 
-test('(b) sensores: nenhum invade o lote de outro lugar', FALHA_HOJE, () => {
+test('(b) sensores: nenhum invade o lote de outro lugar', () => {
   const violacoes = [];
   for (const s of SENSORES) {
     for (const lote of LOTES_VISUAIS) {

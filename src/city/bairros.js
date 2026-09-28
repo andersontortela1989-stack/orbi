@@ -58,7 +58,7 @@ export const BAIRROS = [
     predios: [
       {
         slug: 'PIZZA',
-        pos: [-20, 15],
+        pos: [-12, 15],
         size: [12, 6, 12],
         cor: PALETA3D.predios.PIZZA,
         pedido: 'Que cheiro bom! O que é pizza? Me leva lá?',
@@ -154,7 +154,7 @@ export const BAIRROS = [
       },
       {
         slug: 'VET',
-        pos: [22, 62],
+        pos: [24, 56],
         size: [12, 7, 12],
         cor: PALETA3D.predios.VET,
         // Sem pedido/chegada próprios: as frases vêm do banco de animais

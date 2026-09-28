@@ -369,3 +369,95 @@ fazendo o teste consumir a geometria compartilhada (`CALCADA_POR_LADO` em
 **O que falta.** Nada até o lançamento: é **insumo** para espalhar a cidade
 depois de 04/10 (opção maior da iniciativa A1 em `docs/PLANO_MESTRE.md`). São os
 primeiros pares a conferir se a folga mínima subir.
+
+---
+
+## 14. Ruas passam por baixo das calçadas, por desenho
+
+**Observado.** As ruas (`CAMINHOS`) ligam os prédios pelo centro: o caminho 4
+nasce no centro do POSTO e termina no centro do HOSPITAL, e o caminho 3 termina
+no centro da GARAGEM. Por isso o leito de alguma rua passa por baixo da calçada
+de **10 dos 13 lotes**. Só PADARIA, FAROL e VET ficam fora do leito. A calçada é
+desenhada acima da rua e a cobre.
+
+**Onde.** `src/components/RoadNetwork.jsx:13-24`.
+
+**Quando.** Análise da fatia A1.2b, 27/09/2026.
+
+**O que falta.** Nada a corrigir: é o desenho da cidade. Fica registrado que
+**"nenhum lote sobre rua" não é uma regra válida** para o teste de folgas — 10
+lotes falhariam hoje.
+
+---
+
+## 15. Proposta de teste (d): todo sensor de chegada alcançado por uma rua
+
+**Observado.** Dá para medir, com os dados, se o leito de alguma rua entra no
+sensor de chegada de cada lugar. Hoje isso **não vale** para PADARIA, FAROL e
+VET. Depois da A1.2b, o sensor do VET fica a cerca de 8,6 do leito mais
+próximo: a criança precisa sair da rua para chegar. O chão inteiro é dirigível,
+então continua possível.
+
+**Onde.** Ruas em `src/components/RoadNetwork.jsx:13-24`; sensores derivados de
+`src/city/bairros.js` e `src/city/geometria.js`.
+
+**Quando.** Análise da fatia A1.2b, 27/09/2026.
+
+**O que falta.** Proposta futura, não implementada: um item (d) em
+`tests/folgas-cidade.test.js` com a regra "todo sensor de chegada é alcançado
+pelo leito de alguma rua" (PADARIA, FAROL e VET entrariam como TODO). Exige
+**promover `CAMINHOS` a dado puro em `src/city/`**, como a A1.2a fez com a
+geometria dos lugares, e amostrar a mesma curva do jogo no teste.
+
+---
+
+## 16. `RoadNetwork.jsx` repete a posição do POSTO
+
+**Observado.** O caminho 4 começa em `[-34, 24]`, que é a posição do POSTO
+digitada à mão, em vez de ler `POSTO_POS` de `src/city/posto.js`. Mover o POSTO
+deixaria a rua para trás sem aviso.
+
+**Onde.** `src/components/RoadNetwork.jsx:20`.
+
+**Quando.** Análise da fatia A1.2b, 27/09/2026.
+
+**O que falta.** Fazer o ponto ler `POSTO_POS` — de preferência junto com a
+promoção de `CAMINHOS` a dado puro (item 15).
+
+---
+
+## 17. Alternativa R4 para ZOO↔VET, se o VET ficar difícil de alcançar
+
+**Observado.** A A1.2b separou ZOO e VET movendo o VET para `[24, 56]`, o que o
+afastou das ruas (item 15). A alternativa medida na análise foi mover o **ZOO**
+para `[14, 84]`: também resolve o par com folga 5,6, mas põe a árvore
+`[14, 90]` sobre a parede do prédio e se afasta do fim do caminho 2
+(`[20, 78]`).
+
+**Onde.** `src/city/bairros.js` (ZOO e VET), árvore em
+`src/components/Cenario.jsx:46`, fim do caminho 2 em
+`src/components/RoadNetwork.jsx:16`.
+
+**Quando.** Análise da fatia A1.2b, 27/09/2026.
+
+**O que falta.** Decidir **só se** o teste com as crianças mostrar que o VET
+ficou difícil de alcançar. Nesse caso: VET volta para `[22, 62]`, ZOO vai para
+`[14, 84]`, a árvore `[14, 90]` sai de cima da parede e o fim do caminho 2
+acompanha o ZOO.
+
+---
+
+## 18. O teste (b) mede sobreposição geométrica, não o limiar do carro
+
+**Observado.** O carro (3,5 × 1,8) pode disparar dois sensores ao mesmo tempo
+se eles estiverem a menos de 1,8 um do outro. Depois da A1.2b, só a zona de
+embarque da carona × sensor de chegada da PIZZA (0,50) fica abaixo disso. No
+teste manual de 28/09/2026, chegar à PIZZA pelo sul com a missão PIZZA ativa
+**não** embarcou o cão.
+
+**Onde.** `tests/folgas-cidade.test.js`; `src/city/carona.js:16`.
+
+**Quando.** Teste manual da A1.2b, 28/09/2026.
+
+**O que falta.** Proposta futura: o teste (b) exigir distância ≥ largura do
+carro entre sensores de atividades diferentes.
