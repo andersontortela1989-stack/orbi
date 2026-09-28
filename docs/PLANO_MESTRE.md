@@ -511,6 +511,8 @@ junto (679 bytes). Qualquer fatia que toque a abertura (`StartScreen`,
   - **A3.3 — correção da maior causa medida,** uma causa por fatia. Aceite:
     melhora medida na rota padrão.
   - **A3.4 — nova medição e registro.**
+    - A3.4 — medição do build candidato em 03/10, mesmo protocolo da A3.2;
+      critério de comparação em `LANCAMENTO.md` §2.
 - **Critério de decisão da A3.3 — definido em 28/09/2026, ANTES da medição no
   celular.**
   Alvo, por rodada, depois dos 10 s de aquecimento: até 2% dos quadros acima

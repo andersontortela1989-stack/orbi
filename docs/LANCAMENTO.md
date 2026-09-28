@@ -90,6 +90,22 @@ Todos precisam ser **sim**:
       ≤ 3.200 kB.
 - [ ] Desempenho no celular **não pior** que a medição de base (A3.2), pela
       rota padrão.
+
+      **Definição de "não pior"** (decidida em 28/09/2026, antes da medição
+      de base):
+      - **Base:** as 6 rodadas da A3.2 (29/09), build `c8aca64`.
+      - **Comparação:** nova medição do build candidato em 03/10 (A3.4), com
+        o **mesmo** protocolo: mesmo celular, rota padrão, 3 rodadas com e 3
+        sem Modo Tranquilo, notas de protocolo de `TESTES_COM_CRIANCAS.md`.
+      - **"Não pior"** = em **cada** modo: (a) a mediana das 3 rodadas da %
+        de quadros acima de 50 ms fica no máximo 1 ponto percentual acima da
+        mediana da base; (b) o total de travadas acima de 250 ms nas 3
+        rodadas fica no máximo 1 acima do total da base.
+      - Se um dos modos não cumprir, é no-go de desempenho até a causa ser
+        investigada.
+      - Não há limite absoluto de desempenho para o lançamento; o alvo
+        absoluto vale só para decidir a A3.3 (ficha A3 do `PLANO_MESTRE.md`).
+
 - [ ] Teste de 03/10 com as crianças sem regressão: o que funcionava em 27/09
       continua funcionando, e elas querem jogar de novo.
 - [ ] Nenhum item do checklist de princípios (§2.6 do plano) violado nas
