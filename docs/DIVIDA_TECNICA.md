@@ -276,6 +276,8 @@ sem precisar reler os três arquivos.
 
 ## 10. Tela inicial em retrato
 
+**Status.** Resolvido pela A4.1 (commit `c8aca64`, caminho 1).
+
 **Observado.** Com o celular em pé, a arte da abertura fica numa faixa estreita
 no meio da tela, com muito espaço vazio em cima e embaixo.
 

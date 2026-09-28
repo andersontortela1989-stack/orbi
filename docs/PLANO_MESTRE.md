@@ -511,6 +511,24 @@ junto (679 bytes). Qualquer fatia que toque a abertura (`StartScreen`,
   - **A3.3 — correção da maior causa medida,** uma causa por fatia. Aceite:
     melhora medida na rota padrão.
   - **A3.4 — nova medição e registro.**
+- **Critério de decisão da A3.3 — definido em 28/09/2026, ANTES da medição no
+  celular.**
+  Alvo, por rodada, depois dos 10 s de aquecimento: até 2% dos quadros acima
+  de 50 ms e nenhum acima de 250 ms.
+  - **A)** As 6 rodadas no alvo → a A3.3 não entra; o alvo provisório passa a
+    definitivo.
+  - **B)** Fora do alvo com causa clara → a A3.3 entra em 30/09, limitada a um
+    dia; se não resolver até o fim do dia, volta para a dívida técnica.
+    Causa clara = pelo menos uma:
+    1. os picos acima de 250 ms, ou a maioria dos picos acima de 50 ms,
+       acontecem no mesmo trecho ou evento (chegada, painel, fala, balão) em
+       pelo menos 2 das 3 rodadas do mesmo modo;
+    2. Modo Tranquilo ligado cumpre o alvo nas 3 rodadas e desligado não
+       cumpre em pelo menos 2.
+  - **C)** Fora do alvo sem causa clara → a A3.3 não entra antes do
+    lançamento; A3.1b (`?dpr`, `?aa`, `?balao`) e A3.3 vão para depois. O
+    efeito sobre o lançamento é decidido pelo critério de go/no-go do
+    `LANCAMENTO.md`.
 - **Testes:** U, B, C; O confirma pela sensação.
 - **Esforço:** de 3 a 5 fatias.
 - **Cabe até 04/10? Parcial.** Medir cabe com certeza. Corrigir depende do que

@@ -120,6 +120,21 @@ render: 211 chamadas · 28938 triângulos · 408 geometrias · 1 texturas
 tela: 1707×879 · DPR 1,13
 ```
 
+### 29/09/2026 — notas de protocolo para a A3.2 (celular)
+
+Protocolo completo e critério de decisão da A3.3: `docs/PLANO_MESTRE.md`,
+ficha A3.
+
+- Build do commit `c8aca64` (pacote inicial 197,98 kB).
+- Save com a aventura da água já concluída; não apagar o progresso entre
+  rodadas, só recarregar.
+- Ignorar os pedidos do roteiro e seguir a rota padrão. A PIZZA mudou de lugar
+  na A1.2b; não há medição de celular anterior pela rota, então não se perde
+  comparação.
+- Desviar do cão da carona (perto do início, ao sul da PIZZA); se embarcar,
+  anotar na rodada.
+- Anotar à mão o trecho de cada travada.
+
 ---
 
 ## Modelo para os próximos testes
