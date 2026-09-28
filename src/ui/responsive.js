@@ -8,7 +8,9 @@
 
 export const ZOOM_MAXIMO = 16;
 export const ZOOM_MINIMO_DESKTOP = 11;
-export const ZOOM_MINIMO_TOQUE = 9;
+// Piso de toque (A1.3): era 9 — no celular o carro ficava com ~32 px.
+// Com 11, vai a ~39 px (estimativa). Verificação visual no celular em 29/09.
+export const ZOOM_MINIMO_TOQUE = 11;
 
 const ALTURA_MUNDO_ALVO = 56;
 const LARGURA_MUNDO_DESKTOP = 92;

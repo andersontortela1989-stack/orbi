@@ -20,9 +20,17 @@ test('notebook baixo afasta a câmera sem perder legibilidade', () => {
 });
 
 test('celular pequeno respeita o piso próprio para toque', () => {
+  assert.equal(ZOOM_MINIMO_TOQUE, 11);
   assert.equal(
     calcularZoomViewport({ largura: 640, altura: 360, tactil: true }),
-    ZOOM_MINIMO_TOQUE
+    11
+  );
+});
+
+test('celular pequeno em retrato também respeita o piso de toque', () => {
+  assert.equal(
+    calcularZoomViewport({ largura: 360, altura: 800, tactil: true }),
+    11
   );
 });
 
