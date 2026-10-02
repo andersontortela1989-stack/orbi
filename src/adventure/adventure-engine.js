@@ -38,6 +38,13 @@ function validarDefinicao(def) {
   }
 }
 
+// Etapa com objetivo (ir_para, coletar, entregar, distribuir) acontece com o
+// mundo à vista e a missão no topo: ela pede de volta o foco de `em_missao`
+// antes de falar. Sem isso, se a missão tiver saído da pilha (F1: o registro
+// do MissionController a libera na primeira jogada), o foco cai em
+// `explorando` e o objetivo some calado. Já no topo, o pedido não faz nada.
+const PEDIR_MISSAO = Object.freeze({ tipo: 'foco', acao: 'pedir', atividade: 'em_missao' });
+
 export function criarAventura(def) {
   validarDefinicao(def);
 
@@ -106,6 +113,7 @@ export function criarAventura(def) {
 
       case 'ir_para':
         efeitos.push(
+          PEDIR_MISSAO,
           { tipo: 'objetivo', texto: atual.texto, alvo: atual.lugar },
           { tipo: 'falar', texto: atual.texto }
         );
@@ -121,6 +129,7 @@ export function criarAventura(def) {
 
       case 'coletar':
         efeitos.push(
+          PEDIR_MISSAO,
           {
             tipo: 'objetivo',
             texto: atual.texto,
@@ -145,6 +154,7 @@ export function criarAventura(def) {
         const porSlot = inteiroPositivo(atual.porSlot);
         st.distribuido = Array(slots).fill(0);
         efeitos.push(
+          PEDIR_MISSAO,
           {
             tipo: 'objetivo',
             texto: atual.texto,
@@ -162,6 +172,7 @@ export function criarAventura(def) {
 
       case 'entregar':
         efeitos.push(
+          PEDIR_MISSAO,
           { tipo: 'objetivo', texto: atual.texto, alvo: atual.lugar },
           { tipo: 'falar', texto: atual.texto }
         );

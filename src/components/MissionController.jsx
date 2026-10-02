@@ -117,6 +117,16 @@ export function MissionController() {
     };
   }, []);
 
+  // 2b) FIM DA AVENTURA (F1) — aventura e roteiro dividem `em_missao`; o
+  // último objetivo da aventura ficaria como a fala que o 🔊 repete. Ao
+  // terminar, esquece o "já narrado" para o efeito abaixo dizer de novo o
+  // pedido da MESMA parada retomada (e guardá-lo para o 🔊).
+  const aventuraAntes = useRef(aventuraAtiva);
+  useEffect(() => {
+    if (aventuraAntes.current && !aventuraAtiva) ultimoNarrado.current = null;
+    aventuraAntes.current = aventuraAtiva;
+  }, [aventuraAtiva]);
+
   // 3) MUDANÇA DE MISSÃO — narra cada nova missão (após 1ª interação).
   useEffect(() => {
     if (aventuraAtiva) return;

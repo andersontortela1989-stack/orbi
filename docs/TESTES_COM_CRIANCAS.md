@@ -94,6 +94,13 @@ seção "Medições de desempenho".
 - [ ] Depois de sair e voltar ao app, o 🔊 repete o pedido atual.
 - [ ] Trocar o céu não muda o que o 🔊 repete.
 
+**F1 — objetivo da aventura falado**
+
+- [ ] Na aventura do parque, depois da pergunta, o Órbi diz aonde ir; o 🔊
+      repete o objetivo.
+- [ ] Ao terminar a aventura, o Órbi volta a pedir a mesma parada do roteiro, e
+      o 🔊 repete esse pedido (não o último objetivo da aventura).
+
 ---
 
 ## 28/09/2026 — teste do Anderson no notebook (sem as crianças)

@@ -539,3 +539,22 @@ saem do lugar sem nenhum teste avisar.
 **Quando.** Fatia A2.1, 01/10/2026.
 
 **O que falta.** Resolver quando o Building exportar essas medidas como dado.
+
+---
+
+## 24. Aventura e roteiro dividem a atividade `em_missao`
+
+**Observado.** Aventura e roteiro dividem a atividade `em_missao`. Por ordem
+de efeitos (`AdventureController` antes do `MissionController` em
+`GameExperience.jsx`), o `useRegistrarAtividade('em_missao', false)` do
+`MissionController` libera com valor velho a `em_missao` pedida pela aventura.
+
+**Onde.** `src/GameExperience.jsx` (ordem de montagem);
+`src/components/MissionController.jsx`; `src/activity/useActivity.js`
+(`useRegistrarAtividade`).
+
+**Quando.** Fatia F1, 02/10/2026.
+
+**O que falta.** A F1 contorna (etapas com objetivo pedem o foco de novo antes
+de falar); a causa de origem fica: separar as atividades da aventura e do
+roteiro, ou tornar o registro imune a valor velho.
