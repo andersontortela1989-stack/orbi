@@ -32,7 +32,7 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 **Registro honesto.** 29/09 e 30/09: medição e teste curto realizados,
 resultados não registrados.
 
-**Regra.** Cada fatia, até o congelamento do código (fim de 02/10), acrescenta
+**Regra.** Cada fatia, até o congelamento do código (fim de 09/10), acrescenta
 aqui os seus itens de verificação manual.
 
 **Medição (A3.4).** 12 rodadas, base × candidato, pelo protocolo de
@@ -223,7 +223,7 @@ ficha A3.
 - Método de servir o build: registrar em cada rodada se foi a prévia da Vercel
   (`orbi-kahe-git-codex-activity-coordinator-p0-androm.vercel.app`, deployment
   `5944kBqzB`, commit `3a1fafa`, código idêntico a `c8aca64`) ou
-  `npm run preview` local. A A3.4 (03/10) usa o **mesmo** método.
+  `npm run preview` local. A A3.4 (10/10) usa o **mesmo** método.
 
 ### 01/10/2026 — custo da A2.1 (pães da PADARIA)
 
@@ -232,6 +232,28 @@ A2.1, custo calculado em node com as peças reais (`tests/pao-3d.test.js`):
 navegador em 01/10 foi inconclusiva (pontos de cópia diferentes; pico de
 98,2 ms na versão nova sem causa identificada). A comparação real fica para a
 medição base × candidato de 03/10.
+
+### 02/10/2026 — ponto fixo da PADARIA, estilo atual × estilo real (V1)
+
+**Contexto.** Notebook, build de produção (`npm run preview`, código do
+commit `0358947`), ponto fixo `?medir=1&ponto=PADARIA`, com e sem
+`?estilo=real`. Revisão do Anderson. Resumos como foram colados:
+
+```
+[ESTILO ATUAL] 02/10/2026 10:47:01 · sessão 1 min 26 s · 4448 quadros medidos · mediana 16,7 ms · p95 21,6 ms · maior 63,4 ms · >50 ms 0,0% · >250 ms 0 · 218 chamadas · 32720 triângulos · 412 geometrias · 1707×879 DPR 1,13
+```
+
+```
+[ESTILO REAL] 02/10/2026 10:48:05 · sessão 1 min 20 s · 4168 quadros medidos · mediana 16,7 ms · p95 19,5 ms · maior 76,5 ms · >50 ms 0,0% · >250 ms 0 · 220 chamadas · 33468 triângulos · 398 geometrias · 1707×879 DPR 1,13
+```
+
+**Desempenho.** Igual nos dois estilos no notebook: mediana 16,7 ms nos dois;
+p95 19,5 ms (real) × 21,6 ms (atual); 0% acima de 50 ms.
+
+**Avaliação visual.** REPROVADA na legibilidade: a PADARIA real se confunde com
+o terreno (fachada bege e calçada caramelo sobre areia, sem contorno), o
+letreiro fica ilegível e a vitrine e o toldo quase não aparecem. A V1 fica
+como ponto de salvamento atrás da chave; os ajustes vão para a V1.2b.
 
 ---
 

@@ -341,6 +341,9 @@ junto (679 bytes). Qualquer fatia que toque a abertura (`StartScreen`,
 porque `paleta3d.js` entra no inicial via `bairros.js` e store); folga de
 cerca de 1,98 kB.
 
+**Depois da V1:** `GameExperience` 3.137,95 kB; folga de cerca de 62 kB; cada
+lugar novo no estilo real informa o seu custo.
+
 ### 2.5 Política de save
 
 **Sobe `SAVE_VERSION` quando:**
