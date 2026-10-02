@@ -1268,6 +1268,19 @@ crianças confirmadas pelo Anderson em 27/09/2026: 30/09 (curto) e 03/10
 E1 (página do universo) sai do lançamento. Nenhuma iniciativa fora da lista
 aprovada entra até 04/10.
 
+**Replanejamento de 02/10 — estilo** (decisão em `LANCAMENTO.md` §6):
+
+- **02/10:** direção de arte e proposta técnica.
+- **03/10:** fatia vertical com `?estilo=real`.
+- **04/10:** teste A/B com as crianças + medição dos dois estilos.
+- **05/10:** decisão do estilo.
+- **05–09/10:** expansão (8 paradas do roteiro e ruas) ou refino no estilo
+  atual; C1 continua.
+- **09/10:** congelamento à noite.
+- **10/10:** teste geral.
+- **11/10:** go/no-go.
+- **12/10:** lançamento.
+
 ---
 
 ## 7. O que fica para depois de 04/10 (nada é descartado)

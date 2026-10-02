@@ -180,3 +180,20 @@ A ser preenchida em E6.2 e conferida a cada lançamento.
   água e horta funcionam como antes.
 - **Ideias para depois, não aprovadas:** peça 2 (carona, busca e aventura como
   paradas) e peça 3 (momentos novos e reação a visita livre).
+
+---
+
+## 6. Estilo visual (02/10/2026)
+
+02/10/2026 — Decisão do Anderson: o estilo visual passa a ser mais realista,
+mais próximo do mundo real e mais vivo, dentro do lançamento de 12/10
+(substitui "estilo realista: não agora"). Execução com ponto de retorno:
+
+1. fatia vertical de um quarteirão (PADARIA, MERCADO, rua entre eles, carro)
+   atrás da chave `?estilo=real`, com o estilo atual intacto;
+2. teste A/B com as crianças e medição dos dois estilos em 04/10;
+3. decisão do estilo em 05/10: expandir para a cidade ou lançar no estilo
+   atual com a PADARIA refinada.
+
+A regra "não pior que a base" do go/no-go vale também para o estilo novo,
+salvo decisão explícita do Anderson em contrário.

@@ -10,6 +10,17 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 
 ---
 
+## Teste intermediário de 04/10/2026 — A/B de estilo
+
+- A/B de estilo: qual as crianças preferem (observar, não perguntar "qual é
+  mais bonito" de forma indutiva);
+- reconhecem a PADARIA e o MERCADO sem placa em cada estilo?;
+- o que chamam de "de verdade";
+- medição de desempenho nos dois estilos pela rota padrão, resumos colados no
+  repositório no mesmo dia.
+
+---
+
 ## Roteiro do teste geral de 03/10/2026
 
 **Registro honesto.** 29/09 e 30/09: medição e teste curto realizados,
