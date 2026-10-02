@@ -390,6 +390,12 @@ desenhada acima da rua e a cobre.
 **"nenhum lote sobre rua" não é uma regra válida** para o teste de folgas — 10
 lotes falhariam hoje.
 
+**Atualização (V1.3, 02/10/2026).** O trecho final do caminho 2 foi corrigido
+nos dois estilos e deixou de passar sob o MERCADO: agora termina entre os lotes
+do MERCADO e da PADARIA, com o eixo reto em z ≈ 31,6
+(`tests/rua-mercado.test.js`). Os traçados ficaram em `src/city/ruas.js`. Os
+demais lotes continuam como registrado acima.
+
 ---
 
 ## 15. Proposta de teste (d): todo sensor de chegada alcançado por uma rua
@@ -558,3 +564,32 @@ de efeitos (`AdventureController` antes do `MissionController` em
 **O que falta.** A F1 contorna (etapas com objetivo pedem o foco de novo antes
 de falar); a causa de origem fica: separar as atividades da aventura e do
 roteiro, ou tornar o registro imune a valor velho.
+
+---
+
+## 25. PADARIA de costas para a rua nova
+
+**Observado.** Na câmera 2,5D, prédio ao sul de uma rua mostra os fundos para
+ela quando a frente está virada para a câmera. Depois da V1.3, a PADARIA fica
+de costas para o trecho final do caminho 2.
+
+**Onde.** `src/city/ruas.js` (caminho 2); `src/city/bairros.js` (PADARIA).
+
+**Quando.** Fatia V1.3, 02/10/2026.
+
+**O que falta.** Aceito; revisar na expansão do estilo real.
+
+---
+
+## 26. Oclusão do carro pela PADARIA no trecho final do caminho 2
+
+**Observado.** Oclusão do carro pela PADARIA no trecho final do caminho 2 (V1.3,
+nos dois estilos): até 80% (atual) e 93% (real) oculto rente à beira do lado da
+PADARIA, x 47–58; o sensor de chegada da PADARIA fica nessa faixa.
+
+**Onde.** `src/city/ruas.js`; PADARIA em `src/city/bairros.js`.
+
+**Quando.** Fatia V1.3, 02/10/2026. Conta: raios de 75 pontos do carro × 406
+posições, obstáculos em caixas envolventes (tende a superestimar).
+
+**O que falta.** Resolvido pela silhueta do carro (S1).

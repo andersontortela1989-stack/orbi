@@ -4,6 +4,7 @@ import { Building } from './Building.jsx';
 import { OpenPark } from './OpenPark.jsx';
 import { AderecosLugar } from './AderecosLugar.jsx';
 import { PredioReal } from './PredioReal.jsx';
+import { RuaReal } from './RuaReal.jsx';
 import { BAIRROS } from '../city/bairros.js';
 import { ADERECOS } from '../city/identidade.js';
 import { estiloReal } from '../visual/estilo.js';
@@ -99,6 +100,9 @@ export function City() {
           ))}
         </group>
       ))}
+      {/* Estilo real (V1.3): meio-fio, calçada e mobiliário da rua entre a
+          PADARIA e o MERCADO. */}
+      {estiloReal && <RuaReal />}
     </>
   );
 }

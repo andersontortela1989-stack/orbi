@@ -37,4 +37,34 @@ export const PALETA_REAL = Object.freeze({
   pisoTatil: '#9fa3aa',
   meioFio: '#c4bfcf',
   contorno: '#3a3550',
+
+  // MERCADO (V1.3): fachada branco-gelo (≈1,9 contra a areia e ≈3,6 contra a
+  // terracota da PADARIA), faixa verde de mercado, toldo azul liso.
+  brancoGelo: '#eef1f4',
+  rodapeCinza: '#9aa3ad',
+  verdeMercado: '#2e8b57',
+  painelClaro: '#fff8e1',
+  toldoAzul: '#2f6db5',
+  portaAberta: '#2b2f38',
+  portaEnrolar: '#b8bec6',
+  nervura: '#8f969f',
+  bancaBase: '#2e6b4a',
+  caixote: '#a9784e',
+  // frutas: a COR diz qual é (pergunta das cores na chegada do MERCADO);
+  // a banana fica longe do âmbar da moeda
+  laranja: '#f28c28',
+  maca: '#d7263d',
+  banana: '#f2d53c',
+  uva: '#6b2d8f',
+  folha: '#3f9e52',
+
+  // rua e mobiliário (V1.3)
+  poste: '#7d8590',
+  luminaria: '#fff1d0',
+  tronco: '#7a5230',
+  copa: '#3f9e52',
+  copaClara: '#5bbe6e',
+  canteiro: '#7d6650',
+  lixeira: '#2f7d4f',
+  lixeiraTampa: '#25603c',
 });

@@ -1,21 +1,25 @@
 import { montarMalha, limitesDe } from '../geometria-mesclada.js';
 import { orcamentoDoLugar } from '../pao-3d.js';
 import { pecasDaPadaria, letreiroDaPadaria } from './padaria.js';
+import { colisoresDoMercado, letreiroDoMercado, pecasDoMercado } from './mercado.js';
 
 /**
  * PRÉDIOS DO ESTILO REAL (fatia V1) — o que muda é só o desenho.
  *
  * Pegada, posição e colisor saem do MESMO bairros.js que o Building usa
  * (`colisorDoLote`), então folgas, sensores, roteiro e física valem igual nos
- * dois estilos. Hoje: só a PADARIA (V1.2); MERCADO e rua vêm na V1.3.
+ * dois estilos. PADARIA (V1.2) e MERCADO (V1.3); a rua real fica em rua.js.
  */
 
 // Projeções altas (toldo, marquise, placa bandeira) só acima disto: o carro,
 // com cabine e enfeite, chega a ~1,7. Uns 3 m no mundo real.
 export const ALTURA_LIVRE = 2.4;
 
+// `colisores`: colisores PRÓPRIOS além do prédio (coordenadas do lote) — hoje
+// só a banca de frutas do MERCADO (regra própria da V1.3).
 export const PREDIOS_REAIS = Object.freeze({
-  PADARIA: Object.freeze({ pecas: pecasDaPadaria, letreiro: letreiroDaPadaria }),
+  PADARIA: Object.freeze({ pecas: pecasDaPadaria, letreiro: letreiroDaPadaria, colisores: () => [] }),
+  MERCADO: Object.freeze({ pecas: pecasDoMercado, letreiro: letreiroDoMercado, colisores: colisoresDoMercado }),
 });
 
 /** Colisor do lote: idêntico ao do Building (centro a h/2, meia-extensão). */

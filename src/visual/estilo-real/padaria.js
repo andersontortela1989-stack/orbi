@@ -1,5 +1,6 @@
 import { PALETA3D } from '../../brand/paleta3d.js';
 import { PALETA_REAL as C } from './paleta.js';
+import { CALCADA, PISO, TRACO_REAL, caixa, contorno } from './pecas.js';
 
 /**
  * PADARIA no ESTILO REAL (V1.2, legibilidade na V1.2b) — peças em dado puro,
@@ -24,11 +25,9 @@ import { PALETA_REAL as C } from './paleta.js';
  * vitrine, desenhado à parte com brilho próprio (o Modo Tranquilo reduz).
  */
 
-const CALCADA = 2.2; // por lado (CALCADA_POR_LADO)
-const PISO = 0.16; // topo da calçada
-
-// Espessura do contorno fino (o Building usa 0,2; aqui é mais discreto).
-export const TRACO_REAL = 0.08;
+// CALCADA, PISO, TRACO_REAL, caixa e contorno: auxiliares compartilhados com
+// o MERCADO e a rua (pecas.js). TRACO_REAL segue exportado daqui também.
+export { TRACO_REAL };
 
 // Vitrine da esquerda: o dado dos pães da A2.1 (city/identidade.js) lê isto.
 export const VITRINE_PADARIA_REAL = Object.freeze({
@@ -47,22 +46,7 @@ const FAIXA = Object.freeze({ y: 3.85, altura: 1.4 });
 const JANELA_Y = 5.3;
 const JANELA_ALTURA = 1.0;
 
-const caixa = (id, zona, pos, tam, cor, extra = {}) => ({ id, zona, forma: 'caixa', pos, tam, cor, ...extra });
 
-/** Casca do contorno: a mesma caixa, TRACO_REAL maior por lado. */
-function contorno(peca, zona = peca.zona) {
-  const t = 2 * TRACO_REAL;
-  return {
-    id: `contorno-${peca.id}`,
-    zona,
-    forma: 'caixa',
-    camada: 'contorno',
-    pos: peca.pos,
-    rot: peca.rot,
-    tam: [peca.tam[0] + t, peca.tam[1] + t, peca.tam[2] + t],
-    cor: C.contorno,
-  };
-}
 
 function calcada(w, l) {
   const fx = w / 2 + CALCADA;

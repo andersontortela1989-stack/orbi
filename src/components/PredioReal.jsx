@@ -1,11 +1,11 @@
 import { useEffect, useMemo } from 'react';
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { Text } from '@react-three/drei';
-import * as THREE from 'three';
 import { useGame } from '../store/useGame.js';
 import { perfilVisual } from '../visual/world-style.js';
 import { geometriaDe } from '../visual/geometria-mesclada.js';
 import { PALETA_REAL } from '../visual/estilo-real/paleta.js';
+import { MATERIAL_CONTORNO, MATERIAL_OPACO } from '../visual/estilo-real/materiais.js';
 import {
   PREDIOS_REAIS,
   colisorDoLote,
@@ -29,20 +29,6 @@ import { AderecosLugar } from './AderecosLugar.jsx';
  * pré-compilados pelo <PreCompilar> — nada é gerado na primeira aparição.
  */
 
-// Um material para todas as peças opacas de todos os prédios reais.
-const MATERIAL_OPACO = new THREE.MeshStandardMaterial({
-  vertexColors: true,
-  roughness: 0.85,
-  metalness: 0,
-});
-
-// Contorno fino (V1.2b): cascas pelo avesso, na cor escura da paleta (não
-// preto), como o traço do Building — uma chamada para todas as cascas.
-const MATERIAL_CONTORNO = new THREE.MeshBasicMaterial({
-  color: PALETA_REAL.contorno,
-  side: THREE.BackSide,
-});
-
 // Vitrine acesa (V1.2b): mais clara que a fachada; o Modo Tranquilo baixa.
 const BRILHO_VITRINE = 1.0;
 const BRILHO_VITRINE_TRANQUILO = 0.45;
@@ -53,14 +39,15 @@ export function PredioReal({ predio }) {
     const malhas = malhasDoPredio(slug, size);
     return {
       opaco: geometriaDe(malhas.opaco),
-      luz: geometriaDe(malhas.luz),
+      // sem vitrine acesa (MERCADO), nem cria a malha: zero chamadas
+      luz: malhas.luz.triangulos > 0 ? geometriaDe(malhas.luz) : null,
       contorno: geometriaDe(malhas.contorno),
     };
   }, [slug, size]);
   // Geometria passada por prop não é descartada pelo R3F: descarta aqui.
   useEffect(() => () => {
     geo.opaco.dispose();
-    geo.luz.dispose();
+    geo.luz?.dispose();
     geo.contorno.dispose();
   }, [geo]);
 
@@ -68,24 +55,33 @@ export function PredioReal({ predio }) {
   const visual = perfilVisual(preferencias);
   const colisor = colisorDoLote(predio);
   const letreiro = PREDIOS_REAIS[slug].letreiro(size);
+  // Colisores próprios (V1.3: a banca de frutas), do lote para o mundo.
+  const extras = PREDIOS_REAIS[slug].colisores(size);
 
   return (
     <>
       <RigidBody type="fixed" colliders={false} position={colisor.posicao}>
         <CuboidCollider args={colisor.meiaExtensao} />
       </RigidBody>
+      {extras.map(({ posicao: [x, y, z], meiaExtensao }, i) => (
+        <RigidBody key={i} type="fixed" colliders={false} position={[pos[0] + x, y, pos[1] + z]}>
+          <CuboidCollider args={meiaExtensao} />
+        </RigidBody>
+      ))}
 
       <group position={[pos[0], 0, pos[1]]}>
         <mesh geometry={geo.contorno} material={MATERIAL_CONTORNO} />
         <mesh geometry={geo.opaco} material={MATERIAL_OPACO} />
-        <mesh geometry={geo.luz}>
-          <meshStandardMaterial
-            vertexColors
-            roughness={0.35}
-            emissive={PALETA_REAL.vitrineLuz}
-            emissiveIntensity={visual.tranquilo ? BRILHO_VITRINE_TRANQUILO : BRILHO_VITRINE}
-          />
-        </mesh>
+        {geo.luz && (
+          <mesh geometry={geo.luz}>
+            <meshStandardMaterial
+              vertexColors
+              roughness={0.35}
+              emissive={PALETA_REAL.vitrineLuz}
+              emissiveIntensity={visual.tranquilo ? BRILHO_VITRINE_TRANQUILO : BRILHO_VITRINE}
+            />
+          </mesh>
+        )}
         <Text
           position={letreiro.posicao}
           fontSize={letreiro.tamanho}

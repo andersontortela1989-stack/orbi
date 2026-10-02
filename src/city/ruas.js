@@ -11,8 +11,11 @@
 export const CAMINHOS = Object.freeze([
   // eixo central: estádio → centro → parque
   [[-6, -38], [-5, -22], [0, -6], [-2, 13], [1, 31], [0, 52], [-2, 66]],
-  // porto → centro → mercado
-  [[-78, 28], [-61, 29], [-43, 27], [-24, 23], [-3, 20], [18, 21], [38, 23], [58, 27]],
+  // porto → centro → mercado. V1.3: o fim passava SOB a fachada do MERCADO
+  // (dívida 14); agora sobe na costura do bairro e termina ENTRE os lotes do
+  // MERCADO e da PADARIA, reto em z ≈ 31,6 (tests/rua-mercado.test.js).
+  [[-78, 28], [-61, 29], [-43, 27], [-24, 23], [-3, 20], [18, 21], [34, 24], [39.5, 30.5],
+    [46, 31.6], [52, 31.6], [58, 31.6]],
   // centro → escola → parque/zoo
   [[-2, 15], [5, 29], [0, 41], [-4, 54], [-3, 68], [7, 76], [20, 78]],
   // saída para garagem

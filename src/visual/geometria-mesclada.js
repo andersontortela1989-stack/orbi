@@ -8,8 +8,9 @@ import * as THREE from 'three';
  * mescladas numa malha só, com a cor guardada em cada vértice, viram UMA
  * chamada com um material compartilhado.
  *
- * Peça: { forma: 'caixa', tam: [w, h, d] } ou
- *       { forma: 'cilindro', raio, comprimento, lados, eixo: 'x'|'y'|'z' },
+ * Peça: { forma: 'caixa', tam: [w, h, d] },
+ *       { forma: 'cilindro', raio, comprimento, lados, eixo: 'x'|'y'|'z' } ou
+ *       { forma: 'esfera', raio, lados, aneis },
  *       sempre com pos [x, y, z] (centro), rot [rx, ry, rz] opcional (Euler,
  *       radianos) e cor '#rrggbb'.
  *
@@ -38,6 +39,11 @@ function geometriaDaPeca(peca) {
     const g = new THREE.CylinderGeometry(peca.raio, peca.raio, peca.comprimento, peca.lados ?? 16);
     const e = EIXO_PARA_Y[peca.eixo ?? 'y'];
     return g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(e));
+  }
+  // V1.3: frutas e copas. Baixa resolução de propósito (2·lados·(anéis−1)
+  // triângulos): de longe, a cor e o tamanho já dizem o que é.
+  if (peca.forma === 'esfera') {
+    return new THREE.SphereGeometry(peca.raio, peca.lados ?? 8, peca.aneis ?? 6);
   }
   throw new TypeError(`Forma desconhecida: ${peca.forma}`);
 }

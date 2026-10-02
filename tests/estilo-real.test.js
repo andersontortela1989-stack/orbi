@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { TODOS_PREDIOS } from '../src/city/bairros.js';
 import { CALCADA_POR_LADO, PADDING_CHEGADA } from '../src/city/geometria.js';
-import { CAMINHOS, LARGURA_RUA_BORDA, TENSAO_RUA } from '../src/city/ruas.js';
+import { CAMINHOS, LARGURA_RUA, LARGURA_RUA_BORDA, TENSAO_RUA } from '../src/city/ruas.js';
 import { LIMITE_FACHADA, aderecosDoLugar } from '../src/city/identidade.js';
 import { lerEstilo } from '../src/visual/estilo.js';
 import { pontoDeMedicao } from '../src/perf/medidor.js';
@@ -16,6 +16,8 @@ import {
   orcamentoPredioReal,
 } from '../src/visual/estilo-real/predio-real.js';
 import { PALETA_REAL } from '../src/visual/estilo-real/paleta.js';
+import { PROFUNDIDADE_BANCA } from '../src/visual/estilo-real/mercado.js';
+import { orcamentoRuaReal, pecasDaRua } from '../src/visual/estilo-real/rua.js';
 import { TRACO_REAL } from '../src/visual/estilo-real/padaria.js';
 import { PALETA3D } from '../src/brand/paleta3d.js';
 
@@ -86,7 +88,7 @@ function pecasDe(slug) {
 test('toda peça do estilo real tem zona conhecida, cor e fica acima do chão', () => {
   for (const slug of Object.keys(PREDIOS_REAIS)) {
     for (const peca of pecasDe(slug)) {
-      assert.ok(['chao', 'corpo', 'fachada', 'alta', 'telhado'].includes(peca.zona), peca.id);
+      assert.ok(['chao', 'corpo', 'fachada', 'alta', 'telhado', 'banca'].includes(peca.zona), peca.id);
       assert.match(peca.cor, /^#[0-9a-f]{6}$/i, peca.id);
       assert.ok(limitesDaPeca(peca).min[1] >= -TOL, `${peca.id} abaixo do chão`);
     }
@@ -281,4 +283,116 @@ test('orçamento da PADARIA real: no máximo 6 chamadas e 3.000 triângulos', ()
   const { chamadas, triangulos } = orcamentoPredioReal('PADARIA', PREDIO.get('PADARIA').size);
   assert.ok(chamadas <= 6, `chamadas: ${chamadas}`);
   assert.ok(triangulos <= 3000, `triângulos: ${triangulos}`);
+});
+
+// ---------------------------------------------------------------- V1.3: MERCADO, rua, ponto
+
+test('V1.3: ponto MERCADO em frente à fachada, fora da calçada e do sensor', () => {
+  const { pos, size } = PREDIO.get('MERCADO');
+  const { posicao } = pontoDeMedicao('?medir=1&ponto=MERCADO');
+  const [x, , z] = posicao;
+  assert.ok(Math.abs(x - pos[0]) < size[0] / 2);
+  assert.ok(z - 1.75 > pos[1] + size[2] / 2 + PADDING_CHEGADA, 'não dispara a chegada');
+  assert.ok(z - 1.75 > pos[1] + size[2] / 2 + CALCADA_POR_LADO, 'fora da calçada');
+  assert.equal(pontoDeMedicao('?ponto=MERCADO'), null);
+});
+
+test('V1.3: banca de frutas — até 1,0 de profundidade, dentro da calçada, com colisor próprio', () => {
+  const size = PREDIO.get('MERCADO').size;
+  const [w, , l] = size;
+  const banca = pecasDe('MERCADO').filter((p) => p.zona === 'banca');
+  assert.ok(banca.length > 0);
+  const colisores = PREDIOS_REAIS.MERCADO.colisores(size);
+  assert.ok(colisores.length >= 1);
+  for (const p of banca) {
+    const { min, max } = limitesDaPeca(p);
+    assert.ok(max[2] <= l / 2 + PROFUNDIDADE_BANCA + TOL, `${p.id} passa de ${PROFUNDIDADE_BANCA}`);
+    assert.ok(min[0] >= -w / 2 - CALCADA_POR_LADO && max[0] <= w / 2 + CALCADA_POR_LADO);
+    assert.ok(max[1] <= 1.2, `${p.id} alto demais`);
+    // o carro não atravessa: algum colisor envolve a peça no plano do chão
+    assert.ok(colisores.some(({ posicao: [cx, , cz], meiaExtensao: [mx, , mz] }) =>
+      min[0] >= cx - mx - TOL && max[0] <= cx + mx + TOL && min[2] >= cz - mz - TOL && max[2] <= cz + mz + TOL),
+    `${p.id} fora do colisor da banca`);
+  }
+});
+
+test('V1.3: frutas reconhecíveis — laranja, maçã, banana e uva, por cor e formato', () => {
+  const pecas = pecasDe('MERCADO');
+  const de = (nome) => pecas.filter((p) => p.id.startsWith(`fruta-${nome}`));
+  const [laranjas, macas, bananas, uvas] = ['laranja', 'maca', 'banana', 'uva'].map(de);
+  for (const [nome, lista] of Object.entries({ laranjas, macas, bananas, uvas })) assert.ok(lista.length >= 4, nome);
+  assert.ok(laranjas.every((p) => p.forma === 'esfera' && p.raio >= 0.14));
+  assert.ok(macas.every((p) => p.forma === 'esfera' && p.raio >= 0.14));
+  assert.ok(bananas.every((p) => p.forma === 'cilindro'), 'banana é comprida');
+  assert.ok(uvas.every((p) => p.forma === 'esfera' && p.raio < 0.1), 'uva é bolinha pequena');
+  // matiz como o olho vê (sRGB), não no espaço linear de trabalho do three
+  const matiz = (lista) => new THREE.Color(lista[0].cor).getHSL({}, THREE.SRGBColorSpace).h * 360;
+  assert.ok(matiz(laranjas) >= 20 && matiz(laranjas) <= 40, 'laranja é laranja');
+  assert.ok(matiz(macas) <= 10 || matiz(macas) >= 345, 'maçã é vermelha');
+  assert.ok(matiz(bananas) >= 45 && matiz(bananas) <= 60, 'banana é amarela');
+  assert.ok(matiz(uvas) >= 260 && matiz(uvas) <= 300, 'uva é roxa');
+  assert.notEqual(bananas[0].cor.toLowerCase(), PALETA3D.moeda.toLowerCase());
+});
+
+test('V1.3: MERCADO legível — fachada, toldo e letreiro', () => {
+  const corpo = pecaDe('MERCADO', 'corpo').cor;
+  assert.ok(contraste(corpo, PALETA3D.chaoMercado) >= 1.8, 'fachada × areia');
+  assert.ok(contraste(corpo, pecaDe('PADARIA', 'corpo').cor) >= 1.5, 'fachada × terracota');
+  const toldo = pecaDe('MERCADO', 'toldo').cor;
+  assert.notEqual(toldo, pecaDe('PADARIA', 'toldo').cor);
+  assert.ok(contraste(toldo, corpo) >= 1.5, 'toldo × fachada');
+  const size = PREDIO.get('MERCADO').size;
+  const letreiro = PREDIOS_REAIS.MERCADO.letreiro(size);
+  const painel = pecaDe('MERCADO', 'painel-letreiro');
+  assert.equal(letreiro.texto, 'MERCADO');
+  assert.ok(letreiro.tamanho >= 1.1);
+  assert.ok(contraste(letreiro.cor, painel.cor) >= 7);
+  assert.ok(letreiro.texto.length * letreiro.tamanho * 0.67 <= painel.tam[0]);
+  const ids = pecasDe('MERCADO').map((p) => p.id);
+  assert.equal(ids.filter((id) => /^porta-enrolar-\d$/.test(id)).length, 3);
+  for (const alvo of ['volume', 'faixa-letreiro', 'toldo', 'banca-base']) {
+    assert.ok(ids.includes(`contorno-${alvo}`), `falta contorno de ${alvo}`);
+  }
+});
+
+test('V1.3: orçamento do MERCADO real — até 6 chamadas e 3.000 triângulos', () => {
+  const { chamadas, triangulos } = orcamentoPredioReal('MERCADO', PREDIO.get('MERCADO').size);
+  assert.ok(chamadas <= 6, `chamadas: ${chamadas}`);
+  assert.ok(triangulos <= 3000, `triângulos: ${triangulos}`);
+});
+
+test('V1.3: rua no estilo real — nada sobre o leito; meio-fio, calçada e mobiliário', () => {
+  const pecas = pecasDaRua();
+  const eixo = new THREE.CatmullRomCurve3(
+    CAMINHOS[1].map(([x, z]) => new THREE.Vector3(x, 0, z)), false, 'catmullrom', TENSAO_RUA
+  ).getSpacedPoints(800).map((p) => [p.x, p.z]);
+  for (const p of pecas) {
+    const { min, max } = limitesDaPeca(p);
+    const d = Math.min(...eixo.map(([rx, rz]) =>
+      Math.hypot(Math.max(min[0] - rx, 0, rx - max[0]), Math.max(min[2] - rz, 0, rz - max[2]))));
+    assert.ok(d >= LARGURA_RUA / 2 - TOL, `${p.id} sobre o leito (${d.toFixed(2)})`);
+  }
+  const ids = pecas.map((p) => p.id);
+  assert.ok(ids.some((id) => id.startsWith('meio-fio')));
+  assert.ok(ids.some((id) => id.startsWith('calcada')));
+  const conta = (prefixo) => new Set(ids.filter((id) => id.startsWith(prefixo)).map((id) => id.split(':')[0])).size;
+  assert.equal(conta('poste'), 2);
+  assert.equal(conta('arvore'), 2);
+  assert.equal(conta('lixeira'), 1);
+  // Modo Tranquilo esconde lixeira e árvores (grupo 'extra'); postes ficam
+  for (const p of pecas) {
+    if (p.id.startsWith('arvore') || p.id.startsWith('lixeira')) assert.equal(p.grupo, 'extra', p.id);
+    if (p.id.startsWith('poste') || p.id.startsWith('meio-fio')) assert.equal(p.grupo, 'base', p.id);
+  }
+});
+
+test('V1.3: orçamento da rua no estilo real — até 4 chamadas e 2.000 triângulos', () => {
+  const { chamadas, triangulos } = orcamentoRuaReal();
+  assert.ok(chamadas <= 4, `chamadas: ${chamadas}`);
+  assert.ok(triangulos <= 2000, `triângulos: ${triangulos}`);
+});
+
+test('montarMalha: esfera de n lados e m anéis = 2·n·(m−1) triângulos', () => {
+  const esfera = montarMalha([{ forma: 'esfera', pos: [0, 0, 0], raio: 1, lados: 6, aneis: 4, cor: '#ffffff' }]);
+  assert.equal(esfera.triangulos, 36);
 });

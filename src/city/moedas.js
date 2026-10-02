@@ -76,7 +76,8 @@ export const MOEDAS = [
   ...fileira([-37.5, 6], [0, 1]),
   ...fileira([-37.5, 42], [0, 1]),
 
-  // aproximação da entrada do MERCADO (leva à faixa de travessia em x≈35.5)
+  // aproximação da entrada do MERCADO (ao lado da rua que sobe para o
+  // MERCADO; a travessia foi para x≈48,5 na V1.3 — tests/rua-mercado.test.js)
   ...fileira([28.5, 28], [1, 0]),
 
   // aproximação da entrada do PARQUE (leva à faixa em z≈53). O centro das

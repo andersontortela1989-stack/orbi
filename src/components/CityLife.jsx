@@ -6,7 +6,8 @@ import { PALETA3D, TINTAS } from '../brand/paleta3d.js';
 
 const LUZES = [
   [-9, 4], [9, 5], [-12, 22], [12, 24], [-5, 42], [7, 48],
-  [-27, 25], [27, 23], [-8, 60], [8, 65], [-10, 79], [5, 82],
+  // [27, 28.6] era [27, 23], sobre a rua (V1.3: fora do leito do caminho 2)
+  [-27, 25], [27, 28.6], [-8, 60], [8, 65], [-10, 79], [5, 82],
 ];
 
 function PostesMagicos() {

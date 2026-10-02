@@ -30,10 +30,14 @@ export function medicaoAtiva(search) {
 // calçada e do sensor de chegada (margem 3,5), para não disparar a missão.
 const RECUO_DO_PONTO = 8;
 
+// V1.3: MERCADO entra com o mesmo contrato da PADARIA (em frente à fachada,
+// fora da calçada e do sensor de chegada).
+const PONTOS_DE_MEDICAO = Object.freeze(['PADARIA', 'MERCADO']);
+
 /**
- * PONTO DE MEDIÇÃO FIXO (fatia V1): `?medir=1&ponto=PADARIA` larga o carro
- * em frente à fachada da PADARIA, para as medições A/B partirem do mesmo
- * lugar. Sem `?medir=1`, ou com ponto desconhecido, devolve null e o carro
+ * PONTO DE MEDIÇÃO FIXO (fatia V1): `?medir=1&ponto=PADARIA` (ou MERCADO,
+ * V1.3) larga o carro em frente à fachada do lugar, para as medições A/B
+ * partirem do mesmo lugar. Sem `?medir=1`, ou com ponto desconhecido, devolve null e o carro
  * nasce onde sempre nasceu. Não toca save, missão nem roteiro: só a posição
  * inicial do corpo físico.
  */
@@ -41,7 +45,7 @@ export function pontoDeMedicao(search) {
   if (!medicaoAtiva(search)) return null;
   const nome = new URLSearchParams(search).get('ponto');
   const predio = TODOS_PREDIOS.find((p) => p.slug === nome);
-  if (nome !== 'PADARIA' || !predio) return null;
+  if (!PONTOS_DE_MEDICAO.includes(nome) || !predio) return null;
   const [x, z] = predio.pos;
   const [, , l] = predio.size;
   // rumo π: o nariz do carro aponta para a fachada (+Z do prédio)
