@@ -262,6 +262,15 @@ o terreno (fachada bege e calçada caramelo sobre areia, sem contorno), o
 letreiro fica ilegível e a vitrine e o toldo quase não aparecem. A V1 fica
 como ponto de salvamento atrás da chave; os ajustes vão para a V1.2b.
 
+### 02/10/2026, 11:22 — PADARIA real legível (V1.2b), sessão longa
+
+02/10/2026 11:22, notebook, prévia de produção,
+`?medir=1&ponto=PADARIA&estilo=real`, janela anônima, sessão de 5 min 54 s com
+aventura do parque completa, garagem e chegada viva: 19.980 quadros medidos ·
+mediana 16,8 ms · p95 20,7 ms · maior 146,2 ms · >50 ms 0,0% · >250 ms 0 · 232
+chamadas · 32.016 triângulos · 1707×879 DPR 1,13. O pico de 146 ms não tem
+evento identificado (motiva a M1).
+
 ---
 
 ## Modelo para os próximos testes
