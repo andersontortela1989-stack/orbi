@@ -52,6 +52,20 @@ seção "Medições de desempenho".
 - [ ] ESCOLA e PIZZA prendem a atenção.
 - [ ] Anotar as tentativas de visitar lugares fora do dia.
 
+**A2.1 — identidade da PADARIA**
+
+- [ ] Num print com a placa coberta, um adulto reconhece a PADARIA.
+- [ ] Os pães na vitrine dão para ver no celular, com o zoom de toque.
+- [ ] O pão no telhado aparece de longe.
+- [ ] Com o Modo Tranquilo ligado, os pães continuam lá, parados.
+- [ ] A chegada à PADARIA (pergunta de contagem 🍞) funciona igual a antes, e
+      o carro não bate em nada novo.
+- [ ] O carro não atravessa os pães da vitrine ao encostar na PADARIA.
+- [ ] Observação: as crianças dizem "pão" ou "padaria" antes da fala do Órbi?
+- [ ] Os pães da vitrine não são confundidos com moedas (a criança não tenta
+      coletá-los).
+- [ ] O pão do telhado é reconhecido como pão de vários ângulos.
+
 ---
 
 ## 28/09/2026 — teste do Anderson no notebook (sem as crianças)
@@ -182,6 +196,14 @@ ficha A3.
   (`orbi-kahe-git-codex-activity-coordinator-p0-androm.vercel.app`, deployment
   `5944kBqzB`, commit `3a1fafa`, código idêntico a `c8aca64`) ou
   `npm run preview` local. A A3.4 (03/10) usa o **mesmo** método.
+
+### 01/10/2026 — custo da A2.1 (pães da PADARIA)
+
+A2.1, custo calculado em node com as peças reais (`tests/pao-3d.test.js`):
+4 chamadas, 736 triângulos, 3 materiais compartilhados. A leitura no
+navegador em 01/10 foi inconclusiva (pontos de cópia diferentes; pico de
+98,2 ms na versão nova sem causa identificada). A comparação real fica para a
+medição base × candidato de 03/10.
 
 ---
 

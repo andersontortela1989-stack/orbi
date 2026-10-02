@@ -337,6 +337,10 @@ para o pacote inicial (1.088 bytes minificados) e `src/ui/responsive.js` foi
 junto (679 bytes). Qualquer fatia que toque a abertura (`StartScreen`,
 `IntroChegada`, store) deve informar a variação do pacote inicial.
 
+**Depois da A2.1:** pacote inicial 198,02 kB (+0,04 kB, `PALETA3D.pao`,
+porque `paleta3d.js` entra no inicial via `bairros.js` e store); folga de
+cerca de 1,98 kB.
+
 ### 2.5 Política de save
 
 **Sobe `SAVE_VERSION` quando:**

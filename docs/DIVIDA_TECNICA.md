@@ -507,3 +507,35 @@ o botão "Área dos pais". O adulto precisa virar o celular para abri-la. Com a
 
 **O que falta.** Decidir se isso incomoda os pais; hoje não há outro caminho
 para a Área dos Pais em retrato.
+
+---
+
+## 22. Marcos dos prédios somem no Modo Tranquilo
+
+**Observado.** `Marco` (`Building.jsx:132`) só é desenhado com
+`visual.detalhes`, que o Modo Tranquilo desliga; a pizza da PIZZA, a cruz do
+HOSPITAL e do VET, o relógio da ESCOLA, a chave da GARAGEM e a árvore do
+PARQUE somem no Tranquilo, contrariando a ficha A2 ("identidade é informação,
+não enfeite").
+
+**Onde.** `src/components/Building.jsx:132`; `src/visual/world-style.js:46`.
+
+**Quando.** Fatia A2.1, 01/10/2026.
+
+**O que falta.** Migrar para `AderecosLugar` quando cada lugar receber sua
+identidade (ESCOLA na A2.4).
+
+---
+
+## 23. Medidas do Building repetidas em `identidade.js`
+
+**Observado.** `src/city/identidade.js` repete as medidas da janela e do
+telhado do `Building.jsx`. Se elas mudarem no Building, os pães da PADARIA
+saem do lugar sem nenhum teste avisar.
+
+**Onde.** `src/city/identidade.js` (bloco "ESPELHO do Building.jsx");
+`src/components/Building.jsx` (`Janelas` e `Telhado` em pirâmide).
+
+**Quando.** Fatia A2.1, 01/10/2026.
+
+**O que falta.** Resolver quando o Building exportar essas medidas como dado.

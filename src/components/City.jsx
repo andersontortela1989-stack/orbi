@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import * as THREE from 'three';
 import { Building } from './Building.jsx';
 import { OpenPark } from './OpenPark.jsx';
+import { AderecosLugar } from './AderecosLugar.jsx';
 import { BAIRROS } from '../city/bairros.js';
+import { ADERECOS } from '../city/identidade.js';
 import { TINTAS } from '../brand/paleta3d.js';
 
 function geometriaRetanguloArredondado(largura, profundidade, raio) {
@@ -75,13 +77,18 @@ export function City() {
             p.slug === 'PARQUE' ? (
               <OpenPark key={p.slug} floorPos={p.pos} />
             ) : (
-              <Building
-                key={p.slug}
-                floorPos={p.pos}
-                size={p.size}
-                color={p.cor}
-                label={p.slug}
-              />
+              <Fragment key={p.slug}>
+                <Building
+                  floorPos={p.pos}
+                  size={p.size}
+                  color={p.cor}
+                  label={p.slug}
+                />
+                {/* Identidade do lugar (A2): pães da PADARIA etc. */}
+                {ADERECOS[p.slug] && (
+                  <AderecosLugar slug={p.slug} floorPos={p.pos} size={p.size} />
+                )}
+              </Fragment>
             )
           ))}
         </group>

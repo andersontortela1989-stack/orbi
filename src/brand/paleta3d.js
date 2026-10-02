@@ -119,6 +119,14 @@ export const PALETA3D = {
   // micro-celebração espalhada pelo asfalto, mesma família do destaque 2D
   moeda: TINTAS.sun,
 
+  // pães da PADARIA (A2.1) — casca de pão, NUNCA a família do âmbar da
+  // moeda (sun/sunDeep/sunSoft): pão na vitrine não pode parecer coletável.
+  // Tons de mundo próprios, fora de colors.css (como calcada e terreno).
+  pao: {
+    lateral: '#C98A4B', // caramelo
+    casca:   '#9A5B2C', // casca tostada
+  },
+
   // bichos do mundo (frente "Bichos no mundo") — fauna sticker; todo
   // slug existe no banco ANIMAIS dos quizzes (ponte mundo↔conteúdo).
   // Crista coral é cor de MUNDO, ok — o guard-rail "vermelho banido"
