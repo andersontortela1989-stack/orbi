@@ -5,8 +5,8 @@
 > nenhum push, merge, deploy ou compra de domínio: cada um continua exigindo
 > autorização expressa no momento.
 
-**Data-alvo: 04/10/2026 (domingo).**
-**Último portão:** o teste com as crianças de 03/10/2026.
+**Data-alvo: 12/10/2026 (segunda-feira, Dia das Crianças).**
+**Último portão:** o teste com as crianças de 10/10/2026.
 
 ---
 
@@ -26,8 +26,8 @@
 
 A Vercel está ligada à `main`. Segundo o Anderson, o painel indica que um push
 na `main` atualiza a produção de `orbi-kahe.vercel.app`. Sem esse passo, o
-merge publica a versão nova **antes** do teste de 03/10 e do go/no-go de
-04/10.
+merge publica a versão nova **antes** do teste de 10/10 e do go/no-go de
+11/10.
 
 **Ação do Anderson no painel.** O merge não acontece enquanto este passo não
 estiver confirmado.
@@ -88,7 +88,7 @@ Ordem e motivo na §7 do plano mestre.
 
 ---
 
-## 2. Critérios de go / no-go (04/10)
+## 2. Critérios de go / no-go (11/10)
 
 Todos precisam ser **sim**:
 
@@ -101,7 +101,7 @@ Todos precisam ser **sim**:
       **Definição de "não pior"** (decidida em 28/09/2026, antes da medição
       de base):
       - **Base:** as 6 rodadas da A3.2 (29/09), build `c8aca64`.
-      - **Comparação:** nova medição do build candidato em 03/10 (A3.4), com
+      - **Comparação:** nova medição do build candidato em 10/10 (A3.4), com
         o **mesmo** protocolo: mesmo celular, rota padrão, 3 rodadas com e 3
         sem Modo Tranquilo, notas de protocolo de `TESTES_COM_CRIANCAS.md`.
       - **"Não pior"** = em **cada** modo: (a) a mediana das 3 rodadas da %
@@ -114,7 +114,7 @@ Todos precisam ser **sim**:
         absoluto vale só para decidir a A3.3 (ficha A3 do `PLANO_MESTRE.md`).
 
       **Revisão de 01/10/2026:** a medição de base de 29/09 não foi
-      registrada. A base passa a ser medida em 03/10, na **mesma** sessão do
+      registrada. A base passa a ser medida em 10/10, na **mesma** sessão do
       candidato:
       - **base** = deployment `5944kBqzB` (commit `3a1fafa`, código idêntico
         a `c8aca64`), no endereço fixo
@@ -124,9 +124,9 @@ Todos precisam ser **sim**:
       Mesmo celular, mesma rota, 3 rodadas com e 3 sem Modo Tranquilo para
       **cada** build (12 no total), alternando base e candidato. A regra de
       "não pior" continua a mesma. O deployment `5944kBqzB` não pode ser
-      apagado até o go/no-go.
+      apagado até o go/no-go de 11/10.
 
-- [ ] Teste de 03/10 com as crianças sem regressão: o que funcionava em 27/09
+- [ ] Teste de 10/10 com as crianças sem regressão: o que funcionava em 27/09
       continua funcionando, e elas querem jogar de novo.
 - [ ] Nenhum item do checklist de princípios (§2.6 do plano) violado nas
       fatias entregues.
@@ -161,7 +161,7 @@ A ser preenchida em E6.2 e conferida a cada lançamento.
 - **Save:** exportar o save do celular pela Área dos Pais **antes** de
   instalar a versão nova.
 - **Publicação:** republicar o deploy anterior no painel da Netlify. O recurso
-  precisa ser **conferido no painel** antes de 04/10.
+  precisa ser **conferido no painel** antes de 12/10.
 - **Código:** o último commit aprovado da branch de produção é a referência.
   Nenhum `push --force`.
 
@@ -197,3 +197,13 @@ mais próximo do mundo real e mais vivo, dentro do lançamento de 12/10
 
 A regra "não pior que a base" do go/no-go vale também para o estilo novo,
 salvo decisão explícita do Anderson em contrário.
+
+---
+
+## 7. Data de lançamento (02/10/2026)
+
+02/10/2026 — data de lançamento alterada de 04/10 para 12/10/2026
+(segunda-feira, Dia das Crianças), por decisão do Anderson. O escopo não cresce
+com o prazo além do já registrado (§6 estilo, A2.4 ESCOLA, A3.3 se a medição
+cair no caso B). Continuam fora, salvo revisão explícita do Anderson: E1, A5.2,
+A2.2, A2.3 e iniciativas novas.

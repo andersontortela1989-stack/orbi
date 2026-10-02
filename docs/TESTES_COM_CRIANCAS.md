@@ -21,7 +21,7 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 
 ---
 
-## Roteiro do teste geral de 03/10/2026
+## Roteiro do teste geral de 10/10/2026
 
 **Registro honesto.** 29/09 e 30/09: medição e teste curto realizados,
 resultados não registrados.

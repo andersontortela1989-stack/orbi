@@ -5,7 +5,7 @@ código, commit de código, push, merge ou deploy. Cada fatia só começa quando
 pedida e cumprir a definição de pronto (§2.1).
 
 Escrito em 27/09/2026 na branch `codex/activity-coordinator-p0`, a partir do HEAD
-`f945547`. Data-alvo de lançamento: **04/10/2026** (ver `docs/LANCAMENTO.md`).
+`f945547`. Data-alvo de lançamento: **12/10/2026** (ver `docs/LANCAMENTO.md`).
 
 ---
 
@@ -515,7 +515,7 @@ cerca de 1,98 kB.
   - **A3.3 — correção da maior causa medida,** uma causa por fatia. Aceite:
     melhora medida na rota padrão.
   - **A3.4 — nova medição e registro.**
-    - A3.4 — medição do build candidato em 03/10, mesmo protocolo da A3.2;
+    - A3.4 — medição do build candidato em 10/10, mesmo protocolo da A3.2;
       critério de comparação em `LANCAMENTO.md` §2.
 - **Critério de decisão da A3.3 — definido em 28/09/2026, ANTES da medição no
   celular.**
@@ -1133,7 +1133,7 @@ cerca de 1,98 kB.
 - **Pré-requisito obrigatório de E5.2:** desconectar o repositório no painel da
   Vercel ou pausar seus deploys. A Vercel publica automaticamente a partir da
   `main` (§1.5); sem esse passo, o merge publica a versão nova em
-  `orbi-kahe.vercel.app` antes do teste de 03/10 e do go/no-go de 04/10. É
+  `orbi-kahe.vercel.app` antes do teste de 10/10 e do go/no-go de 11/10. É
   ação do Anderson no painel, confirmada antes do merge.
 - **Riscos:**
   - o merge na `main` publica na Vercel se o pré-requisito acima não for
@@ -1183,14 +1183,14 @@ cerca de 1,98 kB.
 A6 ─────────────────────────────────────────────┐
 A3.1 → A3.2 → A3.3 → A3.4 ──────────────────────┤
 A1.1 → A1.2 → A1.3 → A2.1…A2.4 ─────────────────┤
-A4.1 ───────────────────────────────────────────┤→ teste 03/10 → lançamento 04/10
+A4.1 ───────────────────────────────────────────┤→ teste 10/10 → lançamento 12/10
 A5.1 (→ A5.2) ──────────────────────────────────┤
 C1 (decidido 27/09) → C1.1 → C1.2 ──────────────┤
 E5.1 → E5.2 → E4.1 ─────────────────────────────┤
 E3.1 → (E4.2 domínio) ──────────────────────────┤
 E6.1 → E6.2 → E1.1 → E1.2 ──────────────────────┘
 
-Depois de 04/10:
+Depois de 12/10:
 D1.1 → B1 (→ A7) → C5 ; D1.1 → B2 ; D1.1 → B4
 A2.1 → B5 ; B1 → B6 ; A2 + A3 → B7 ; D1.1 → C2 ; observação → C3
 A1.4+ (espalhar) só depois de observação com as crianças
@@ -1217,18 +1217,18 @@ reaproveitamento:
 
 ---
 
-## 5. Caminho crítico até 04/10/2026
+## 5. Caminho crítico até 12/10/2026
 
 O lançamento depende de quatro correntes. Qualquer atraso nelas atrasa a data:
 
 1. **Publicação:** decisão E5.1 → PR E5.2 (com autorização) → configuração
-   E4.1 → deploy no dia 04/10 (com autorização).
+   E4.1 → deploy no dia 12/10 (com autorização).
 2. **Desempenho:** A3.1 → medição A3.2 no celular → A3.3, se a causa for
-   clara → nova medição A3.4. A A3.4 acontece em 03/10 com ou sem A3.3: é a
+   clara → nova medição A3.4. A A3.4 acontece em 10/10 com ou sem A3.3: é a
    medição do build candidato que decide o go/no-go de desempenho
    (`LANCAMENTO.md` §2). Sem A3.2 não há número para decidir "go".
 3. **Mundo:** A1.1 → A1.2 → A1.3, e então o **teste com as crianças de
-   03/10**, que é o último portão.
+   10/10**, que é o último portão.
 4. **Textos:** E6.1, porque o README não pode prometer a Horta.
 
 **Fora do caminho crítico** (saem primeiro se houver atraso, nesta ordem): E1,
@@ -1283,11 +1283,11 @@ aprovada entra até 04/10.
 
 ---
 
-## 7. O que fica para depois de 04/10 (nada é descartado)
+## 7. O que fica para depois de 12/10 (nada é descartado)
 
-| Iniciativa | Situação em 04/10 | Próximo passo |
+| Iniciativa | Situação em 12/10 | Próximo passo |
 |---|---|---|
-| A1.4 em diante | não iniciada | Decidir com a observação de 03/10 |
+| A1.4 em diante | não iniciada | Decidir com a observação de 10/10 |
 | A2.5 em diante | não iniciada | Um lugar por fatia |
 | A3 (correções difusas) | medida | Uma causa por fatia, sempre com medição |
 | A7 | não iniciada | Junto com B1 |
