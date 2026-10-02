@@ -18,6 +18,8 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 - o que chamam de "de verdade";
 - medição de desempenho nos dois estilos pela rota padrão, resumos colados no
   repositório no mesmo dia.
+- Copiar o resumo completo; as listas de picos por atividade substituem a
+  anotação manual do trecho, que continua opcional.
 
 **V1 — PADARIA no estilo real (`?estilo=real`)**
 

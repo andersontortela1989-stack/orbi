@@ -133,11 +133,19 @@ export function estadoIncremental() {
     acima50: 0,
     acima250: 0,
     descartados: 0,
+    // M1: os 5 maiores quadros (duração, momento, atividade em foco) e os
+    // quadros acima de 50 ms por atividade. Só crescem quando um quadro
+    // entra no top 5 ou é lento — raro; o quadro comum não aloca nada.
+    picos: [],
+    lentosPorAtividade: {},
   };
 }
 
-/** Soma um quadro ao estado (mesmas regras de aquecimento e descarte). */
-export function registrarQuadro(estado, duracao, aquecimentoMs = AQUECIMENTO_MS) {
+/**
+ * Soma um quadro ao estado (mesmas regras de aquecimento e descarte).
+ * `atividade` (M1, opcional) é o foco do coordenador naquele quadro.
+ */
+export function registrarQuadro(estado, duracao, aquecimentoMs = AQUECIMENTO_MS, atividade = null) {
   if (typeof duracao !== 'number' || !Number.isFinite(duracao) || duracao < 0) {
     estado.descartados += 1;
     return estado;
@@ -149,9 +157,35 @@ export function registrarQuadro(estado, duracao, aquecimentoMs = AQUECIMENTO_MS)
   }
   estado.quadros += 1;
   if (estado.maior === null || duracao > estado.maior) estado.maior = duracao;
-  if (duracao > LIMIAR_LENTO_MS) estado.acima50 += 1;
+  if (duracao > LIMIAR_LENTO_MS) {
+    estado.acima50 += 1;
+    const chave = atividade ?? SEM_ATIVIDADE;
+    estado.lentosPorAtividade[chave] = (estado.lentosPorAtividade[chave] ?? 0) + 1;
+  }
   if (duracao > LIMIAR_TRAVADA_MS) estado.acima250 += 1;
+  registrarPico(estado.picos, duracao, estado.duracaoSessaoMs, atividade);
   return estado;
+}
+
+export const MAX_PICOS = 5;
+const SEM_ATIVIDADE = '—';
+
+// Mantém os MAX_PICOS maiores em ordem decrescente. Empate: quem aconteceu
+// primeiro fica (o novo só entra se for estritamente maior que o último).
+function registrarPico(picos, duracao, momentoMs, atividade) {
+  if (picos.length === MAX_PICOS && duracao <= picos[MAX_PICOS - 1].duracao) return;
+  let i = picos.length;
+  while (i > 0 && picos[i - 1].duracao < duracao) i -= 1;
+  picos.splice(i, 0, { duracao, momentoMs, atividade });
+  if (picos.length > MAX_PICOS) picos.pop();
+}
+
+/**
+ * Leitor da atividade em foco para o medidor (M1). Sem `?medir=1` devolve
+ * null e quem chama não lê nada: o custo fora da medição é zero.
+ */
+export function leitorDeFoco(search, lerFoco) {
+  return medicaoAtiva(search) ? () => lerFoco() : null;
 }
 
 /**
@@ -211,5 +245,36 @@ export function textoResumo(resumo, { render, tela, quando } = {}) {
     );
   }
   if (tela) linhas.push(`tela: ${tela.largura}×${tela.altura} · DPR ${decimal(tela.dpr, 2)}`);
+  return linhas.join('\n');
+}
+
+const momentoLegivel = (ms) => {
+  const s = Math.floor(ms / 1000);
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+};
+
+/**
+ * M1 — as duas listas que vão no FIM do resumo copiado, depois das linhas de
+ * sempre (que não mudam: registros antigos continuam comparáveis):
+ * os 5 maiores quadros com momento (mm:ss da sessão) e atividade em foco, e
+ * os quadros acima de 50 ms por atividade.
+ */
+export function textoPicos(estado) {
+  const picos = estado.picos ?? [];
+  const linhas = [];
+  if (picos.length === 0) {
+    linhas.push('picos (5 maiores, depois do aquecimento): nenhum');
+  } else {
+    linhas.push('picos (5 maiores, depois do aquecimento):');
+    for (const p of picos) {
+      linhas.push(`  ${decimal(p.duracao)} ms · ${momentoLegivel(p.momentoMs)} · ${p.atividade ?? SEM_ATIVIDADE}`);
+    }
+  }
+  const lentos = Object.entries(estado.lentosPorAtividade ?? {});
+  linhas.push(
+    lentos.length === 0
+      ? 'acima de 50 ms por atividade: nenhum'
+      : `acima de 50 ms por atividade: ${lentos.map(([a, n]) => `${a} ${n}`).join(' · ')}`
+  );
   return linhas.join('\n');
 }

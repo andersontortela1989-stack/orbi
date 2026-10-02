@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import {
   estadoIncremental,
+  leitorDeFoco,
   lerIncremental,
   registrarQuadro,
   resumirQuadros,
+  textoPicos,
   textoResumo,
 } from '../perf/medidor.js';
+import { coordenadorAtividade } from '../activity/index.js';
 
 /**
  * MEDIDOR DE DESEMPENHO (fatia A3.1a) — só existe com `?medir=1` no endereço.
@@ -54,6 +57,13 @@ const coleta = {
 
 const INTERVALO_PAINEL_MS = 2000;
 
+// M1: atividade em foco no coordenador a cada quadro, para saber ONDE os
+// picos acontecem. Só existe com `?medir=1` (sem ele, null e nada é lido).
+const lerFoco =
+  typeof location !== 'undefined'
+    ? leitorDeFoco(location.search, () => coordenadorAtividade.estado().foco)
+    : null;
+
 export function ColetorDesempenho() {
   const gl = useThree((s) => s.gl);
 
@@ -82,7 +92,7 @@ export function ColetorDesempenho() {
     coleta.duracoes[i] = delta * 1000;
     // Soma o valor JÁ arredondado para 32 bits: contadores do painel e resumo
     // copiado (feito sobre o Float32Array) falam exatamente dos mesmos números.
-    registrarQuadro(coleta.estado, coleta.duracoes[i]);
+    registrarQuadro(coleta.estado, coleta.duracoes[i], undefined, lerFoco ? lerFoco() : null);
     coleta.gravados = i + 1;
     if (coleta.gravados === CAPACIDADE) coleta.limiteAtingido = true;
 
@@ -206,6 +216,8 @@ export function MedidorDesempenho() {
     if (coleta.limiteAtingido) {
       texto += `\nlimite atingido: medição parou em ${CAPACIDADE} quadros`;
     }
+    // M1: picos com momento e atividade, sempre DEPOIS das linhas de sempre.
+    texto += `\n${textoPicos(coleta.estado)}`;
     const ok = await copiarTexto(texto);
     setCopia(ok ? { estado: 'copiado', texto: '' } : { estado: 'manual', texto });
   };
