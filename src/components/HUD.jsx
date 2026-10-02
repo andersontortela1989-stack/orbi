@@ -8,6 +8,7 @@ import { ANIMAL_POR_SLUG } from '../missions/missoes-ciencias.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
 import { useAdventure } from '../adventure/useAdventure.js';
 import { enviarEventoAventura } from '../adventure/runtime.js';
+import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
@@ -171,6 +172,12 @@ export function HUD() {
         >
           {CEUS[ceuId].rotulo}
         </button>
+      )}
+
+      {/* C1 — repetir a última fala do Órbi; nos painéis de pergunta o
+          botão vem dentro do próprio painel. */}
+      {atividade.hud !== 'painel' && atividade.foco !== 'pausado' && (
+        <BotaoRepetirFala className="repetir-btn--hud" />
       )}
 
       <div className="hud" aria-live="polite">

@@ -77,6 +77,17 @@ seção "Medições de desempenho".
       coletá-los).
 - [ ] O pão do telhado é reconhecido como pão de vários ângulos.
 
+**C1 — botão de repetir a fala (🔊)**
+
+- [ ] O botão aparece no HUD e nos painéis de pergunta (chegada viva e
+      pergunta da aventura).
+- [ ] Repete a última fala certa (a da atividade em foco).
+- [ ] Não aparece ativo com a voz desligada.
+- [ ] Observação: a criança encontra o botão sozinha?
+- [ ] Toques repetidos não empilham falas.
+- [ ] Depois de sair e voltar ao app, o 🔊 repete o pedido atual.
+- [ ] Trocar o céu não muda o que o 🔊 repete.
+
 ---
 
 ## 28/09/2026 — teste do Anderson no notebook (sem as crianças)

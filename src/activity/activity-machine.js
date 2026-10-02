@@ -145,6 +145,9 @@ function validarAtividade(atividade) {
 export function criarCoordenadorAtividade(opcoes = {}) {
   const agora = opcoes.agora ?? (() => Date.now());
   const ouvintes = new Set();
+  // Última fala autorizada de cada atividade (C1, botão de repetir). Só o
+  // texto: repetir nunca reenvia onEnd, que poderia avançar um fluxo.
+  const falas = new Map();
   let pilha = [BASE];
   let snapshotAtual;
 
@@ -162,6 +165,7 @@ export function criarCoordenadorAtividade(opcoes = {}) {
       voz: espec.voz,
       hud: espec.hud,
       mundo: espec.mundo,
+      fala: falas.get(foco) ?? null,
     });
   };
 
@@ -171,6 +175,12 @@ export function criarCoordenadorAtividade(opcoes = {}) {
   };
 
   reconstruirSnapshot();
+
+  const guardarFala = (dono, texto) => {
+    if (falas.get(dono) === String(texto)) return;
+    falas.set(dono, String(texto));
+    notificar();
+  };
 
   const pedirFoco = (atividade) => {
     validarAtividade(atividade);
@@ -236,6 +246,7 @@ export function criarCoordenadorAtividade(opcoes = {}) {
     reiniciar() {
       const anterior = topo();
       opcoes.voz?.calar();
+      falas.clear();
       pilha = [BASE];
       emitir({ tipo: 'foco', de: anterior, para: BASE });
       notificar();
@@ -244,11 +255,32 @@ export function criarCoordenadorAtividade(opcoes = {}) {
     falar(dono, texto, opts) {
       validarAtividade(dono);
       const atual = topo();
+      // `guardar: false` = fala global (céu, combustível, boas-vindas): é
+      // dita, mas não vira a fala que o botão de repetir devolve.
+      const guardar = opts?.guardar !== false;
       if (dono !== atual || !ESPEC_ATIVIDADE[atual].voz) {
+        // A pausa não muda de quem é a fala: a do foco logo abaixo dela é
+        // guardada para repetir depois, só não é dita agora.
+        if (guardar && atual === 'pausado' && dono === pilha[pilha.length - 2]) {
+          guardarFala(dono, texto);
+        }
         emitir({ tipo: 'voz_bloqueada', dono, topo: atual, texto: String(texto) });
         return false;
       }
+      if (guardar) guardarFala(dono, texto);
       return opcoes.voz?.falar(String(texto), opts) ?? false;
+    },
+
+    /**
+     * Fala de novo a última fala da atividade em foco. Corta a fala em curso
+     * (nunca enfileira) e não reenvia opções como onEnd: não conta tentativa
+     * nem ajuda, não avança etapa e não toca no save.
+     */
+    repetir() {
+      const atual = topo();
+      const texto = falas.get(atual);
+      if (!texto || !ESPEC_ATIVIDADE[atual].voz) return false;
+      return opcoes.voz?.falar(texto, { interrupt: true }) ?? false;
     },
 
     temFoco: (atividade) => topo() === atividade,

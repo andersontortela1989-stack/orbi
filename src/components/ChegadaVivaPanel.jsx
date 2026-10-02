@@ -4,6 +4,7 @@ import { somSucesso } from '../audio/sons.js';
 import { falarDaAtividade } from '../activity/index.js';
 import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { Bandeira } from './Bandeira.jsx';
+import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
 
 // Tempo entre resolver (acerto ou revelação) e fechar o painel — a frase
 // final começa e a carta certa acende antes de o fluxo seguir.
@@ -113,15 +114,19 @@ export function ChegadaVivaPanel() {
   return (
     <div className="viva-overlay">
       <div className="viva-painel" role="dialog" aria-label="pergunta do Órbi">
-        <div className="viva-titulo">
-          {pergunta.tituloAntes}
-          {pergunta.tituloDestaque && (
-            <>
-              {' '}
-              <span className="viva-som">{pergunta.tituloDestaque}</span>
-            </>
-          )}
-          {pergunta.tituloDepois}
+        {/* C1: 🔊 ao lado do título, longe das cartas de resposta. */}
+        <div className="repetir-linha">
+          <div className="viva-titulo">
+            {pergunta.tituloAntes}
+            {pergunta.tituloDestaque && (
+              <>
+                {' '}
+                <span className="viva-som">{pergunta.tituloDestaque}</span>
+              </>
+            )}
+            {pergunta.tituloDepois}
+          </div>
+          <BotaoRepetirFala />
         </div>
 
         {/* Fileira de itens pra CONTAR (PADARIA): pães grandes e separados,

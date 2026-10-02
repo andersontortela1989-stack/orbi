@@ -5,6 +5,7 @@ import {
 } from '../adventure/runtime.js';
 import { useAdventure } from '../adventure/useAdventure.js';
 import { useActivity } from '../activity/useActivity.js';
+import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
 
 function AdventurePanel() {
   const aventura = useAdventure();
@@ -47,7 +48,11 @@ function AdventurePanel() {
     return (
       <div className="adv-overlay">
         <div className="adv-painel" role="dialog" aria-modal="true" aria-label="Pergunta da aventura">
-          <div className="adv-titulo">{painel.texto}</div>
+          {/* C1: 🔊 ao lado do título, longe das opções de resposta. */}
+          <div className="repetir-linha">
+            <div className="adv-titulo">{painel.texto}</div>
+            <BotaoRepetirFala />
+          </div>
           <div className="adv-opcoes">
             {painel.opcoes.map((opcao) => (
               <button

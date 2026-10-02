@@ -1,0 +1,58 @@
+/* C1 — 🔊 repetir a última fala do Órbi. Importado pelo BotaoRepetirFala:
+   vai no CSS do pacote do jogo, não no CSS inicial da abertura.
+   Mesma linguagem do céu e do caderninho; alvo de no mínimo 48 px em
+   qualquer tela. Estático: só o afundar do toque, como os outros botões
+   (nada de animação, inclusive no Modo Tranquilo e com movimento reduzido). */
+.repetir-btn {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  min-width: 48px;
+  min-height: 48px;
+  font-size: 26px;
+  line-height: 1;
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--solid-3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.repetir-btn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+.repetir-btn:disabled {
+  opacity: 0.4;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* No HUD: logo abaixo do caderninho, no canto direito. Na fileira do topo
+   ele ficava sob a faixa da missão quando o texto é longo. */
+.repetir-btn--hud {
+  position: fixed;
+  top: calc(var(--ui-safe-top) + 56px + var(--space-3));
+  right: var(--ui-safe-right);
+  z-index: 15;
+}
+
+/* Nos painéis de pergunta: ao lado do título, separado das respostas por
+   uma folga a mais (dedo pequeno não acerta a carta sem querer). */
+.repetir-linha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+/* Mesma condição em que o caderninho encolhe para 42 px; o 🔊 para em
+   48 px e acompanha a altura do caderninho. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .repetir-btn { width: 48px; height: 48px; font-size: 22px; }
+  .repetir-btn--hud { top: calc(var(--ui-safe-top) + 42px + var(--space-2)); }
+}

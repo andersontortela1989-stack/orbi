@@ -18,11 +18,12 @@ export function falarDaAtividade(atividade, texto, opts) {
 /**
  * Para eventos globais iniciados pela criança (céu, aviso de combustível):
  * atribui a fala ao foco atual, sem permitir fala quando o jogo está pausado.
+ * Não é guardada para o botão de repetir (C1): o 🔊 repete o pedido do foco.
  */
 export function falarNoFoco(texto, opts) {
   return coordenadorAtividade.falar(
     coordenadorAtividade.estado().foco,
     texto,
-    opts
+    { ...opts, guardar: false }
   );
 }
