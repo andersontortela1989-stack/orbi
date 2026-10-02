@@ -27,6 +27,42 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 - [ ] Sem o contorno de adesivo, tudo continua legível no celular.
 - [ ] O carro passa sob o toldo sem parecer atravessá-lo.
 
+### Roteiro executável do A/B (04/10)
+
+**Endereços**
+
+- Prévia da Vercel da branch (https), com e sem `&estilo=real`.
+- Base de desempenho: deployment `5944kBqzB`.
+- V1.4 (carro real) fica fora do A/B.
+
+**Ordem**
+
+- Uma criança começa pelo estilo real e a outra pelo atual.
+- Cerca de 5 min por estilo.
+- Levar cada uma ao quarteirão PADARIA/MERCADO pela missão do roteiro.
+
+**Observar, sem perguntas indutivas**
+
+- [ ] Reconhecem PADARIA e MERCADO sem a placa?
+- [ ] Notam a banca?
+- [ ] Estranham o contraste entre o quarteirão real e o resto?
+- [ ] O carro some de vista?
+- [ ] O que pedem para jogar de novo?
+
+**Medição no celular (só o Anderson)**
+
+- Rota padrão.
+- 3 rodadas com e 3 sem Modo Tranquilo no estilo atual (critério da A3.3) + 3
+  sem Modo Tranquilo no estilo real.
+- Resumo completo, com as listas da M1 e da M1b, colado no repositório no
+  mesmo dia.
+
+**Decisão de 05/10**
+
+- Estilo real para a cidade ou lançamento no estilo atual.
+- Critérios: reconhecimento, reação das crianças e desempenho ("não pior" vale
+  para o estilo real).
+
 ---
 
 ## Roteiro do teste geral de 10/10/2026
@@ -272,6 +308,20 @@ aventura do parque completa, garagem e chegada viva: 19.980 quadros medidos ·
 mediana 16,8 ms · p95 20,7 ms · maior 146,2 ms · >50 ms 0,0% · >250 ms 0 · 232
 chamadas · 32.016 triângulos · 1707×879 DPR 1,13. O pico de 146 ms não tem
 evento identificado (motiva a M1).
+
+### 02/10/2026, 15:39 — quarteirão real (V1.3), picos por atividade (M1)
+
+02/10/2026 15:39, notebook, prévia de produção,
+`?medir=1&ponto=MERCADO&estilo=real`, sessão de 2 min 35 s (missões PIZZA e
+PADARIA): 8197 quadros · mediana 16,8 ms · p95 23,9 ms · maior 248,4 ms · >50 ms
+0,1% · >250 ms 0 · 139 chamadas · 30980 triângulos · 1707×879 DPR 1,13.
+
+Picos: 248,4 ms 02:08 em_missao; 222,9 ms 01:08 pergunta; 149,5 ms 00:38
+em_missao; 107,5 ms 02:30 pergunta; 103,9 ms 02:30 pergunta. Acima de 50 ms por
+atividade: em_missao 5 · pergunta 6.
+
+Leitura: picos concentrados nas transições (chegada, abertura da pergunta), não
+ao dirigir; os painéis são iguais nos dois estilos. Motiva a M1b.
 
 ---
 
