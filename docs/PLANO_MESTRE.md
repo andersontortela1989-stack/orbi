@@ -531,6 +531,9 @@ junto (679 bytes). Qualquer fatia que toque a abertura (`StartScreen`,
     lançamento; A3.1b (`?dpr`, `?aa`, `?balao`) e A3.3 vão para depois. O
     efeito sobre o lançamento é decidido pelo critério de go/no-go do
     `LANCAMENTO.md`.
+- **01/10/2026:** A3.2 sem registro; A3.3 sai do lançamento (sem janela para
+  corrigir antes de 04/10) e vai para depois. A3.4 vira medição comparativa
+  base × candidato em 03/10 (`LANCAMENTO.md` §2).
 - **Testes:** U, B, C; O confirma pela sensação.
 - **Esforço:** de 3 a 5 fatias.
 - **Cabe até 04/10? Parcial.** Medir cabe com certeza. Corrigir depende do que
@@ -1248,6 +1251,18 @@ crianças confirmadas pelo Anderson em 27/09/2026: 30/09 (curto) e 03/10
 
 **Contagem:** cerca de 17 fatias em 7 dias, dentro de 2 a 3 por dia, mas
 **sem folga**. Por isso a ordem de corte da §5.
+
+**Replanejamento de 01/10:**
+
+- **01/10:** A2.1 PADARIA.
+- **02/10:** C1, A2.4 ESCOLA, A5.2 (se couber), E6.1, preparação de E4.1/E5.
+  **CONGELAMENTO** do código no fim de 02/10.
+- **03/10:** teste geral (12 rodadas, itens visuais, teste completo com as
+  crianças) e só correções apontadas por ele.
+- **04/10:** go/no-go.
+
+E1 (página do universo) sai do lançamento. Nenhuma iniciativa fora da lista
+aprovada entra até 04/10.
 
 ---
 

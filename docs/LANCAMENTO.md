@@ -113,6 +113,19 @@ Todos precisam ser **sim**:
       - Não há limite absoluto de desempenho para o lançamento; o alvo
         absoluto vale só para decidir a A3.3 (ficha A3 do `PLANO_MESTRE.md`).
 
+      **Revisão de 01/10/2026:** a medição de base de 29/09 não foi
+      registrada. A base passa a ser medida em 03/10, na **mesma** sessão do
+      candidato:
+      - **base** = deployment `5944kBqzB` (commit `3a1fafa`, código idêntico
+        a `c8aca64`), no endereço fixo
+        `orbi-kahe-aejxe15zy-androm.vercel.app`;
+      - **candidato** = deployment do build congelado.
+
+      Mesmo celular, mesma rota, 3 rodadas com e 3 sem Modo Tranquilo para
+      **cada** build (12 no total), alternando base e candidato. A regra de
+      "não pior" continua a mesma. O deployment `5944kBqzB` não pode ser
+      apagado até o go/no-go.
+
 - [ ] Teste de 03/10 com as crianças sem regressão: o que funcionava em 27/09
       continua funcionando, e elas querem jogar de novo.
 - [ ] Nenhum item do checklist de princípios (§2.6 do plano) violado nas

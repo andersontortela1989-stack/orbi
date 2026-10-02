@@ -10,6 +10,50 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 
 ---
 
+## Roteiro do teste geral de 03/10/2026
+
+**Registro honesto.** 29/09 e 30/09: medição e teste curto realizados,
+resultados não registrados.
+
+**Regra.** Cada fatia, até o congelamento do código (fim de 02/10), acrescenta
+aqui os seus itens de verificação manual.
+
+**Medição (A3.4).** 12 rodadas, base × candidato, pelo protocolo de
+`docs/LANCAMENTO.md` §2 (revisão de 01/10) e pelas notas de protocolo da
+seção "Medições de desempenho".
+
+### Lista única de verificação no celular
+
+**A4.1 — aviso de virar o celular na abertura**
+
+- [ ] Com o celular em pé, o aviso 🔄 aparece na abertura.
+- [ ] Ao virar para paisagem, o aviso some sozinho, sem toque.
+- [ ] Com o Modo Tranquilo ligado, o aviso é o mesmo e fica parado.
+- [ ] Com a Área dos Pais aberta em paisagem, virar para retrato não põe o
+      aviso por cima dela.
+
+**A1.3 — zoom de toque**
+
+- [ ] O carro está maior que no teste de 27/09.
+- [ ] As placas são legíveis ao chegar perto de cada lugar.
+- [ ] Velocidade aparente: com o zoom maior, o carro parece rápido demais?
+
+**A1.2b — lugares separados**
+
+- [ ] PIZZA e VET aparecem nas posições novas.
+- [ ] O VET é fácil de alcançar.
+- [ ] O cão da carona não embarca ao chegar à PIZZA pelo sul.
+
+**R1 — roteiro "Um dia do Órbi"**
+
+- [ ] A ordem do dia é seguida (PADARIA → ESCOLA → ESTÁDIO → GATO → ZOO → VET
+      → MERCADO → PIZZA).
+- [ ] Dá para perceber o rumo de cada parada.
+- [ ] ESCOLA e PIZZA prendem a atenção.
+- [ ] Anotar as tentativas de visitar lugares fora do dia.
+
+---
+
 ## 28/09/2026 — teste do Anderson no notebook (sem as crianças)
 
 **Condições.** `npm run dev` no notebook, Chrome, com a fatia A1.2b aplicada
