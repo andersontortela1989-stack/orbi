@@ -25,26 +25,32 @@ export function colisorDoLote({ pos: [x, z], size: [w, h, l] }) {
 
 export const limitesDaPeca = limitesDe;
 
-/** Malha opaca (cor por vértice) e malha da luz da vitrine, já mescladas. */
+/**
+ * Malhas já mescladas: opaca (cor por vértice), luz da vitrine e contorno
+ * (cascas desenhadas pelo avesso, V1.2b).
+ */
 export function malhasDoPredio(slug, size) {
   const pecas = PREDIOS_REAIS[slug].pecas(size);
+  const camada = (p) => p.camada ?? 'opaco';
   return {
-    opaco: montarMalha(pecas.filter((p) => p.camada !== 'luz')),
-    luz: montarMalha(pecas.filter((p) => p.camada === 'luz')),
+    opaco: montarMalha(pecas.filter((p) => camada(p) === 'opaco')),
+    luz: montarMalha(pecas.filter((p) => camada(p) === 'luz')),
+    contorno: montarMalha(pecas.filter((p) => camada(p) === 'contorno')),
   };
 }
 
 /**
  * Chamadas de desenho e triângulos de um prédio real: malha opaca, luz da
- * vitrine, letreiro (o troika desenha cada letra como um quadrado: 2
- * triângulos) e os pães sem contorno.
+ * vitrine, contorno, letreiro (o troika desenha cada letra como um quadrado:
+ * 2 triângulos) e os pães sem contorno.
  */
 export function orcamentoPredioReal(slug, size) {
-  const { opaco, luz } = malhasDoPredio(slug, size);
+  const { opaco, luz, contorno } = malhasDoPredio(slug, size);
   const letras = PREDIOS_REAIS[slug].letreiro(size).texto.replace(/\s/g, '').length;
   const paes = orcamentoDoLugar(slug, size, 'real');
+  const malhas = [opaco, luz, contorno];
   return {
-    chamadas: (opaco.triangulos > 0) + (luz.triangulos > 0) + 1 + paes.chamadas,
-    triangulos: opaco.triangulos + luz.triangulos + letras * 2 + paes.triangulos,
+    chamadas: malhas.filter((m) => m.triangulos > 0).length + 1 + paes.chamadas,
+    triangulos: malhas.reduce((s, m) => s + m.triangulos, 0) + letras * 2 + paes.triangulos,
   };
 }

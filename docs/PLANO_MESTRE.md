@@ -1284,6 +1284,21 @@ aprovada entra até 04/10.
 - **11/10:** go/no-go.
 - **12/10:** lançamento.
 
+**Estilo real (`?estilo=real`) — regras de legibilidade** (lições da PADARIA,
+02/10):
+
+1. contorno fino na cor escura da paleta, nunca sem contorno;
+2. letreiro com fonte comparável às placas do estilo atual e texto escuro
+   sobre fundo claro;
+3. fachada com cor que contraste com o terreno do bairro, e o contorno
+   garante a separação quando a cor não basta;
+4. calçada `PALETA3D.calcada`;
+5. projeções rasas (a câmera desce cerca de 1,13 de altura por unidade de
+   profundidade; marquise funda esconde o térreo);
+6. cores vivas, nada de paleta apagada;
+7. orçamento por lugar de até 6 chamadas e 3.000 triângulos, salvo
+   justificativa.
+
 ---
 
 ## 7. O que fica para depois de 12/10 (nada é descartado)

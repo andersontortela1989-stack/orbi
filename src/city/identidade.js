@@ -147,10 +147,13 @@ function paoNoTelhado(size) {
  */
 function paesNaVitrineReal([, , l]) {
   const v = VITRINE_PADARIA_REAL;
-  const escala = [1.0, 0.8, 0.3];
+  // V1.2b: pães maiores, visíveis de longe; a profundidade continua rasa
+  // para a frente não passar de LIMITE_FACHADA.
+  const escala = [1.15, 1.1, 0.3];
   const meiaProfundidade = (PAO_FORMA.base[2] / 2 + TRACO_ADERECO) * escala[2];
   const z = l / 2 + LIMITE_FACHADA - meiaProfundidade - 0.01;
-  return [-1.1, 0, 1.1].map((dx) => ({
+  const passo = v.largura * 0.3;
+  return [-passo, 0, passo].map((dx) => ({
     posicao: [v.centroX + dx, v.topoDoBalcao, z],
     rotacao: [0, 0, 0],
     escala,

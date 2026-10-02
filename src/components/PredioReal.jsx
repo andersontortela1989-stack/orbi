@@ -20,8 +20,9 @@ import { AderecosLugar } from './AderecosLugar.jsx';
  *
  * Desenho em poucas chamadas: as dezenas de peças viram UMA malha opaca com
  * cor por vértice (material compartilhado), mais o vidro aceso da vitrine,
- * o letreiro e os pães sem contorno. Nada animado; no Modo Tranquilo só o
- * brilho da vitrine baixa — letreiro, vitrine, toldo e placa bandeira ficam.
+ * o contorno fino (V1.2b), o letreiro e os pães sem contorno. Nada animado; no
+ * Modo Tranquilo só o brilho da vitrine baixa — letreiro, vitrine, toldo e
+ * placa bandeira ficam.
  *
  * As letras do letreiro são preparadas na MONTAGEM (o Text da drei chama o
  * sync do troika no useLayoutEffect), junto com a cidade, e os materiais são
@@ -35,16 +36,32 @@ const MATERIAL_OPACO = new THREE.MeshStandardMaterial({
   metalness: 0,
 });
 
+// Contorno fino (V1.2b): cascas pelo avesso, na cor escura da paleta (não
+// preto), como o traço do Building — uma chamada para todas as cascas.
+const MATERIAL_CONTORNO = new THREE.MeshBasicMaterial({
+  color: PALETA_REAL.contorno,
+  side: THREE.BackSide,
+});
+
+// Vitrine acesa (V1.2b): mais clara que a fachada; o Modo Tranquilo baixa.
+const BRILHO_VITRINE = 1.0;
+const BRILHO_VITRINE_TRANQUILO = 0.45;
+
 export function PredioReal({ predio }) {
   const { slug, pos, size } = predio;
   const geo = useMemo(() => {
     const malhas = malhasDoPredio(slug, size);
-    return { opaco: geometriaDe(malhas.opaco), luz: geometriaDe(malhas.luz) };
+    return {
+      opaco: geometriaDe(malhas.opaco),
+      luz: geometriaDe(malhas.luz),
+      contorno: geometriaDe(malhas.contorno),
+    };
   }, [slug, size]);
   // Geometria passada por prop não é descartada pelo R3F: descarta aqui.
   useEffect(() => () => {
     geo.opaco.dispose();
     geo.luz.dispose();
+    geo.contorno.dispose();
   }, [geo]);
 
   const preferencias = useGame((s) => s.preferencias);
@@ -59,13 +76,14 @@ export function PredioReal({ predio }) {
       </RigidBody>
 
       <group position={[pos[0], 0, pos[1]]}>
+        <mesh geometry={geo.contorno} material={MATERIAL_CONTORNO} />
         <mesh geometry={geo.opaco} material={MATERIAL_OPACO} />
         <mesh geometry={geo.luz}>
           <meshStandardMaterial
             vertexColors
             roughness={0.35}
             emissive={PALETA_REAL.vitrineLuz}
-            emissiveIntensity={visual.brilhoJanela}
+            emissiveIntensity={visual.tranquilo ? BRILHO_VITRINE_TRANQUILO : BRILHO_VITRINE}
           />
         </mesh>
         <Text

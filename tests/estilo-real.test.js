@@ -15,6 +15,9 @@ import {
   limitesDaPeca,
   orcamentoPredioReal,
 } from '../src/visual/estilo-real/predio-real.js';
+import { PALETA_REAL } from '../src/visual/estilo-real/paleta.js';
+import { TRACO_REAL } from '../src/visual/estilo-real/padaria.js';
+import { PALETA3D } from '../src/brand/paleta3d.js';
 
 /**
  * ESTILO REAL, fatia V1 (V1.1 infraestrutura + V1.2 PADARIA). O estilo real
@@ -160,10 +163,76 @@ test('PADARIA real: tem os elementos aprovados e nada da padaria das fotos', () 
   assert.equal(texto, 'PADARIA');
 });
 
-test('estilo real sem contorno de adesivo', () => {
-  for (const slug of Object.keys(PREDIOS_REAIS)) {
-    assert.ok(!pecasDe(slug).some((p) => p.id.includes('contorno')));
+// ---------------------------------------------------------------- legibilidade (V1.2b)
+
+// Luminância relativa (WCAG) de '#rrggbb' e razão de contraste entre duas cores.
+function luminancia(hex) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+const contraste = (a, b) => {
+  const [x, y] = [luminancia(a), luminancia(b)].sort((m, n) => n - m);
+  return (x + 0.05) / (y + 0.05);
+};
+const pecaDe = (slug, id) => pecasDe(slug).find((p) => p.id === id);
+
+test('V1.2b: contorno fino de volta, na cor escura da paleta (não preto), em camada própria', () => {
+  const contornos = pecasDe('PADARIA').filter((p) => p.camada === 'contorno');
+  for (const alvo of ['volume', 'marquise', 'toldo', 'placa-bandeira', 'faixa-letreiro']) {
+    assert.ok(contornos.some((p) => p.id === `contorno-${alvo}`), `falta contorno de ${alvo}`);
   }
+  for (const p of contornos) {
+    assert.equal(p.cor, PALETA_REAL.contorno, p.id);
+    assert.notEqual(p.cor.toLowerCase(), '#000000');
+    assert.ok(luminancia(p.cor) < 0.06, `${p.id} não é escuro`);
+  }
+  assert.ok(TRACO_REAL > 0 && TRACO_REAL <= 0.1, `traço ${TRACO_REAL}`);
+});
+
+test('V1.2b: fachada contrasta com o chão do bairro (sem bege sobre areia)', () => {
+  const reboco = pecaDe('PADARIA', 'corpo').cor;
+  assert.ok(contraste(reboco, PALETA3D.chaoMercado) >= 1.8,
+    `reboco × areia: ${contraste(reboco, PALETA3D.chaoMercado).toFixed(2)}`);
+});
+
+test('V1.2b: calçada cinza-clara como a da cidade, com meio-fio e piso tátil cinza', () => {
+  assert.equal(pecaDe('PADARIA', 'calcada').cor.toLowerCase(), PALETA3D.calcada.toLowerCase());
+  const tatil = pecaDe('PADARIA', 'piso-tatil').cor;
+  assert.ok(contraste(tatil, PALETA3D.calcada) >= 1.5, 'piso tátil some na calçada');
+  assert.ok(pecasDe('PADARIA').some((p) => p.id.startsWith('meio-fio')));
+});
+
+test('V1.2b: toldo em cor lisa que se destaca da fachada e não lembra a moeda', () => {
+  const toldo = pecaDe('PADARIA', 'toldo').cor;
+  assert.ok(contraste(toldo, pecaDe('PADARIA', 'corpo').cor) >= 1.5, 'toldo some na fachada');
+  assert.ok(contraste(toldo, PALETA3D.chaoMercado) >= 1.5, 'toldo some no chão');
+  assert.notEqual(toldo.toLowerCase(), PALETA3D.moeda.toLowerCase());
+  assert.ok(!pecasDe('PADARIA').some((p) => p.id.includes('listra')), 'sem listras');
+});
+
+test('V1.2b: vitrine acesa mais clara que a fachada', () => {
+  const vidro = pecaDe('PADARIA', 'vitrine-vidro');
+  assert.equal(vidro.camada, 'luz');
+  assert.ok(luminancia(vidro.cor) > luminancia(pecaDe('PADARIA', 'corpo').cor) * 2);
+});
+
+test('V1.2b: letreiro grande, escuro sobre creme, cabe no painel', () => {
+  const size = PREDIO.get('PADARIA').size;
+  const letreiro = PREDIOS_REAIS.PADARIA.letreiro(size);
+  const painel = pecaDe('PADARIA', 'painel-letreiro');
+  assert.ok(letreiro.tamanho >= 1.0, `fonte ${letreiro.tamanho} (placa atual: até 1,15)`);
+  assert.ok(contraste(letreiro.cor, painel.cor) >= 7, 'texto escuro sobre creme');
+  // largura aproximada do texto em caixa alta (≈ 0,67 da fonte por letra)
+  assert.ok(letreiro.texto.length * letreiro.tamanho * 0.67 <= painel.tam[0], 'texto maior que o painel');
+  assert.ok(letreiro.tamanho * 1.05 <= painel.tam[1], 'texto mais alto que o painel');
+});
+
+test('V1.2b: pães da vitrine maiores, ainda dentro da regra de 0,3 u', () => {
+  const size = PREDIO.get('PADARIA').size;
+  const [paes] = aderecosDoLugar('PADARIA', size, 'real');
+  for (const inst of paes.instancias) assert.ok(inst.escala[1] >= 1.0, `altura ${inst.escala[1]}`);
+  assert.ok(paes.limites.max[2] <= size[2] / 2 + LIMITE_FACHADA + TOL);
 });
 
 // ---------------------------------------------------------------- pães
