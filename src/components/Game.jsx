@@ -22,6 +22,8 @@ import { perfilVisual } from '../visual/world-style.js';
 import { RoadNetwork } from './RoadNetwork.jsx';
 import { CityLife } from './CityLife.jsx';
 import { Landscape } from './Landscape.jsx';
+import { PreCompilar } from './PreCompilar.jsx';
+import { estiloReal } from '../visual/estilo.js';
 
 export function Game() {
   const carRef = useRef(null);
@@ -140,6 +142,10 @@ export function Game() {
       <Carona targetRef={carRef} />
 
       <CameraFollow targetRef={carRef} />
+
+      {/* Estilo real (V1): compila os shaders na carga, não na primeira
+          aparição. Por último, para a cena já estar montada. */}
+      {estiloReal && <PreCompilar />}
     </>
   );
 }

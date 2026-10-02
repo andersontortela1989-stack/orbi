@@ -2,30 +2,19 @@ import { useMemo } from 'react';
 import { Instance, Instances } from '@react-three/drei';
 import * as THREE from 'three';
 import { PALETA3D } from '../brand/paleta3d.js';
+import { CAMINHOS, LARGURA_RUA, LARGURA_RUA_BORDA, TENSAO_RUA } from '../city/ruas.js';
 
 /**
  * Ruas curvas do Órbi 2,5D. São uma pele visual sobre o Ground físico:
  * dirigir continua livre e todas as posições de sensores permanecem intactas.
+ * O traçado é dado puro em city/ruas.js (o teste do estilo real o lê).
  */
-const CAMINHOS = Object.freeze([
-  // eixo central: estádio → centro → parque
-  [[-6, -38], [-5, -22], [0, -6], [-2, 13], [1, 31], [0, 52], [-2, 66]],
-  // porto → centro → mercado
-  [[-78, 28], [-61, 29], [-43, 27], [-24, 23], [-3, 20], [18, 21], [38, 23], [58, 27]],
-  // centro → escola → parque/zoo
-  [[-2, 15], [5, 29], [0, 41], [-4, 54], [-3, 68], [7, 76], [20, 78]],
-  // saída para garagem
-  [[0, -4], [12, -7], [22, -12], [34, -16]],
-  // anel curto de serviços do centro
-  [[-34, 24], [-27, 17], [-18, 8], [-4, 3], [11, 6], [22, 15]],
-]);
-
 function curvaDe(caminho) {
   return new THREE.CatmullRomCurve3(
     caminho.map(([x, z]) => new THREE.Vector3(x, 0, z)),
     false,
     'catmullrom',
-    0.35
+    TENSAO_RUA
   );
 }
 
@@ -81,8 +70,8 @@ function dadosDasFaixas() {
 export function RoadNetwork({ tranquilo = false }) {
   const geometrias = useMemo(
     () => CAMINHOS.map((caminho) => ({
-      borda: geometriaFaixa(caminho, 7.6),
-      rua: geometriaFaixa(caminho, 6.5),
+      borda: geometriaFaixa(caminho, LARGURA_RUA_BORDA),
+      rua: geometriaFaixa(caminho, LARGURA_RUA),
     })),
     []
   );

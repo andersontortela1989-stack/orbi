@@ -43,18 +43,24 @@ export function recursosDoPao() {
   recursos = Object.freeze({
     // Ordem de desenho: contornos primeiro, como no Building.
     camadas: Object.freeze([
-      Object.freeze({ geometria: base(TRACO_ADERECO), material: contorno }),
-      Object.freeze({ geometria: copa(TRACO_ADERECO), material: contorno }),
-      Object.freeze({ geometria: base(0), material: lateral }),
-      Object.freeze({ geometria: copa(0), material: casca }),
+      Object.freeze({ geometria: base(TRACO_ADERECO), material: contorno, contorno: true }),
+      Object.freeze({ geometria: copa(TRACO_ADERECO), material: contorno, contorno: true }),
+      Object.freeze({ geometria: base(0), material: lateral, contorno: false }),
+      Object.freeze({ geometria: copa(0), material: casca, contorno: false }),
     ]),
   });
   return recursos;
 }
 
+/** Camadas a desenhar: o estilo real não tem contorno de adesivo (V1). */
+export function camadasDoEstilo(estilo = 'atual') {
+  const { camadas } = recursosDoPao();
+  return estilo === 'real' ? camadas.filter((c) => !c.contorno) : camadas;
+}
+
 /** Todos os pães do lugar (vitrine e telhado), prontos para as instâncias. */
-export function paesDoLugar(slug, size) {
-  return aderecosDoLugar(slug, size)
+export function paesDoLugar(slug, size, estilo = 'atual') {
+  return aderecosDoLugar(slug, size, estilo)
     .filter((a) => a.forma === 'pao')
     .flatMap((a) => a.instancias);
 }
@@ -62,10 +68,10 @@ export function paesDoLugar(slug, size) {
 const triangulos = (g) => (g.index ? g.index.count : g.attributes.position.count) / 3;
 
 /** Chamadas de desenho e triângulos dos pães de um lugar. */
-export function orcamentoDoLugar(slug, size) {
-  const paes = paesDoLugar(slug, size);
+export function orcamentoDoLugar(slug, size, estilo = 'atual') {
+  const paes = paesDoLugar(slug, size, estilo);
   if (paes.length === 0) return { chamadas: 0, triangulos: 0 };
-  const { camadas } = recursosDoPao();
+  const camadas = camadasDoEstilo(estilo);
   return {
     chamadas: camadas.length,
     triangulos: camadas.reduce((soma, c) => soma + triangulos(c.geometria) * paes.length, 0),

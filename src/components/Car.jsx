@@ -7,6 +7,13 @@ import { PALETA3D } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
 import { tintaDoCarro } from '../city/garagem.js';
 import { coordenadorAtividade } from '../activity/index.js';
+import { pontoDeMedicao } from '../perf/medidor.js';
+
+// Ponto de medição fixo (V1): só com `?medir=1&ponto=...`; senão, null e o
+// carro nasce onde sempre nasceu. Lido uma vez, na carga.
+const PONTO = typeof location !== 'undefined' ? pontoDeMedicao(location.search) : null;
+const POSICAO_INICIAL = PONTO?.posicao ?? [0, 1, 0];
+const RUMO_INICIAL = PONTO?.rumo ?? 0;
 
 // =====================================================================
 //  PARÂMETROS DE GAME FEEL  —  AJUSTE AQUI, SENTINDO.
@@ -32,7 +39,7 @@ const _q = new THREE.Quaternion();
 const _yAxis = new THREE.Vector3(0, 1, 0);
 
 export function Car({ rigidBodyRef }) {
-  const heading = useRef(0); // ângulo Y em radianos
+  const heading = useRef(RUMO_INICIAL); // ângulo Y em radianos
   const input = useKeyboard();
   const localRef = useRef(null);
   const ref = rigidBodyRef ?? localRef;
@@ -117,7 +124,7 @@ export function Car({ rigidBodyRef }) {
       type="dynamic"
       colliders={false}
       enabledRotations={[false, true, false]}
-      position={[0, 1, 0]}
+      position={POSICAO_INICIAL}
       linearDamping={0}
       angularDamping={0}
       mass={1}

@@ -18,6 +18,8 @@
  * do chão. A câmera 2,5D vê as fachadas +Z e +X (CAMERA_2_5D).
  */
 
+import { VITRINE_PADARIA_REAL } from '../visual/estilo-real/padaria.js';
+
 export const LIMITE_FACHADA = 0.3;
 
 // Traço do contorno escuro, mesma técnica do Building (casca BackSide). Mais
@@ -138,6 +140,23 @@ function paoNoTelhado(size) {
   return [{ posicao: [0, y, z], rotacao: [inclinacao, 0, 0], escala: [2, 1.6, 2.4] }];
 }
 
+/**
+ * Estilo real (V1.2): os 3 pães sentados no balcão da vitrine da PADARIA real
+ * (visual/estilo-real/padaria.js). Mesmo contrato da fachada: a frente fica
+ * no máximo LIMITE_FACHADA para fora da parede; o resto entra no vidro.
+ */
+function paesNaVitrineReal([, , l]) {
+  const v = VITRINE_PADARIA_REAL;
+  const escala = [1.0, 0.8, 0.3];
+  const meiaProfundidade = (PAO_FORMA.base[2] / 2 + TRACO_ADERECO) * escala[2];
+  const z = l / 2 + LIMITE_FACHADA - meiaProfundidade - 0.01;
+  return [-1.1, 0, 1.1].map((dx) => ({
+    posicao: [v.centroX + dx, v.topoDoBalcao, z],
+    rotacao: [0, 0, 0],
+    escala,
+  }));
+}
+
 export const ADERECOS = Object.freeze({
   PADARIA: Object.freeze([
     Object.freeze({ id: 'paes-vitrine', lugar: 'fachada', forma: 'pao', colisor: false, montar: paesNaVitrine }),
@@ -145,9 +164,21 @@ export const ADERECOS = Object.freeze({
   ]),
 });
 
-/** Adereços prontos de um lugar (vazio se o lugar não tem identidade). */
-export function aderecosDoLugar(slug, size) {
-  return (ADERECOS[slug] ?? []).map(({ montar, ...declarado }) => {
+// No estilo real o pão do telhado sai: a laje é plana e a placa bandeira com
+// o ícone de pão faz esse papel (decisão de 02/10).
+export const ADERECOS_REAIS = Object.freeze({
+  PADARIA: Object.freeze([
+    Object.freeze({ id: 'paes-vitrine', lugar: 'fachada', forma: 'pao', colisor: false, montar: paesNaVitrineReal }),
+  ]),
+});
+
+/**
+ * Adereços prontos de um lugar (vazio se o lugar não tem identidade).
+ * `estilo` 'real' usa ADERECOS_REAIS quando o lugar tem versão real.
+ */
+export function aderecosDoLugar(slug, size, estilo = 'atual') {
+  const tabela = estilo === 'real' && ADERECOS_REAIS[slug] ? ADERECOS_REAIS : ADERECOS;
+  return (tabela[slug] ?? []).map(({ montar, ...declarado }) => {
     const instancias = montar(size);
     return {
       ...declarado,

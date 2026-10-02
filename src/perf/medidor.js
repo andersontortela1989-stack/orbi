@@ -14,6 +14,8 @@
  * `ignorados`, para o número nunca esconder o que aconteceu.
  */
 
+import { TODOS_PREDIOS } from '../city/bairros.js';
+
 export const AQUECIMENTO_MS = 10000;
 export const LIMIAR_LENTO_MS = 50;
 export const LIMIAR_TRAVADA_MS = 250;
@@ -22,6 +24,28 @@ export const LIMIAR_TRAVADA_MS = 250;
 export function medicaoAtiva(search) {
   if (typeof search !== 'string') return false;
   return new URLSearchParams(search).get('medir') === '1';
+}
+
+// Distância da frente do lote ao CENTRO do carro no ponto de medição: fora da
+// calçada e do sensor de chegada (margem 3,5), para não disparar a missão.
+const RECUO_DO_PONTO = 8;
+
+/**
+ * PONTO DE MEDIÇÃO FIXO (fatia V1): `?medir=1&ponto=PADARIA` larga o carro
+ * em frente à fachada da PADARIA, para as medições A/B partirem do mesmo
+ * lugar. Sem `?medir=1`, ou com ponto desconhecido, devolve null e o carro
+ * nasce onde sempre nasceu. Não toca save, missão nem roteiro: só a posição
+ * inicial do corpo físico.
+ */
+export function pontoDeMedicao(search) {
+  if (!medicaoAtiva(search)) return null;
+  const nome = new URLSearchParams(search).get('ponto');
+  const predio = TODOS_PREDIOS.find((p) => p.slug === nome);
+  if (nome !== 'PADARIA' || !predio) return null;
+  const [x, z] = predio.pos;
+  const [, , l] = predio.size;
+  // rumo π: o nariz do carro aponta para a fachada (+Z do prédio)
+  return { posicao: [x, 1, z + l / 2 + RECUO_DO_PONTO], rumo: Math.PI };
 }
 
 // Mediana: com quantidade par, a média dos dois do meio.

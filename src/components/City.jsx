@@ -3,8 +3,11 @@ import * as THREE from 'three';
 import { Building } from './Building.jsx';
 import { OpenPark } from './OpenPark.jsx';
 import { AderecosLugar } from './AderecosLugar.jsx';
+import { PredioReal } from './PredioReal.jsx';
 import { BAIRROS } from '../city/bairros.js';
 import { ADERECOS } from '../city/identidade.js';
+import { estiloReal } from '../visual/estilo.js';
+import { PREDIOS_REAIS } from '../visual/estilo-real/predio-real.js';
 import { TINTAS } from '../brand/paleta3d.js';
 
 function geometriaRetanguloArredondado(largura, profundidade, raio) {
@@ -76,6 +79,9 @@ export function City() {
           {bairro.predios.map((p) => (
             p.slug === 'PARQUE' ? (
               <OpenPark key={p.slug} floorPos={p.pos} />
+            ) : estiloReal && PREDIOS_REAIS[p.slug] ? (
+              // Estilo real (V1, `?estilo=real`): mesmo lote, outro desenho.
+              <PredioReal key={p.slug} predio={p} />
             ) : (
               <Fragment key={p.slug}>
                 <Building

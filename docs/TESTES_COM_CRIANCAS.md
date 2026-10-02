@@ -19,6 +19,12 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 - medição de desempenho nos dois estilos pela rota padrão, resumos colados no
   repositório no mesmo dia.
 
+**V1 — PADARIA no estilo real (`?estilo=real`)**
+
+- [ ] A PADARIA real é reconhecida sem a placa.
+- [ ] Sem o contorno de adesivo, tudo continua legível no celular.
+- [ ] O carro passa sob o toldo sem parecer atravessá-lo.
+
 ---
 
 ## Roteiro do teste geral de 10/10/2026
