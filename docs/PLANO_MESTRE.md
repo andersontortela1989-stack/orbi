@@ -344,6 +344,15 @@ cerca de 1,98 kB.
 **Depois da V1:** `GameExperience` 3.137,95 kB; folga de cerca de 62 kB; cada
 lugar novo no estilo real informa o seu custo.
 
+**Em 09/11/2026, depois da S1 e da M1b:** pacote inicial 198,65 kB (gzip
+64,68 kB), folga de 1,35 kB até o teto de 200 kB; `GameExperience`
+3.151,19 kB (gzip 1.074,31 kB), folga de 48,81 kB até o teto de 3.200 kB. A
+M1b custou +0,14 kB no pacote inicial (a sonda); a S1, +0.
+
+**Regra por fatia.** Cada fatia pode subir o pacote inicial em até 0,3 kB
+sobre a fatia anterior; acima disso, para e reporta. Os tetos da tabela
+continuam valendo para o total.
+
 ### 2.5 Política de save
 
 **Sobe `SAVE_VERSION` quando:**

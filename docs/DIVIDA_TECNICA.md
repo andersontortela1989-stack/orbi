@@ -593,3 +593,62 @@ PADARIA, x 47–58; o sensor de chegada da PADARIA fica nessa faixa.
 posições, obstáculos em caixas envolventes (tende a superestimar).
 
 **O que falta.** Resolvido pela silhueta do carro (S1).
+
+---
+
+## 27. Medidor sem marca de save e de moeda
+
+**Observado.** A sonda da M1b marca fala, voz, chegada, missão, pergunta,
+resumo, garagem e posto. Não marca a gravação do save nem a coleta de moeda:
+um pico causado por um desses sai no resumo com "nenhum" evento.
+
+**Onde.** `src/perf/sonda.js`; store (`persist`) e coleta de moedas.
+
+**Quando.** Fatia M1b, inventário de 09/11/2026.
+
+**O que falta.** Acrescentar as duas marcas, com teste antes.
+
+---
+
+## 28. Teste "sem animação" da silhueta é fraco
+
+**Observado.** O teste compara dois materiais criados com a mesma cor e confere
+que não há `onBeforeRender` próprio. Não prova que nada muda por quadro nem
+que o Modo Tranquilo não altera a silhueta; isso está garantido só por leitura
+de `Car.jsx`. O teste de orçamento confere um número fixo de chamadas.
+
+**Onde.** `tests/silhueta.test.js`; `src/visual/silhueta.js`.
+
+**Quando.** Fatia S1, inventário de 09/11/2026.
+
+**O que falta.** Um teste que falhe se a silhueta ganhar animação ou depender
+do perfil visual.
+
+---
+
+## 29. Criação do `PerformanceObserver` sem teste
+
+**Observado.** O observador de `longtask` só é criado com `?medir=1`, mas isso
+está em código de módulo de `MedidorDesempenho.jsx` e foi confirmado só por
+leitura. Um registro de marcas vazio é criado na carga mesmo sem medição.
+
+**Onde.** `src/components/MedidorDesempenho.jsx`.
+
+**Quando.** Fatia M1b, inventário de 09/11/2026.
+
+**O que falta.** Extrair a instalação para uma função testável e cobrir o caso
+sem `?medir=1`.
+
+---
+
+## 30. +0,49 kB do pacote inicial sem origem investigada
+
+**Observado.** O pacote inicial passou de 198,02 kB (depois da A2.1) para
+198,51 kB no commit `4d08653`. Nenhuma fatia desse intervalo registrou a
+variação no orçamento.
+
+**Onde.** `docs/PLANO_MESTRE.md` §2.4; commits entre a A2.1 e `4d08653`.
+
+**Quando.** Inventário de 09/11/2026.
+
+**O que falta.** Medir o build commit a commit e registrar a origem.

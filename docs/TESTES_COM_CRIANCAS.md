@@ -47,6 +47,8 @@ visto**. As observações do pai ficam separadas das reações das crianças.
 - [ ] Notam a banca?
 - [ ] Estranham o contraste entre o quarteirão real e o resto?
 - [ ] O carro some de vista?
+- [ ] S1: o carro nunca some de vista; atrás de prédio aparece a silhueta.
+- [ ] S1: a silhueta não assusta nem confunde.
 - [ ] O que pedem para jogar de novo?
 
 **Medição no celular (só o Anderson)**
@@ -138,6 +140,14 @@ seção "Medições de desempenho".
       repete o objetivo.
 - [ ] Ao terminar a aventura, o Órbi volta a pedir a mesma parada do roteiro, e
       o 🔊 repete esse pedido (não o último objetivo da aventura).
+
+**S1 — silhueta do carro atrás de obstáculos**
+
+- [ ] O carro nunca some de vista: atrás de prédio aparece a silhueta.
+- [ ] A silhueta não assusta nem confunde.
+- [ ] A silhueta é parada (não pisca nem pulsa), também com o Modo Tranquilo.
+- [ ] A silhueta não aparece com o carro sobre a calçada nem através do chão.
+- [ ] Depois de pintar o carro na garagem, a silhueta tem a cor nova.
 
 ---
 
