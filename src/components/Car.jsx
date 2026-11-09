@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
@@ -8,6 +8,13 @@ import { useGame } from '../store/useGame.js';
 import { tintaDoCarro } from '../city/garagem.js';
 import { coordenadorAtividade } from '../activity/index.js';
 import { pontoDeMedicao } from '../perf/medidor.js';
+import { geometriaDe } from '../visual/geometria-mesclada.js';
+import {
+  ORDEM_CARRO,
+  ORDEM_SILHUETA,
+  criarMateriaisSilhueta,
+  malhasDaSilhueta,
+} from '../visual/silhueta.js';
 
 // Ponto de medição fixo (V1): só com `?medir=1&ponto=...`; senão, null e o
 // carro nasce onde sempre nasceu. Lido uma vez, na carga.
@@ -50,6 +57,22 @@ export function Car({ rigidBodyRef }) {
   // não muda. corPreview (experimentando na garagem) vence corCarro.
   const corCorpo = useGame((s) => tintaDoCarro(s.corPreview ?? s.corCarro));
   const temRegador = useGame((s) => s.recompensas.includes('regador-no-teto'));
+
+  // S1 — silhueta atrás de obstáculos (visual/silhueta.js): geometria fixa,
+  // material refeito só quando a pintura muda (inclusive a prévia da garagem).
+  const geoSilhueta = useMemo(() => {
+    const m = malhasDaSilhueta({ largura: CAR_W, altura: CAR_H, comprimento: CAR_L });
+    return { preenchimento: geometriaDe(m.preenchimento), contorno: geometriaDe(m.contorno) };
+  }, []);
+  const matSilhueta = useMemo(() => criarMateriaisSilhueta(corCorpo), [corCorpo]);
+  useEffect(() => () => {
+    geoSilhueta.preenchimento.dispose();
+    geoSilhueta.contorno.dispose();
+  }, [geoSilhueta]);
+  useEffect(() => () => {
+    matSilhueta.preenchimento.dispose();
+    matSilhueta.contorno.dispose();
+  }, [matSilhueta]);
 
   useFrame((_, deltaRaw) => {
     const rb = ref.current;
@@ -132,6 +155,16 @@ export function Car({ rigidBodyRef }) {
       {/* Um único collider para o carro inteiro — wheels são visual */}
       <CuboidCollider args={[CAR_W / 2, CAR_H / 2, CAR_L / 2]} friction={0.4} />
 
+      {/* S1 — silhueta: desenhada DEPOIS do mundo e ANTES do carro, com
+          profundidade invertida — só aparece onde algo está na frente. */}
+      <group renderOrder={ORDEM_SILHUETA}>
+        <mesh geometry={geoSilhueta.contorno} material={matSilhueta.contorno} />
+        <mesh geometry={geoSilhueta.preenchimento} material={matSilhueta.preenchimento} renderOrder={1} />
+      </group>
+
+      {/* O carro de verdade por último: cobre a silhueta onde aparece. */}
+      <group renderOrder={ORDEM_CARRO}>
+
       {/* Chassi — cor escolhida na garagem (coral de fábrica = o coral
           OFICIAL da Fatia B). Cabine/rodas seguem navy FIXO: identidade +
           contraste garantido com qualquer corpo do catálogo. */}
@@ -187,6 +220,7 @@ export function Car({ rigidBodyRef }) {
           <meshStandardMaterial color={PALETA3D.carro.roda} roughness={0.8} />
         </mesh>
       ))}
+      </group>
     </RigidBody>
   );
 }
