@@ -6,7 +6,9 @@
  *
  * Este módulo não conhece React, Zustand, Three.js nem o navegador. Isso é
  * intencional: as regras de coordenação rodam diretamente no `node:test`.
+ * (A sonda do medidor, M1b, é um módulo puro e desligado sem `?medir=1`.)
  */
+import { marcar } from '../perf/sonda.js';
 
 export const ATIVIDADES = Object.freeze([
   'explorando',
@@ -268,6 +270,7 @@ export function criarCoordenadorAtividade(opcoes = {}) {
         return false;
       }
       if (guardar) guardarFala(dono, texto);
+      marcar('fala'); // M1b: só registra com ?medir=1
       return opcoes.voz?.falar(String(texto), opts) ?? false;
     },
 

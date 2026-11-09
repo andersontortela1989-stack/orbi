@@ -14,6 +14,7 @@
  */
 
 import { useGame } from '../store/useGame.js';
+import { marcar } from '../perf/sonda.js';
 
 /**
  * O "timbre" do Órbi — CLAREZA > caricatura (criança TEA precisa de fala
@@ -160,6 +161,7 @@ export function falar(texto, opts = {}) {
   }
   const v = bestVoice();
   if (v) u.voice = v;
+  marcar('voz-speak'); // M1b: só registra com ?medir=1
   window.speechSynthesis.speak(u);
   return true;
 }

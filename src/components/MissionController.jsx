@@ -12,6 +12,8 @@ import {
 import { useAdventure } from '../adventure/useAdventure.js';
 import { aventuraAtiva as aventuraEstaAtiva } from '../adventure/runtime.js';
 import { podePedirProxima } from '../missions/roteiro.js';
+import { marcar } from '../perf/sonda.js';
+import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 
 // === Tempos de orquestração — afináveis ===
 const CELEBRACAO_MS         = 2200; // entre completar uma missão e pedir a próxima parada
@@ -116,6 +118,12 @@ export function MissionController() {
       window.removeEventListener('pointerdown', onFirst);
     };
   }, []);
+
+  // M1b: marcas para o medidor (só registram com ?medir=1).
+  useMarcarTroca(!!concluida, 'missao-concluida');
+  useEffect(() => {
+    if (destino) marcar('missao-nova');
+  }, [destino, animal]);
 
   // 2b) FIM DA AVENTURA (F1) — aventura e roteiro dividem `em_missao`; o
   // último objetivo da aventura ficaria como a fala que o 🔊 repete. Ao

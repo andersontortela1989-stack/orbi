@@ -4,6 +4,7 @@ import { somSucesso, somTique } from '../audio/sons.js';
 import { falarDaAtividade } from '../activity/index.js';
 import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { litrosFaltando, postoAtivo } from '../economia.js';
+import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 
 /**
  * Painel de abastecimento (Fatia 5) — A MATEMÁTICA COMO MECÂNICA.
@@ -40,6 +41,7 @@ export function RefuelPanel() {
   const encherTanque = useGame((s) => s.encherTanque);
   const registrarHabilidade = useGame((s) => s.registrarHabilidade);
   useRegistrarAtividade('abastecendo', aberto);
+  useMarcarTroca(aberto, 'posto-abre', 'posto-fecha'); // M1b: só com ?medir=1
 
   const [conta, setConta] = useState(0);
   const [meta, setMeta] = useState(1); // N congelado no momento da abertura

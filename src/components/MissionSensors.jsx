@@ -1,4 +1,5 @@
 import { ArrivalSensor } from './ArrivalSensor.jsx';
+import { marcar } from '../perf/sonda.js';
 import { useGame } from '../store/useGame.js';
 import { PREDIOS_GPS } from '../missions/destinos.js';
 import { coordenadorAtividade } from '../activity/index.js';
@@ -17,6 +18,7 @@ export function MissionSensors() {
   const processarChegada = useGame((s) => s.processarChegada);
 
   const chegou = (slug) => {
+    marcar('chegada'); // M1b: só registra com ?medir=1
     // Missão suspensa por carona/painel nunca progride por baixo do foco.
     if (!coordenadorAtividade.temFoco('em_missao')) return;
     if (aventuraAtiva()) {

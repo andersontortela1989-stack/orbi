@@ -15,6 +15,7 @@
  */
 
 import { TODOS_PREDIOS } from '../city/bairros.js';
+import { ligarSonda } from './sonda.js';
 
 export const AQUECIMENTO_MS = 10000;
 export const LIMIAR_LENTO_MS = 50;
@@ -147,9 +148,17 @@ export function estadoIncremental() {
 
 /**
  * Soma um quadro ao estado (mesmas regras de aquecimento e descarte).
- * `atividade` (M1, opcional) é o foco do coordenador naquele quadro.
+ * `atividade` (M1, opcional) é o foco do coordenador naquele quadro;
+ * `agoraMs` (M1b, opcional) é o relógio da página (performance.now) no fim
+ * do quadro, para achar os eventos e as tarefas longas perto de cada pico.
  */
-export function registrarQuadro(estado, duracao, aquecimentoMs = AQUECIMENTO_MS, atividade = null) {
+export function registrarQuadro(
+  estado,
+  duracao,
+  aquecimentoMs = AQUECIMENTO_MS,
+  atividade = null,
+  agoraMs = null
+) {
   if (typeof duracao !== 'number' || !Number.isFinite(duracao) || duracao < 0) {
     estado.descartados += 1;
     return estado;
@@ -167,7 +176,7 @@ export function registrarQuadro(estado, duracao, aquecimentoMs = AQUECIMENTO_MS,
     estado.lentosPorAtividade[chave] = (estado.lentosPorAtividade[chave] ?? 0) + 1;
   }
   if (duracao > LIMIAR_TRAVADA_MS) estado.acima250 += 1;
-  registrarPico(estado.picos, duracao, estado.duracaoSessaoMs, atividade);
+  registrarPico(estado.picos, duracao, estado.duracaoSessaoMs, atividade, agoraMs);
   return estado;
 }
 
@@ -176,11 +185,11 @@ const SEM_ATIVIDADE = '—';
 
 // Mantém os MAX_PICOS maiores em ordem decrescente. Empate: quem aconteceu
 // primeiro fica (o novo só entra se for estritamente maior que o último).
-function registrarPico(picos, duracao, momentoMs, atividade) {
+function registrarPico(picos, duracao, momentoMs, atividade, agoraMs) {
   if (picos.length === MAX_PICOS && duracao <= picos[MAX_PICOS - 1].duracao) return;
   let i = picos.length;
   while (i > 0 && picos[i - 1].duracao < duracao) i -= 1;
-  picos.splice(i, 0, { duracao, momentoMs, atividade });
+  picos.splice(i, 0, { duracao, momentoMs, atividade, agoraMs });
   if (picos.length > MAX_PICOS) picos.pop();
 }
 
@@ -280,5 +289,85 @@ export function textoPicos(estado) {
       ? 'acima de 50 ms por atividade: nenhum'
       : `acima de 50 ms por atividade: ${lentos.map(([a, n]) => `${a} ${n}`).join(' · ')}`
   );
+  return linhas.join('\n');
+}
+
+// ---------------------------------------------------------------- M1b
+
+/** Eventos marcados até este tempo ANTES do início do quadro lento contam. */
+export const JANELA_EVENTO_MS = 150;
+
+/**
+ * Registro das marcas de eventos (M1b): nome fixo + horário da página. Teto
+ * de `limite` marcas (as mais antigas saem) — eventos são raros, então isto
+ * só aloca quando algo acontece, nunca por quadro.
+ */
+export function criarRegistroDeMarcas(agora, limite = 500) {
+  const marcas = [];
+  return {
+    marcar(nome) {
+      marcas.push({ nome, t: agora() });
+      if (marcas.length > limite) marcas.splice(0, marcas.length - limite);
+    },
+    lista: () => marcas.slice(),
+  };
+}
+
+/** Liga a sonda (sonda.js) ao registro — só com `?medir=1`. */
+export function instalarSonda(search, registro) {
+  if (!medicaoAtiva(search)) return false;
+  ligarSonda(registro.marcar);
+  return true;
+}
+
+/** Nomes dos eventos entre (início do quadro − janela) e o fim do quadro. */
+export function eventosDoPico(pico, marcas, janelaMs = JANELA_EVENTO_MS) {
+  if (pico.agoraMs === null || pico.agoraMs === undefined) return [];
+  const de = pico.agoraMs - pico.duracao - janelaMs;
+  return marcas.filter((m) => m.t >= de && m.t <= pico.agoraMs).map((m) => m.nome);
+}
+
+/** Durações das tarefas longas que se sobrepõem ao quadro lento. */
+export function tarefasDoPico(pico, tarefas) {
+  if (pico.agoraMs === null || pico.agoraMs === undefined) return [];
+  const inicio = pico.agoraMs - pico.duracao;
+  return tarefas
+    .filter((t) => t.inicio <= pico.agoraMs && t.inicio + t.duracao >= inicio)
+    .map((t) => t.duracao);
+}
+
+/**
+ * M1b — bloco que vai DEPOIS das listas da M1 no resumo copiado: para cada um
+ * dos 5 maiores picos, os eventos marcados nos 150 ms antes do quadro lento e
+ * as tarefas longas sobrepostas; no fim, o total de tarefas longas.
+ */
+export function textoEventos(estado, { marcas = [], tarefas = [], longtaskSuportado = false } = {}) {
+  const picos = estado.picos ?? [];
+  const linhas = [];
+  const cabecalho = `eventos por pico (${JANELA_EVENTO_MS} ms antes do quadro lento):`;
+  if (picos.length === 0) {
+    linhas.push(`${cabecalho} nenhum pico`);
+  } else {
+    linhas.push(cabecalho);
+    for (const p of picos) {
+      const eventos = eventosDoPico(p, marcas);
+      const longas = longtaskSuportado ? tarefasDoPico(p, tarefas) : [];
+      linhas.push(
+        `  ${decimal(p.duracao)} ms · ${momentoLegivel(p.momentoMs)} · ${p.atividade ?? SEM_ATIVIDADE}: ` +
+          `${eventos.length ? eventos.join(', ') : 'nenhum'}` +
+          longas.map((d) => ` · tarefa longa ${decimal(d)} ms`).join('')
+      );
+    }
+  }
+  if (!longtaskSuportado) {
+    linhas.push('tarefas longas: não suportado neste navegador');
+  } else {
+    const maior = tarefas.reduce((m, t) => Math.max(m, t.duracao), 0);
+    linhas.push(
+      tarefas.length === 0
+        ? 'tarefas longas: 0'
+        : `tarefas longas: ${tarefas.length} (maior ${decimal(maior)} ms)`
+    );
+  }
   return linhas.join('\n');
 }

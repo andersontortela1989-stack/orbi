@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import {
+  criarRegistroDeMarcas,
   estadoIncremental,
+  instalarSonda,
   leitorDeFoco,
   lerIncremental,
   registrarQuadro,
   resumirQuadros,
+  textoEventos,
   textoPicos,
   textoResumo,
 } from '../perf/medidor.js';
@@ -64,6 +67,27 @@ const lerFoco =
     ? leitorDeFoco(location.search, () => coordenadorAtividade.estado().foco)
     : null;
 
+// M1b: eventos marcados pela sonda (chegada, pergunta, fala, voz...) e tarefas
+// longas do navegador, para dizer QUAL evento acompanha cada pico. Tudo isto
+// só é ligado com `?medir=1`; sem ele, a sonda segue desligada.
+const agora = () => performance.now();
+const registroMarcas = criarRegistroDeMarcas(agora);
+const tarefasLongas = [];
+let longtaskSuportado = false;
+if (typeof location !== 'undefined' && instalarSonda(location.search, registroMarcas)) {
+  longtaskSuportado =
+    typeof PerformanceObserver !== 'undefined' &&
+    (PerformanceObserver.supportedEntryTypes ?? []).includes('longtask');
+  if (longtaskSuportado) {
+    new PerformanceObserver((lista) => {
+      for (const e of lista.getEntries()) {
+        tarefasLongas.push({ inicio: e.startTime, duracao: e.duration });
+        if (tarefasLongas.length > 500) tarefasLongas.shift();
+      }
+    }).observe({ type: 'longtask', buffered: true });
+  }
+}
+
 export function ColetorDesempenho() {
   const gl = useThree((s) => s.gl);
 
@@ -92,7 +116,7 @@ export function ColetorDesempenho() {
     coleta.duracoes[i] = delta * 1000;
     // Soma o valor JÁ arredondado para 32 bits: contadores do painel e resumo
     // copiado (feito sobre o Float32Array) falam exatamente dos mesmos números.
-    registrarQuadro(coleta.estado, coleta.duracoes[i], undefined, lerFoco ? lerFoco() : null);
+    registrarQuadro(coleta.estado, coleta.duracoes[i], undefined, lerFoco ? lerFoco() : null, agora());
     coleta.gravados = i + 1;
     if (coleta.gravados === CAPACIDADE) coleta.limiteAtingido = true;
 
@@ -218,6 +242,12 @@ export function MedidorDesempenho() {
     }
     // M1: picos com momento e atividade, sempre DEPOIS das linhas de sempre.
     texto += `\n${textoPicos(coleta.estado)}`;
+    // M1b: eventos e tarefas longas por pico, depois das listas da M1.
+    texto += `\n${textoEventos(coleta.estado, {
+      marcas: registroMarcas.lista(),
+      tarefas: tarefasLongas,
+      longtaskSuportado,
+    })}`;
     const ok = await copiarTexto(texto);
     setCopia(ok ? { estado: 'copiado', texto: '' } : { estado: 'manual', texto });
   };

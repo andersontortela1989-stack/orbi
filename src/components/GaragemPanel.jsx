@@ -4,6 +4,7 @@ import { somSucesso } from '../audio/sons.js';
 import { falarDaAtividade } from '../activity/index.js';
 import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { CORES_CARRO, COR_POR_ID } from '../city/garagem.js';
+import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 
 /**
  * Painel da garagem (frente "Garagem") — escolher a cor do carro.
@@ -34,6 +35,7 @@ export function GaragemPanel() {
   const coresCompradas = useGame((s) => s.coresCompradas);
   const corPreview = useGame((s) => s.corPreview);
   useRegistrarAtividade('garagem', aberto);
+  useMarcarTroca(aberto, 'garagem-abre', 'garagem-fecha'); // M1b: só com ?medir=1
 
   // Guard de "sem repetição" (ajuste da frente): re-clicar a MESMA swatch
   // já em preview não re-fala — uma fala por clique novo.

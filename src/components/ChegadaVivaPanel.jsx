@@ -5,6 +5,7 @@ import { falarDaAtividade } from '../activity/index.js';
 import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { Bandeira } from './Bandeira.jsx';
 import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
+import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 
 // Tempo entre resolver (acerto ou revelação) e fechar o painel — a frase
 // final começa e a carta certa acende antes de o fluxo seguir.
@@ -40,6 +41,7 @@ export function ChegadaVivaPanel() {
   const pergunta = useGame((s) => s.chegadaViva);
   const registrarHabilidade = useGame((s) => s.registrarHabilidade);
   useRegistrarAtividade('pergunta', !!pergunta);
+  useMarcarTroca(!!pergunta, 'pergunta'); // M1b: só registra com ?medir=1
 
   const [tentativas, setTentativas] = useState(0);
   const [acertou, setAcertou] = useState(false);

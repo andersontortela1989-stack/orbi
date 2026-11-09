@@ -6,11 +6,15 @@ import {
 import { useAdventure } from '../adventure/useAdventure.js';
 import { useActivity } from '../activity/useActivity.js';
 import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
+import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 
 function AdventurePanel() {
   const aventura = useAdventure();
   const atividade = useActivity();
   const painel = aventura.painel;
+  // M1b: marcas para o medidor (só registram com ?medir=1).
+  useMarcarTroca(aventura.ativa && painel?.tipo === 'pergunta', 'pergunta');
+  useMarcarTroca(aventura.ativa && painel?.tipo === 'resumo', 'resumo');
   if (!aventura.ativa || !painel) return null;
 
   const focoEsperado =
