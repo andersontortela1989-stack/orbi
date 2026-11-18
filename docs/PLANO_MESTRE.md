@@ -1403,3 +1403,31 @@ aprovada entra até 04/10.
 - **Peça 3:** momentos novos no dia (por exemplo, o HOSPITAL quando alguém
   precisa de ajuda, o FAROL acendendo à noite) e uma reação do Órbi quando a
   criança visita por conta própria um lugar fora do dia (hoje, nada acontece).
+
+## 10. Decisões de 18/11/2026
+
+### Ordem de trabalho
+
+1. Ligar a Horta ao jogo.
+2. Expandir o estilo realista.
+3. Por último, diagnóstico da travada e testes com as crianças.
+
+Em toda fatia continuam valendo: testes antes do código, `npm test`,
+`npm run build` com os tamanhos dos dois pacotes, sem push, merge ou deploy,
+e nenhum commit sem aprovação.
+
+### Critério de causa identificada da travada ao responder pergunta
+
+Definido antes da medição (sessão de diagnóstico com o medidor M1c em
+`?medir=1`, estilo atual, duas rodadas). Considerando os picos de 50 ms ou
+mais ligados a responder pergunta, somando as duas rodadas, a causa é
+**identificada** se ocorrer um destes:
+
+- **a)** o mesmo evento aparece na janela de 150 ms em pelo menos 3 desses
+  picos;
+- **b)** a duração somada das gravações do save na janela de um pico é de
+  30 ms ou mais;
+- **c)** `som:contexto` aparece na janela do maior pico da sessão.
+
+Se nenhum ocorrer, o resultado é **não identificada**, e nenhuma correção é
+proposta sem uma hipótese nova.
