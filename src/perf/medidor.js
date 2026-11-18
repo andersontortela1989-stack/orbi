@@ -150,14 +150,18 @@ export function estadoIncremental() {
  * Soma um quadro ao estado (mesmas regras de aquecimento e descarte).
  * `atividade` (M1, opcional) é o foco do coordenador naquele quadro;
  * `agoraMs` (M1b, opcional) é o relógio da página (performance.now) no fim
- * do quadro, para achar os eventos e as tarefas longas perto de cada pico.
+ * do quadro, para achar os eventos e as tarefas longas perto de cada pico;
+ * `capturar` (M1c, opcional) devolve a janela de eventos do quadro e é
+ * chamado só quando o quadro entra na lista de picos — a janela fica guardada
+ * no pico, imune ao teto do registro de marcas.
  */
 export function registrarQuadro(
   estado,
   duracao,
   aquecimentoMs = AQUECIMENTO_MS,
   atividade = null,
-  agoraMs = null
+  agoraMs = null,
+  capturar = null
 ) {
   if (typeof duracao !== 'number' || !Number.isFinite(duracao) || duracao < 0) {
     estado.descartados += 1;
@@ -176,7 +180,7 @@ export function registrarQuadro(
     estado.lentosPorAtividade[chave] = (estado.lentosPorAtividade[chave] ?? 0) + 1;
   }
   if (duracao > LIMIAR_TRAVADA_MS) estado.acima250 += 1;
-  registrarPico(estado.picos, duracao, estado.duracaoSessaoMs, atividade, agoraMs);
+  registrarPico(estado.picos, duracao, estado.duracaoSessaoMs, atividade, agoraMs, capturar);
   return estado;
 }
 
@@ -185,11 +189,13 @@ const SEM_ATIVIDADE = '—';
 
 // Mantém os MAX_PICOS maiores em ordem decrescente. Empate: quem aconteceu
 // primeiro fica (o novo só entra se for estritamente maior que o último).
-function registrarPico(picos, duracao, momentoMs, atividade, agoraMs) {
+function registrarPico(picos, duracao, momentoMs, atividade, agoraMs, capturar) {
   if (picos.length === MAX_PICOS && duracao <= picos[MAX_PICOS - 1].duracao) return;
   let i = picos.length;
   while (i > 0 && picos[i - 1].duracao < duracao) i -= 1;
-  picos.splice(i, 0, { duracao, momentoMs, atividade, agoraMs });
+  const pico = { duracao, momentoMs, atividade, agoraMs };
+  if (capturar) pico.janela = capturar(pico);
+  picos.splice(i, 0, pico);
   if (picos.length > MAX_PICOS) picos.pop();
 }
 
@@ -304,12 +310,48 @@ export const JANELA_EVENTO_MS = 150;
  */
 export function criarRegistroDeMarcas(agora, limite = 500) {
   const marcas = [];
+  // M1c: o save é gravado a cada mudança da store (umas 2 vezes por segundo
+  // dirigindo) e encheria a lista. Tem contadores próprios e uma fila só das
+  // gravações recentes, para a janela de cada pico.
+  const savesRecentes = [];
+  const saves = { total: 0, maiorMs: 0, caracteres: 0 };
+  const aparar = (fila) => {
+    if (fila.length > limite) fila.splice(0, fila.length - limite);
+  };
   return {
-    marcar(nome) {
-      marcas.push({ nome, t: agora() });
-      if (marcas.length > limite) marcas.splice(0, marcas.length - limite);
+    marcar(nome, dados) {
+      const t = agora();
+      if (nome === 'save') {
+        const ms = dados?.ms ?? 0;
+        saves.total += 1;
+        if (saves.total === 1 || ms > saves.maiorMs) {
+          saves.maiorMs = ms;
+          saves.caracteres = dados?.caracteres ?? 0;
+        }
+        savesRecentes.push({ t, ms });
+        aparar(savesRecentes);
+        return;
+      }
+      marcas.push({ nome, t });
+      aparar(marcas);
     },
     lista: () => marcas.slice(),
+    /** Total de gravações, a mais demorada e o tamanho do texto dela. */
+    saves: () => ({ ...saves }),
+    /**
+     * Janela de um pico, para ser capturada quando o quadro lento é detectado:
+     * nomes dos eventos, quantas gravações do save e a duração somada delas.
+     */
+    janela(pico, janelaMs = JANELA_EVENTO_MS) {
+      const de = pico.agoraMs - pico.duracao - janelaMs;
+      const dentro = (m) => m.t >= de && m.t <= pico.agoraMs;
+      const gravacoes = savesRecentes.filter(dentro);
+      return {
+        eventos: marcas.filter(dentro).map((m) => m.nome),
+        saves: gravacoes.length,
+        savesMs: gravacoes.reduce((s, g) => s + g.ms, 0),
+      };
+    },
   };
 }
 
@@ -341,7 +383,10 @@ export function tarefasDoPico(pico, tarefas) {
  * dos 5 maiores picos, os eventos marcados nos 150 ms antes do quadro lento e
  * as tarefas longas sobrepostas; no fim, o total de tarefas longas.
  */
-export function textoEventos(estado, { marcas = [], tarefas = [], longtaskSuportado = false } = {}) {
+export function textoEventos(
+  estado,
+  { marcas = [], tarefas = [], longtaskSuportado = false, saves = null } = {}
+) {
   const picos = estado.picos ?? [];
   const linhas = [];
   const cabecalho = `eventos por pico (${JANELA_EVENTO_MS} ms antes do quadro lento):`;
@@ -350,11 +395,17 @@ export function textoEventos(estado, { marcas = [], tarefas = [], longtaskSuport
   } else {
     linhas.push(cabecalho);
     for (const p of picos) {
-      const eventos = eventosDoPico(p, marcas);
+      // M1c: a janela capturada na detecção do pico vale mais que a lista
+      // de marcas (que tem teto); sem ela, cai na conta antiga.
+      const eventos = p.janela ? p.janela.eventos : eventosDoPico(p, marcas);
+      const partes = eventos.length ? [eventos.join(', ')] : [];
+      if (p.janela?.saves > 0) {
+        partes.push(`save ${p.janela.saves}× (soma ${decimal(p.janela.savesMs)} ms)`);
+      }
       const longas = longtaskSuportado ? tarefasDoPico(p, tarefas) : [];
       linhas.push(
         `  ${decimal(p.duracao)} ms · ${momentoLegivel(p.momentoMs)} · ${p.atividade ?? SEM_ATIVIDADE}: ` +
-          `${eventos.length ? eventos.join(', ') : 'nenhum'}` +
+          `${partes.length ? partes.join(' · ') : 'nenhum'}` +
           longas.map((d) => ` · tarefa longa ${decimal(d)} ms`).join('')
       );
     }
@@ -367,6 +418,14 @@ export function textoEventos(estado, { marcas = [], tarefas = [], longtaskSuport
       tarefas.length === 0
         ? 'tarefas longas: 0'
         : `tarefas longas: ${tarefas.length} (maior ${decimal(maior)} ms)`
+    );
+  }
+  // M1c: total de gravações do save, a mais demorada e o tamanho do texto dela.
+  if (saves) {
+    linhas.push(
+      saves.total === 0
+        ? 'gravações do save: 0'
+        : `gravações do save: ${saves.total} (maior ${decimal(saves.maiorMs)} ms, ${saves.caracteres} caracteres)`
     );
   }
   return linhas.join('\n');

@@ -13,6 +13,8 @@
  * acesso) não é corrupção: fluxo normal, sem backup.
  */
 
+import { marcar, sondaLigada } from './perf/sonda.js';
+
 // Versão atual do save — a MESMA passada ao persist (useGame.js) e o teto que
 // o import aceita (versão do futuro é recusada: não sabemos migrar dela).
 // Bump aqui a cada chave nova aninhada em habilidades/descobertas (ver o
@@ -116,7 +118,16 @@ export const storageSeguro = {
   },
   setItem: (nome, valor) => {
     if (!temStorage()) return;
-    localStorage.setItem(nome, JSON.stringify(valor));
+    if (!sondaLigada()) {
+      localStorage.setItem(nome, JSON.stringify(valor));
+      return;
+    }
+    // M1c (só com ?medir=1): mesma gravação, medida — duração de serializar +
+    // gravar e tamanho do texto. Formato e momento da gravação não mudam.
+    const t0 = performance.now();
+    const texto = JSON.stringify(valor);
+    localStorage.setItem(nome, texto);
+    marcar('save', { ms: performance.now() - t0, caracteres: texto.length });
   },
   removeItem: (nome) => {
     if (!temStorage()) return;

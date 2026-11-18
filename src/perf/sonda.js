@@ -14,7 +14,15 @@ export function ligarSonda(fn) {
   registrar = typeof fn === 'function' ? fn : null;
 }
 
-/** Marca um evento conhecido, pelo nome fixo. Sem medição: não faz nada. */
-export function marcar(nome) {
-  if (registrar !== null) registrar(nome);
+/** A medição está ligada? (M1c: quem mede tempo só o faz com a sonda ligada.) */
+export function sondaLigada() {
+  return registrar !== null;
+}
+
+/**
+ * Marca um evento conhecido, pelo nome fixo; `dados` (M1c, opcional) leva as
+ * medidas do evento (o save manda duração e tamanho). Sem medição: não faz nada.
+ */
+export function marcar(nome, dados) {
+  if (registrar !== null) registrar(nome, dados);
 }

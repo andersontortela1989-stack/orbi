@@ -11,6 +11,7 @@ import {
 } from '../city/moedas.js';
 import { useGame } from '../store/useGame.js';
 import { somMoeda } from '../audio/sons.js';
+import { marcar } from '../perf/sonda.js';
 import { coordenadorAtividade } from '../activity/index.js';
 
 /**
@@ -100,6 +101,7 @@ export function Moedas({ targetRef }) {
           // impossível contar duas vezes em frames consecutivos.
           coletadaEm.current[i] = t;
           ganharMoeda(1);
+          marcar('moeda'); // M1c: só registra com ?medir=1
           somMoeda();
         }
       } else if (t - coletadaEm.current[i] >= RESPAWN_SEGUNDOS && d2 > longe2) {

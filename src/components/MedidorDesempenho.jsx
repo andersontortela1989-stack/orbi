@@ -72,6 +72,8 @@ const lerFoco =
 // só é ligado com `?medir=1`; sem ele, a sonda segue desligada.
 const agora = () => performance.now();
 const registroMarcas = criarRegistroDeMarcas(agora);
+// M1c: a janela de eventos é capturada quando o quadro entra nos picos.
+const capturarJanela = (pico) => registroMarcas.janela(pico);
 const tarefasLongas = [];
 let longtaskSuportado = false;
 if (typeof location !== 'undefined' && instalarSonda(location.search, registroMarcas)) {
@@ -116,7 +118,7 @@ export function ColetorDesempenho() {
     coleta.duracoes[i] = delta * 1000;
     // Soma o valor JÁ arredondado para 32 bits: contadores do painel e resumo
     // copiado (feito sobre o Float32Array) falam exatamente dos mesmos números.
-    registrarQuadro(coleta.estado, coleta.duracoes[i], undefined, lerFoco ? lerFoco() : null, agora());
+    registrarQuadro(coleta.estado, coleta.duracoes[i], undefined, lerFoco ? lerFoco() : null, agora(), capturarJanela);
     coleta.gravados = i + 1;
     if (coleta.gravados === CAPACIDADE) coleta.limiteAtingido = true;
 
@@ -247,6 +249,7 @@ export function MedidorDesempenho() {
       marcas: registroMarcas.lista(),
       tarefas: tarefasLongas,
       longtaskSuportado,
+      saves: registroMarcas.saves(),
     })}`;
     const ok = await copiarTexto(texto);
     setCopia(ok ? { estado: 'copiado', texto: '' } : { estado: 'manual', texto });
