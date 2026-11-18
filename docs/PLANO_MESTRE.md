@@ -268,6 +268,10 @@ Há **três alvos** no repositório:
   publica automaticamente a partir da `main`, e **isso precisa ser desligado
   antes do merge** (E5.2). Não há arquivo de configuração da Vercel no
   repositório; a ligação está no painel.
+  **Atualização de 18/11/2026 (informado pelo Anderson):** a produção de
+  `orbi-kahe.vercel.app` só muda por promoção manual na Vercel, e ninguém
+  faz push na `main`. A versão `193bfef` desta branch (H1 da Horta) foi
+  promovida à produção em 18/11/2026.
 
 **Relação entre `origin/main` e esta base:** 5 commits só na `main` e 25 só
 aqui.
@@ -317,6 +321,12 @@ Uma fatia só começa quando estiver escrito, antes de qualquer código:
   expressa.**
 - A branch congelada só é **lida** (`git show`); nunca recebe merge nem
   checkout para edição.
+- **Git sem erro escondido (regra permanente, 18/11/2026).** Nunca suprimir a
+  saída de erro de comandos git (sem `2>/dev/null`, `2>$null`, `| Out-Null`
+  nem redirecionar stderr). Depois de cada `git add` e cada `git commit`,
+  conferir o código de saída e rodar `git status` antes de seguir. Motivo: em
+  18/11 um `git add` falhou calado e o primeiro commit da H1 saiu só com uma
+  renomeação, sem compilar (desfeito antes de qualquer push).
 
 ### 2.4 Orçamento de desempenho
 
@@ -1442,6 +1452,21 @@ proposta sem uma hipótese nova.
 - **Tamanhos depois da H1:** pacote inicial 198,84 kB (gzip 64,75 kB), folga
   de 1,16 kB até o teto de 200 kB; `GameExperience` 3.157,86 kB (gzip
   1.076,58 kB), folga de 42,14 kB até o teto de 3.200 kB.
-- **Próximas:** H2 (horta viva no mundo, nos dois estilos), H3 (Caderninho e
-  textos das faixas, dívida 37), H4 (faixa na Área dos Pais, chave
-  `faixaHorta` sem mudar `SAVE_VERSION`), H5 (README).
+- **H1 promovida à produção (18/11/2026):** a versão `193bfef` foi promovida
+  manualmente na Vercel para `orbi-kahe.vercel.app`. Informado pelo Anderson.
+- **H2 concluída (18/11/2026):** três canteiros baixos (0,20) na faixa leste
+  da ESCOLA, sem corpo físico e sem sensor, com terra de cor lisa e contorno
+  navy fino (sem moldura coral: a moldura exigiria cor por vértice, um
+  programa de shader novo no estilo atual). Com `horta_escola_viva`, dois
+  brotos por canteiro (até 0,6), que crescem uma vez quando o resumo fecha e
+  aparecem prontos ao recarregar, no Modo Tranquilo e sem animações.
+  Oclusão do carro: 0% de acréscimo. 2 chamadas de desenho antes da flag, 3
+  depois. Sem mudança de save.
+- **Tamanhos depois da H2:** pacote inicial 198,84 kB (igual à H1 byte a
+  byte); `GameExperience` 3.160,12 kB (gzip 1.077,36 kB), +2,26 kB sobre a
+  H1, folga de 39,88 kB até o teto de 3.200 kB.
+- **Próximas:** H3 (Caderninho e textos das faixas, dívida 37), H4 (faixa na
+  Área dos Pais, chave `faixaHorta` sem mudar `SAVE_VERSION`), H5 (README).
+- **H2b fica para depois da H4 (decisão de 18/11/2026):** canteiros 3D
+  mostrando as sementes e a terra molhada durante o plantio e a rega. O mundo
+  tem 3 canteiros e a faixa 6–7 usa 2; só faz sentido com a faixa escolhida.

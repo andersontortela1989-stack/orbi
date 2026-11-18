@@ -762,3 +762,24 @@ ESCOLA" nas repetições, sem entregar adesivo novo.
 
 **O que falta.** Corrigir na H3: nas repetições, o resumo não promete adesivo
 (ou diz que o broto já está no Caderninho).
+
+---
+
+## 38. Flores do parque escalam em torno da origem do mundo
+
+**Observado.** `FloresParque` escala o grupo inteiro (`scale.setScalar`), e o
+grupo está na origem do mundo, não no parque. Antes de florescer, as 8 flores
+ficam a 28% das suas coordenadas: pequenas, perto de (−3,9; 20,2), longe do
+canteiro do parque (centro em −13,75; 72,1). Ao florescer, elas crescem e
+"voam" até o parque ao mesmo tempo. Achado pela leitura do código; não
+conferido no jogo.
+
+**Onde.** `src/components/FloresParque.jsx` (`<group ref={grupo}>` e o
+`useFrame` que aplica `setScalar`).
+
+**Quando.** Fatia H2, 18/11/2026. A H2 não repetiu o padrão: os brotos da
+ESCOLA crescem só em altura, a partir da terra.
+
+**O que falta.** Conferir no jogo (código A da H1 mostra o estado antes de
+florescer) e decidir a correção: escalar cada flor em torno da própria base,
+ou esconder as flores antes de florescer.
