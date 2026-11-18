@@ -42,6 +42,19 @@ function AdventurePanel() {
           >
             {painel.botao}
           </button>
+          {/* H1: convite que pode ser recusado — sem perder nada. */}
+          {painel.botaoSecundario && (
+            <button
+              type="button"
+              className="adv-ajuda-painel"
+              onClick={(e) => {
+                enviarEventoAventura({ tipo: 'recusar' });
+                e.currentTarget.blur();
+              }}
+            >
+              {painel.botaoSecundario}
+            </button>
+          )}
         </div>
       </div>
     );

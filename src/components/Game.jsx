@@ -15,7 +15,7 @@ import { FuelController } from './FuelController.jsx';
 import { CameraFollow } from './CameraFollow.jsx';
 import { Carona } from './Carona.jsx';
 import { AdventureMarker } from './AdventureMarker.jsx';
-import { BaldesAventura } from './BaldesAventura.jsx';
+import { ItensAventura } from './ItensAventura.jsx';
 import { FloresParque } from './FloresParque.jsx';
 import { useGame } from '../store/useGame.js';
 import { perfilVisual } from '../visual/world-style.js';
@@ -107,8 +107,9 @@ export function Game() {
 
       <Car rigidBodyRef={carRef} />
 
-      {/* Coletáveis aparecem só durante “O Parque Está com Sede”. */}
-      <BaldesAventura targetRef={carRef} />
+      {/* Coletáveis das aventuras: baldes do parque, sacos de semente da
+          Horta — só na etapa de coleta correspondente. */}
+      <ItensAventura targetRef={carRef} />
 
       {/* Combustível (Fatia 5) — DEPOIS do <Car> de propósito: seu useFrame roda
           após o do carro, então o controle de "tanque vazio" tem a palavra final

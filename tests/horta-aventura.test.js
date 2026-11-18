@@ -172,7 +172,9 @@ test('a definição de cada faixa deriva de HORTA_BANDS, sem número à mão', (
     assert.equal(def.faixaLabel, cfg.label);
     assert.equal(etapa['ir-ao-mercado'].lugar, 'MERCADO');
     assert.equal(etapa['pegar-sementes'].quantidade, cfg.total);
-    assert.equal(etapa['pegar-sementes'].texto, cfg.task, 'reaproveita o texto da faixa');
+    // H1: coleta dirigindo até os sacos (decisão 3 de 18/11); o texto da
+    // cestinha (cfg.task) ficou só com o modelo antigo de horta.js.
+    assert.match(etapa['pegar-sementes'].texto, /^Pegue .+ sacos de sementes\.$/);
     assert.equal(etapa['voltar-a-escola'].lugar, 'ESCOLA');
     assert.equal(etapa.plantar.slots, cfg.beds);
     assert.equal(etapa.plantar.porSlot, cfg.total / cfg.beds);

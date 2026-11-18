@@ -33,7 +33,7 @@ export function criarHortaEscola(band) {
   const cfg = HORTA_BANDS[band];
   if (!cfg) return null;
 
-  const { total, beds, label, task } = cfg;
+  const { total, beds, label } = cfg;
   const porCanteiro = total / beds;
   if (!Number.isInteger(porCanteiro) || porCanteiro < 1) return null;
 
@@ -53,6 +53,9 @@ export function criarHortaEscola(band) {
           'Vamos buscar as sementes no mercado?',
         espera: 'toque',
         botao: 'VAMOS!',
+        // H1: o convite chega sem a criança pedir (na ESCOLA do roteiro) —
+        // por isso pode ser recusado, sem perder nada.
+        botaoSecundario: 'AGORA NÃO',
       },
       {
         id: 'ir-ao-mercado',
@@ -67,9 +70,10 @@ export function criarHortaEscola(band) {
         tipo: 'coletar',
         item: 'semente',
         quantidade: total,
-        // A instrução por faixa já existia em HORTA_BANDS.task — é o texto
-        // que o conteúdo original usava exatamente aqui. Reaproveitado.
-        texto: task,
+        // H1: os sacos de semente são coletados DIRIGINDO, como os baldes do
+        // parque (ItensAventura). O HORTA_BANDS.task do modelo antigo falava
+        // de tocar numa cestinha e fica só com horta.js.
+        texto: `Pegue ${porExtenso(total, MASCULINO)} sacos de sementes.`,
         dica: `Vamos contar juntos até ${porExtenso(total, MASCULINO)}.`,
       },
       {
@@ -106,6 +110,7 @@ export function criarHortaEscola(band) {
         itens: ['broto-da-escola'],
         descobertas: [
           { categoria: 'objetos', id: 'semente' },
+          { categoria: 'objetos', id: 'broto-da-escola' },
           { categoria: 'lugares', id: 'MERCADO' },
           { categoria: 'lugares', id: 'ESCOLA' },
           { categoria: 'contagens', id: String(total) },

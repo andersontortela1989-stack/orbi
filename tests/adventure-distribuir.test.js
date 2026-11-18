@@ -59,6 +59,7 @@ test('a etapa abre com todos os canteiros vazios e anuncia o objetivo', () => {
     total: 2,
     slots: [0, 0],
     porSlot: 1,
+    item: 'semente', // H1: o cartão de repartir lê o item daqui
   });
   assert.deepEqual(de(efeitos, 'falar').map((e) => e.texto), [
     'Coloque uma semente em cada canteiro.',
@@ -77,6 +78,7 @@ test('preencher um canteiro mostra o progresso e NÃO conclui a etapa', () => {
     total: 2,
     slots: [1, 0],
     porSlot: 1,
+    item: 'semente',
   });
   assert.equal(aventura.etapa().id, 'repartir', 'ainda na etapa');
   assert.equal(de(efeitos, 'resumo').length, 0, 'não avançou pro fecho');
@@ -186,7 +188,7 @@ test('definição malformada rende etapa pobre, nunca um crash', () => {
   });
 
   const abertura = aventura.iniciar();
-  assert.deepEqual(contador(abertura), { atual: 0, total: 1, slots: [0], porSlot: 1 });
+  assert.deepEqual(contador(abertura), { atual: 0, total: 1, slots: [0], porSlot: 1, item: 'semente' });
 
   aventura.enviar(por('semente', 0));
   assert.equal(aventura.etapa().id, 'fim', 'um slot de um: conclui no primeiro toque');

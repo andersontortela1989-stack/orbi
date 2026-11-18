@@ -348,6 +348,75 @@ textarea:focus-visible {
   cursor: pointer;
 }
 
+/* H1 — cartão de repartir (plantar e regar na Horta). Sobre o mundo, sem
+   escurecer a tela e sem tomar o foco: um botão grande por canteiro, abaixo
+   do objetivo e do 💡, longe dos controles de toque (cantos de baixo). */
+.adv-repartir {
+  position: fixed;
+  top: calc(var(--ui-safe-top) + 128px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11;
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface-card);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--solid-3);
+  user-select: none;
+}
+
+.adv-canteiro {
+  min-width: 96px;
+  min-height: 96px;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  background: var(--surface-base);
+  border: var(--outline) solid var(--outline-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--solid-3);
+  cursor: pointer;
+}
+
+.adv-canteiro:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: var(--solid-press);
+}
+
+.adv-canteiro:disabled { cursor: default; opacity: 1; }
+.adv-canteiro--cheio { background: var(--orbi-grass-soft); }
+
+.adv-canteiro-vagas {
+  font-size: 30px;
+  line-height: 1;
+  color: var(--text-strong);
+  white-space: nowrap;
+}
+
+.adv-canteiro-terra {
+  display: block;
+  width: 100%;
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: #9A5B2C;
+  border: var(--outline-thin) solid var(--outline-color);
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .adv-repartir {
+    top: calc(var(--ui-safe-top) + 112px);
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+  .adv-canteiro { min-width: 76px; min-height: 76px; }
+  .adv-canteiro-vagas { font-size: 24px; }
+}
+
 .adv-aprendizados {
   width: 100%;
   margin: 0;

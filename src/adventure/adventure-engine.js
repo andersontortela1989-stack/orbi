@@ -102,14 +102,20 @@ export function criarAventura(def) {
     ];
 
     switch (atual.tipo) {
-      case 'fala':
+      case 'fala': {
+        // H1: `botaoSecundario` transforma a fala num CONVITE que pode ser
+        // recusado (AGORA NÃO). Só entra no efeito quando existe — a fala do
+        // parque segue idêntica, campo a campo.
+        const mensagem = { tipo: 'mensagem', texto: atual.texto, botao: atual.botao ?? 'VAMOS!' };
+        if (atual.botaoSecundario) mensagem.botaoSecundario = atual.botaoSecundario;
         efeitos.push(
           { tipo: 'foco', acao: 'pedir', atividade: 'historia' },
-          { tipo: 'mensagem', texto: atual.texto, botao: atual.botao ?? 'VAMOS!' },
+          mensagem,
           { tipo: 'falar', texto: atual.texto }
         );
         if (atual.espera !== 'toque') efeitos.push(...avancar());
         break;
+      }
 
       case 'ir_para':
         efeitos.push(
@@ -163,6 +169,7 @@ export function criarAventura(def) {
               total: slots * porSlot,
               slots: [...st.distribuido],
               porSlot,
+              item: atual.item,
             },
           },
           { tipo: 'falar', texto: atual.texto }
@@ -301,6 +308,20 @@ export function criarAventura(def) {
 
     switch (atual.tipo) {
       case 'fala':
+        // Convite recusado (H1): fecha sem recompensa, sem resumo e sem
+        // contar erro — a aventura simplesmente não acontece agora.
+        if (evento.tipo === 'recusar' && atual.botaoSecundario) {
+          return [
+            {
+              tipo: 'telemetria',
+              evento: 'convite_recusado',
+              dados: { aventura: def.id, etapa: atual.id },
+            },
+            { tipo: 'fechar_painel' },
+            { tipo: 'foco', acao: 'liberar', atividade: 'historia' },
+            ...finalizar(),
+          ];
+        }
         if (evento.tipo !== 'toque') return [];
         return [
           { tipo: 'fechar_painel' },
@@ -359,6 +380,7 @@ export function criarAventura(def) {
               total: slots * porSlot,
               slots: [...st.distribuido],
               porSlot,
+              item: atual.item,
             },
           },
           // Fala a conta DO canteiro tocado, não o total acumulado: o que se

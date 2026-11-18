@@ -29,6 +29,17 @@ const OBJETOS = {
     rotulo: 'FLOR DO PARQUE',
     fato: 'Esta flor cresceu quando você levou água ao parque!',
   },
+  // Horta da escola (H1)
+  semente: {
+    emoji: '🌰',
+    rotulo: 'SEMENTE',
+    fato: 'Da semente nasce uma planta nova!',
+  },
+  'broto-da-escola': {
+    emoji: '🌱',
+    rotulo: 'BROTO DA ESCOLA',
+    fato: 'Este broto nasceu na horta que você plantou na escola!',
+  },
 };
 
 /**

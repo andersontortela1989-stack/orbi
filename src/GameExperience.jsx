@@ -17,6 +17,7 @@ import { TouchControls } from './components/TouchControls.jsx';
 import { Buzina } from './components/Buzina.jsx';
 import { OrientationGuard } from './components/OrientationGuard.jsx';
 import { AdventureController } from './components/AdventureController.jsx';
+import { PainelDistribuir } from './components/PainelDistribuir.jsx';
 import { SensorySettings } from './components/SensorySettings.jsx';
 import {
   ColetorDesempenho,
@@ -137,6 +138,7 @@ export default function GameExperience() {
       </div>
       <WelcomeVoice />
       <AdventureController />
+      <PainelDistribuir />
       <MissionController />
       <OrbiCompanion />
       <Buzina />

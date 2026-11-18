@@ -11,6 +11,7 @@ import {
 } from '../missions/missoes.js';
 import { useAdventure } from '../adventure/useAdventure.js';
 import { aventuraAtiva as aventuraEstaAtiva } from '../adventure/runtime.js';
+import { conviteHortaDaSessao } from '../adventure/convites.js';
 import { podePedirProxima } from '../missions/roteiro.js';
 import { marcar } from '../perf/sonda.js';
 import { useMarcarTroca } from '../perf/useMarcarTroca.js';
@@ -80,6 +81,11 @@ export function MissionController() {
     if (atual?.tipo === 'gps' && temChegadaViva(atual.destino)) {
       useGame.getState().abrirChegadaViva(atual.destino);
     } else {
+      // H1: na ESCOLA, uma vez por sessão, a Horta convida ANTES de o
+      // roteiro avançar. A próxima parada é marcada em silêncio (o efeito de
+      // narração não fala com aventura ativa) e volta a ser pedida quando a
+      // Horta termina ou é recusada (F1, efeito 2b).
+      conviteHortaDaSessao.tentar(atual);
       useGame.getState().proximaMissao();
     }
   };

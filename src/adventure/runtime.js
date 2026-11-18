@@ -67,7 +67,12 @@ function aplicarEfeitos(efeitos) {
       case 'mensagem':
         ui = {
           ...ui,
-          painel: { tipo: 'mensagem', texto: efeito.texto, botao: efeito.botao },
+          painel: {
+            tipo: 'mensagem',
+            texto: efeito.texto,
+            botao: efeito.botao,
+            ...(efeito.botaoSecundario ? { botaoSecundario: efeito.botaoSecundario } : {}),
+          },
         };
         break;
 
@@ -193,6 +198,9 @@ function eventoPermitido(evento) {
     if (ui.painel?.tipo === 'resumo') return atividade.foco === 'resumo';
     if (ui.painel?.tipo === 'mensagem') return atividade.foco === 'historia';
     return atividade.foco === 'em_missao';
+  }
+  if (evento.tipo === 'recusar') {
+    return atividade.foco === 'historia' && ui.painel?.tipo === 'mensagem';
   }
   if (evento.tipo === 'pedir_ajuda') {
     return atividade.foco === 'em_missao' || atividade.foco === 'pergunta';

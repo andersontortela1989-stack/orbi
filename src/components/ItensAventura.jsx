@@ -3,11 +3,9 @@ import { useFrame } from '@react-three/fiber';
 import { TINTAS } from '../brand/paleta3d.js';
 import { enviarEventoAventura } from '../adventure/runtime.js';
 import { useAdventure } from '../adventure/useAdventure.js';
+import { itensDaEtapa } from '../adventure/itens.js';
 import { coordenadorAtividade } from '../activity/index.js';
 
-const POSICOES = [
-  [-44, 8], [-44, 14], [-44, 20], [-44, 26],
-];
 const RAIO_COLETA_2 = 2.7 * 2.7;
 
 function Balde({ pos }) {
@@ -29,31 +27,61 @@ function Balde({ pos }) {
   );
 }
 
-/** Quatro baldes coletáveis, visíveis somente na etapa correspondente. */
-export function BaldesAventura({ targetRef }) {
+/**
+ * Saco de semente da Horta (H1): saco claro amarrado, com um broto em cima —
+ * nada de caramelo (é a cor dos pães da PADARIA, que não são coletáveis).
+ */
+function Saco({ pos }) {
+  return (
+    <group position={[pos[0], 0, pos[1]]}>
+      <mesh position={[0, 0.5, 0]}>
+        <cylinderGeometry args={[0.42, 0.56, 1.0, 12]} />
+        <meshLambertMaterial color={TINTAS.paper} />
+      </mesh>
+      <mesh position={[0, 1.04, 0]}>
+        <cylinderGeometry args={[0.2, 0.3, 0.12, 12]} />
+        <meshBasicMaterial color={TINTAS.inkSoft} />
+      </mesh>
+      <mesh position={[0, 1.32, 0]} scale={[1, 0.6, 1]}>
+        <sphereGeometry args={[0.3, 10, 8]} />
+        <meshLambertMaterial color={TINTAS.grass} />
+      </mesh>
+    </group>
+  );
+}
+
+const VISUAL = { balde: Balde, saco: Saco };
+
+/**
+ * Coletáveis das aventuras (baldes do parque, sacos de semente da Horta),
+ * visíveis somente na etapa de coleta correspondente. Posições e item vêm de
+ * adventure/itens.js; a coleta é por proximidade, dirigindo, sem física nova.
+ */
+export function ItensAventura({ targetRef }) {
   const aventura = useAdventure();
+  const itens = itensDaEtapa(aventura.etapa, aventura.contador);
   const [coletados, setColetados] = useState(() => new Set());
   const coletadosRef = useRef(new Set());
 
   useEffect(() => {
     coletadosRef.current = new Set();
     setColetados(new Set());
-  }, [aventura.id]);
+  }, [aventura.id, aventura.etapa]);
 
   useFrame(() => {
-    if (aventura.etapa !== 'contar-baldes') return;
+    if (!itens) return;
     if (!coordenadorAtividade.temFoco('em_missao')) return;
     const rb = targetRef.current;
     if (!rb) return;
     const carro = rb.translation();
 
-    for (let i = 0; i < POSICOES.length; i += 1) {
+    for (let i = 0; i < itens.posicoes.length; i += 1) {
       if (coletadosRef.current.has(i)) continue;
-      const [x, z] = POSICOES[i];
+      const [x, z] = itens.posicoes[i];
       const dx = carro.x - x;
       const dz = carro.z - z;
       if (dx * dx + dz * dz >= RAIO_COLETA_2) continue;
-      if (enviarEventoAventura({ tipo: 'coletou', item: 'balde_agua', quantidade: 1 })) {
+      if (enviarEventoAventura({ tipo: 'coletou', item: itens.item, quantidade: 1 })) {
         coletadosRef.current.add(i);
         setColetados(new Set(coletadosRef.current));
       }
@@ -61,11 +89,12 @@ export function BaldesAventura({ targetRef }) {
     }
   });
 
-  if (aventura.etapa !== 'contar-baldes') return null;
+  if (!itens) return null;
+  const Visual = VISUAL[itens.visual];
   return (
     <>
-      {POSICOES.map((pos, i) =>
-        coletados.has(i) ? null : <Balde key={i} pos={pos} />
+      {itens.posicoes.map((pos, i) =>
+        coletados.has(i) ? null : <Visual key={i} pos={pos} />
       )}
     </>
   );
