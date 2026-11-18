@@ -1431,3 +1431,17 @@ mais ligados a responder pergunta, somando as duas rodadas, a causa é
 
 Se nenhum ocorrer, o resultado é **não identificada**, e nenhuma correção é
 proposta sem uma hipótese nova.
+
+### Horta da Escola — andamento
+
+- **H1 concluída (18/11/2026):** Horta jogável na faixa 3–5, convite na
+  chegada à ESCOLA do roteiro (uma vez por sessão, com AGORA NÃO), sacos de
+  semente coletados dirigindo em frente ao MERCADO, cartão de repartir na
+  ESCOLA, resumo e adesivos SEMENTE e BROTO DA ESCOLA no Caderninho. Sem
+  mudança de save.
+- **Tamanhos depois da H1:** pacote inicial 198,84 kB (gzip 64,75 kB), folga
+  de 1,16 kB até o teto de 200 kB; `GameExperience` 3.157,86 kB (gzip
+  1.076,58 kB), folga de 42,14 kB até o teto de 3.200 kB.
+- **Próximas:** H2 (horta viva no mundo, nos dois estilos), H3 (Caderninho e
+  textos das faixas, dívida 37), H4 (faixa na Área dos Pais, chave
+  `faixaHorta` sem mudar `SAVE_VERSION`), H5 (README).

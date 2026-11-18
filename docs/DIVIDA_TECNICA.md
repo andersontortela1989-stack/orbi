@@ -745,3 +745,20 @@ atualizar ou desligar).
 **Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
 
 **O que falta.** Acertar a versão no próximo corte de release.
+
+---
+
+## 37. Resumo da Horta repetida promete adesivo que não entrega
+
+**Observado.** A Horta é repetível e a recompensa só sai na primeira conclusão
+(`registrarRecompensa` e `registrarDescoberta` ignoram repetidos). Mas o painel
+de resumo é o mesmo em toda conclusão e continua mostrando "ADESIVO: BROTO DA
+ESCOLA" nas repetições, sem entregar adesivo novo.
+
+**Onde.** `src/school/horta-aventura.js` (etapa `fecho`, `recompensas`);
+`src/adventure/adventure-engine.js` (etapa `resumo`).
+
+**Quando.** Fatia H1, 18/11/2026.
+
+**O que falta.** Corrigir na H3: nas repetições, o resumo não promete adesivo
+(ou diz que o broto já está no Caderninho).

@@ -30,11 +30,12 @@ npm run preview  # serve o build de produção
 
 ## Onde o jogo é publicado
 
-A publicação é feita pelo **Netlify**, configurado em `netlify.toml` na raiz:
-roda `npm run build` e publica a pasta `dist/`, com redirect de SPA.
+A publicação é feita pela **Vercel**: roda `npm run build` e publica a pasta
+`dist/`.
 
-O endereço público vigente é definido pelo responsável pelo projeto. Esta branch
-de desenvolvimento não é publicada automaticamente.
+O endereço público vigente é definido pelo responsável pelo projeto. A Vercel
+gera uma prévia da branch de desenvolvimento a cada push; a produção só muda
+por promoção manual.
 
 ## Aviso
 
@@ -42,9 +43,7 @@ O Órbi **não substitui acompanhamento profissional** — pedagógico, terapêu
 ou de saúde. Ele é uma brincadeira, não uma intervenção.
 
 O Órbi também **não avalia domínio de conteúdo escolar**. Não há nota, não há
-diagnóstico e não há relatório de desempenho. As faixas etárias que aparecem no
-jogo são pontos de partida ajustáveis a qualquer momento, nunca uma medida do
-que a criança sabe ou deixa de saber.
+diagnóstico e não há relatório de desempenho.
 
 Histórias, personagens e situações são ficcionais e existem a serviço da
 brincadeira.
