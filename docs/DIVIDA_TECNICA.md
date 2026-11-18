@@ -652,3 +652,96 @@ variação no orçamento.
 **Quando.** Inventário de 09/11/2026.
 
 **O que falta.** Medir o build commit a commit e registrar a origem.
+
+---
+
+## 31. Horta, repartir e faixas etárias não alcançáveis
+
+**Observado.** A horta da escola (com o passo `distribuir`, que ensina a
+repartir) e a escolha de faixa etária existem no código, mas nenhum componente
+chama `iniciarHortaEscola`. Nada disso aparece para quem joga.
+
+**Onde.** `src/adventure/runtime.js` (`iniciarHortaEscola`);
+`src/school/horta-aventura.js`, `src/school/horta.js`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Decidir se a horta entra no jogo ou sai das promessas (ver o
+item 32).
+
+---
+
+## 32. README da branch promete o que o jogo não mostra e cita a Netlify
+
+**Observado.** O README da branch diz que a criança aprende a "repartir" e a
+"cuidar de uma horta" e fala em "faixas etárias que aparecem no jogo" (item
+31). Também diz que a publicação é feita pelo Netlify.
+
+**Onde.** `README.md`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Corrigir antes de qualquer merge na `main` (o README que o
+GitHub mostra é o da `main`).
+
+---
+
+## 33. Rollback de v8 para a main apaga preferências, worldFlags e recompensas
+
+**Observado.** A `main` (SAVE_VERSION 6) hidrata um save v8 sem descartar, mas
+na primeira carga regrava como v6 e o `partialize` dela deixa de fora
+`preferencias`, `worldFlags` e `recompensas`. `descobertas.objetos` sobrevive.
+Confirmado pelo código do zustand 5.0.14 e por simulação com o código da
+`main`.
+
+**Onde.** `origin/main:src/store/useGame.js` (`partialize`).
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Tratar a promoção como caminho de ida, ou dar à `main` um
+`partialize` que preserve as chaves desconhecidas antes de qualquer rollback.
+
+---
+
+## 34. README diz "terceira tentativa"; a pergunta de chegada revela depois de 2 erros
+
+**Observado.** O README afirma que "na terceira tentativa a resposta aparece".
+A pergunta de chegada revela a resposta depois de 2 erros
+(`MAX_TENTATIVAS = 2`); a aventura, depois de 3 (`TENTATIVAS_ATE_REVELAR`).
+
+**Onde.** `README.md`; `src/components/ChegadaVivaPanel.jsx`;
+`src/adventure/adventure-engine.js`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Alinhar o texto ao comportamento (ou o contrário).
+
+---
+
+## 35. orbi-3ge.pages.dev continua servindo a main
+
+**Observado.** O Cloudflare Pages (`orbi-3ge.pages.dev`) é publicado pelo
+`.github/workflows/deploy.yml` da `main`, que dispara em push na `main` e
+também à mão (`workflow_dispatch`). Promover a branch na Vercel deixa dois
+endereços públicos com versões diferentes. A branch apagou esse workflow
+(`136ee34`): um merge na `main` encerra o deploy do Cloudflare.
+
+**Onde.** `origin/main:.github/workflows/deploy.yml`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Decidir o destino do endereço do Cloudflare (redirecionar,
+atualizar ou desligar).
+
+---
+
+## 36. Versão do pacote: branch em 0.1.0, main em 2.0.0
+
+**Observado.** O `package.json` da branch está em `0.1.0`; o da `main`, em
+`2.0.0` (commit `a2bedd6`, tag `v2.0.0`).
+
+**Onde.** `package.json`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Acertar a versão no próximo corte de release.
