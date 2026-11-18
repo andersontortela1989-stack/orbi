@@ -17,6 +17,7 @@ import { Carona } from './Carona.jsx';
 import { AdventureMarker } from './AdventureMarker.jsx';
 import { ItensAventura } from './ItensAventura.jsx';
 import { FloresParque } from './FloresParque.jsx';
+import { HortaEscola } from './HortaEscola.jsx';
 import { useGame } from '../store/useGame.js';
 import { perfilVisual } from '../visual/world-style.js';
 import { RoadNetwork } from './RoadNetwork.jsx';
@@ -100,6 +101,8 @@ export function Game() {
 
       {/* Aventura 01: consequência permanente + marcador de ajuda. */}
       <FloresParque />
+      {/* H2: canteiros da ESCOLA; brotos depois da primeira Horta. */}
+      <HortaEscola />
       <AdventureMarker />
 
       {/* Sensores invisíveis de chegada (um por prédio) — Fatia 4 */}
