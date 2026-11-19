@@ -763,6 +763,10 @@ ESCOLA" nas repetições, sem entregar adesivo novo.
 **O que falta.** Corrigir na H3: nas repetições, o resumo não promete adesivo
 (ou diz que o broto já está no Caderninho).
 
+**Resolvido na H3 (19/11/2026).** Com o broto já nas recompensas, o resumo
+fica sem adesivo e a fala é "Você cuidou da horta de novo! A professora Lia
+agradeceu." (`criarHortaEscola(band, { repetida })`).
+
 ---
 
 ## 38. Flores do parque escalam em torno da origem do mundo
@@ -784,6 +788,10 @@ ESCOLA crescem só em altura, a partir da terra.
 florescer) e decidir a correção: escalar cada flor em torno da própria base,
 ou esconder as flores antes de florescer.
 
+**Resolvido na H3 (19/11/2026).** Cada flor escala em torno da própria base
+(`FloresParque.jsx`); antes de florescer ficam como botões pequenos no
+canteiro do parque. Elas crescem quando o resumo da aventura fecha.
+
 ---
 
 ## 39. Dieta do pacote inicial
@@ -800,3 +808,108 @@ importar/exportar do save (`src/save.js`).
 
 **O que falta.** Avaliar carregar sob demanda a Área dos Pais e o
 importar/exportar do save. Fazer quando o teto de 205 kB apertar.
+
+---
+
+## 40. A dica da pergunta do parque entrega a resposta no primeiro toque
+
+**Observado.** Na pergunta "Do que as plantas precisam para viver?", o botão
+"💡 OUVIR UMA DICA" fala a `dica` da etapa, que é a própria resposta ("É a
+água! Ela cai da nuvem e ajuda a planta a crescer."). Pode ser tocado antes de
+qualquer tentativa e não conta tentativa: a regra de revelar no 3º erro fica
+sem efeito para quem toca no 💡.
+
+**Onde.** `src/adventure/parque-com-sede.js` (etapa `saber`);
+`src/adventure/adventure-engine.js` (`pedir_ajuda` e a revelação usam o mesmo
+campo `dica`).
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+Além disso, as cartas dessa pergunta têm ordem fixa, com a certa sempre
+primeira (ÁGUA, AREIA, PAPEL).
+
+**O que falta.** Corrigir exige separar no motor a dica (pista) da revelação
+(resposta). A ordem das cartas também é decisão da matriz pedagógica.
+
+---
+
+## 41. Perguntas de chegada revelam no 2º erro e não têm dica
+
+**Observado.** As perguntas de chegada (ZOO, MERCADO, PADARIA, ESTÁDIO) revelam
+a resposta no 2º erro (`MAX_TENTATIVAS = 2`) e não têm botão de dica: depois
+do 1º erro só repetem o pedido. As perguntas de aventura revelam no 3º erro.
+Mesmo assunto da dívida 34.
+
+As três cartas são embaralhadas a cada pergunta (`embaralhar`, Fisher-Yates),
+inclusive as de número da PADARIA: a ordem não é crescente.
+
+**Onde.** `src/components/ChegadaVivaPanel.jsx` (`MAX_TENTATIVAS`);
+`src/missions/chegadas-vivas.js` (`fraseTenteDeNovo`, `fraseRevela`,
+`embaralhar`).
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decisão pela matriz pedagógica.
+
+---
+
+## 42. Aventuras não gravam habilidades, e a telemetria não vai para o save
+
+**Observado.** As aventuras (parque e horta) não chamam `registrarHabilidade`:
+pergunta, coleta e repartir não entram em `habilidades`. A telemetria do
+runtime (tentativas, ajuda pedida, convite recusado) fica só na memória, nos
+últimos 100 eventos, e se perde ao recarregar.
+
+**Onde.** `src/adventure/runtime.js` (`registrarEvento`, `aplicarEfeitos`).
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decidir pela matriz pedagógica o que as aventuras registram.
+Gravar algo novo no save exige seguir a política de save (seção 2.5).
+
+---
+
+## 43. A habilidade `adicao` não é alimentada por nada
+
+**Observado.** `habilidades.adicao` existe no estado inicial e no save, mas
+nenhum código chama `registrarHabilidade('adicao', …)`. O valor fica sempre
+zerado (ou como veio de um save antigo).
+
+**Onde.** `src/store/useGame.js` (`habilidades`).
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decidir pela matriz pedagógica: alimentar ou retirar.
+Retirar a chave exige seguir a política de save.
+
+---
+
+## 44. A pergunta de chegada do PARQUE não pode ser alcançada
+
+**Observado.** Existe o gerador de pergunta do PARQUE ("Quantas árvores tem no
+canteiro?"), mas a pergunta de chegada só abre em missão `gps` do roteiro, e o
+PARQUE não está no roteiro. Nenhuma criança vê essa pergunta hoje.
+
+**Onde.** `src/missions/chegadas-vivas.js` (`sortearPerguntaArvores`);
+`src/missions/roteiro.js` (`ROTEIRO`); `src/components/MissionController.jsx`.
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decidir pela matriz pedagógica: pôr o PARQUE no roteiro ou
+retirar o gerador.
+
+---
+
+## 45. `src/school/activities.js` sem uso no jogo
+
+**Observado.** `activities.js` traz 12 atividades e 30 variações (faixas de 3
+a 10 anos; Matemática, Português, História e Artes; tipos `choice`, `order` e
+`studio`). Só os testes importam o módulo; os componentes que o exibiam
+ficaram na branch congelada.
+
+**Onde.** `src/school/activities.js`; `tests/school-activities.test.js`.
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decidir pela matriz pedagógica o que entra no jogo e o que
+sai do código.

@@ -327,6 +327,13 @@ Uma fatia só começa quando estiver escrito, antes de qualquer código:
   conferir o código de saída e rodar `git status` antes de seguir. Motivo: em
   18/11 um `git add` falhou calado e o primeiro commit da H1 saiu só com uma
   renomeação, sem compilar (desfeito antes de qualquer push).
+- **Textos de resumo descrevem a ação observada (regra permanente,
+  19/11/2026).** O resumo de uma aventura diz o que o jogo viu a criança
+  fazer ("Você buscou três saquinhos de semente"), não a habilidade que supõe
+  ("Você contou até três"). Nenhum texto põe "você" como sujeito de "contou",
+  "sabe", "conhece" ou "aprendeu"; o que foi aprendido é do Órbi ("O Órbi
+  aprendeu que as plantas bebem água"). Há teste para isso
+  (`tests/horta-h3.test.js`).
 
 ### 2.4 Orçamento de desempenho
 
@@ -1475,8 +1482,31 @@ proposta sem uma hipótese nova.
 - **Tamanhos depois da H2:** pacote inicial 198,84 kB (igual à H1 byte a
   byte); `GameExperience` 3.160,12 kB (gzip 1.077,36 kB), +2,26 kB sobre a
   H1, folga de 39,88 kB até o teto de 3.200 kB.
-- **Próximas:** H3 (Caderninho e textos das faixas, dívida 37), H4 (faixa na
-  Área dos Pais, chave `faixaHorta` sem mudar `SAVE_VERSION`), H5 (README).
+- **H3 concluída (19/11/2026):** pergunta "quantas sementes" na faixa 6–7,
+  na chegada ao MERCADO (dica que ajuda a pensar, sem a resposta; três
+  cartas sempre em ordem crescente, com a janela sorteada entre {2,3,4},
+  {3,4,5} e {4,5,6}, para a certa não ficar sempre no meio); adesivo de
+  número do Caderninho sem "pãezinhos" ("O Órbi conheceu o número N com
+  você!", número grande, sem emoji); repetição da Horta sem anunciar o
+  adesivo (dívida 37); sacos 1,3× com contorno navy e amarrado coral (pior
+  caso de oclusão do carro: 22,7%, limite de 25%); resumos do parque e da
+  horta com a ação observada; unidade coerente (cada saquinho carrega uma
+  semente); sem o texto de tarefa morto de `horta.js`. As flores do parque
+  passaram a crescer quando o resumo fecha (antes cresciam atrás do painel),
+  cada uma em torno da própria base (dívida 38), e a fala do resumo do parque
+  virou "Você cuidou do parque! Vamos ver as flores crescendo?". Sem mudança
+  de save.
+- **Ordem das cartas hoje (para a matriz pedagógica):** perguntas de chegada
+  (ZOO, MERCADO, PADARIA, PARQUE, ESTÁDIO) embaralham as três cartas a cada
+  vez (`embaralhar`, Fisher-Yates, em `chegadas-vivas.js`); a pergunta da
+  aventura do parque tem ordem fixa, com a certa sempre primeira (ÁGUA,
+  AREIA, PAPEL); a pergunta da Horta 6–7 usa ordem crescente com janela
+  sorteada.
+- **Tamanhos depois da H3:** pacote inicial 199,62 kB (igual ao R2 byte a
+  byte), folga de 5,38 kB até o teto de 205 kB; `GameExperience` 3.162,04 kB
+  (gzip 1.078,10 kB), +1,72 kB sobre o R2.
+- **Próximas:** H4 (faixa na Área dos Pais, chave `faixaHorta` sem mudar
+  `SAVE_VERSION`), H5 (README).
 - **H2b fica para depois da H4 (decisão de 18/11/2026):** canteiros 3D
   mostrando as sementes e a terra molhada durante o plantio e a rega. O mundo
   tem 3 canteiros e a faixa 6–7 usa 2; só faz sentido com a faixa escolhida.
