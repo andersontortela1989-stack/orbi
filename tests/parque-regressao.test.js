@@ -18,6 +18,10 @@ import { ROTEIROS_PARQUE } from './fixtures/roteiro-parque.mjs';
  * EXATAMENTE como antes: mesma sequência de efeitos, evento a evento, contra a
  * gravação feita com o motor anterior à H1
  * (fixtures/parque-com-sede-efeitos.json).
+ *
+ * H3 (19/11/2026): regravado SÓ nas três linhas e na fala do resumo (regra
+ * de texto: a ação observada, não a habilidade suposta). Todo o resto da
+ * gravação ficou idêntico.
  */
 
 const GRAVADO = JSON.parse(

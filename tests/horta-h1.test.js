@@ -209,12 +209,13 @@ test('nova sessão depois da conclusão: convida de novo e não duplica recompen
 
 // ---------------------------------------------------------------- coleta
 
-test('coleta: a Horta pede sacos de semente dirigindo, contados por extenso', () => {
+test('coleta: a Horta pede saquinhos de semente dirigindo, contados por extenso', () => {
   const def = criarHortaEscola('3-5');
   const coletar = def.etapas.find((e) => e.id === 'pegar-sementes');
   assert.equal(coletar.tipo, 'coletar');
   assert.equal(coletar.item, 'semente');
-  assert.equal(coletar.texto, 'Pegue três sacos de sementes.');
+  // H3 (j): cada saquinho carrega uma semente.
+  assert.equal(coletar.texto, 'Pegue três saquinhos. Cada um tem uma semente.');
 });
 
 test('coleta: os baldes do parque não mudam e os sacos usam o item da Horta', () => {

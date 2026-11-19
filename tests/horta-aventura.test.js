@@ -27,6 +27,15 @@ function mesaLimpa() {
 const punicoes = () =>
   aventuraRuntime.estado().eventos.filter((e) => e.evento === 'tentativa');
 
+/**
+ * H3: a faixa 6–7 pergunta "quantas sementes" na chegada ao MERCADO. Responde
+ * certo (acerto não conta tentativa) para seguir o caminho de antes.
+ */
+function responderQuantasSementes(band) {
+  if (aventuraRuntime.estado().etapa !== 'quantas-sementes') return;
+  enviarEventoAventura({ tipo: 'respondeu', opcao: String(HORTA_BANDS[band].total) });
+}
+
 /** Dirige a aventura do convite até o painel de resumo, sem aferir nada. */
 function jogarAteOResumo(band) {
   const { total, beds } = HORTA_BANDS[band];
@@ -34,6 +43,7 @@ function jogarAteOResumo(band) {
 
   enviarEventoAventura({ tipo: 'toque' });
   enviarEventoAventura({ tipo: 'chegou', lugar: 'MERCADO' });
+  responderQuantasSementes(band);
   for (let n = 0; n < total; n += 1) {
     enviarEventoAventura({ tipo: 'coletou', item: 'semente', quantidade: 1 });
   }
@@ -68,6 +78,7 @@ for (const band of Object.keys(HORTA_BANDS)) {
     assert.equal(coordenadorAtividade.estado().foco, 'em_missao');
 
     enviarEventoAventura({ tipo: 'chegou', lugar: 'MERCADO' });
+    responderQuantasSementes(band);
     assert.equal(aventuraRuntime.estado().etapa, 'pegar-sementes');
 
     for (let n = 0; n < total; n += 1) {
@@ -172,9 +183,9 @@ test('a definição de cada faixa deriva de HORTA_BANDS, sem número à mão', (
     assert.equal(def.faixaLabel, cfg.label);
     assert.equal(etapa['ir-ao-mercado'].lugar, 'MERCADO');
     assert.equal(etapa['pegar-sementes'].quantidade, cfg.total);
-    // H1: coleta dirigindo até os sacos (decisão 3 de 18/11); o texto da
-    // cestinha (cfg.task) ficou só com o modelo antigo de horta.js.
-    assert.match(etapa['pegar-sementes'].texto, /^Pegue .+ sacos de sementes\.$/);
+    // H1: coleta dirigindo até os saquinhos (decisão 3 de 18/11). H3 (j):
+    // cada saquinho carrega uma semente.
+    assert.match(etapa['pegar-sementes'].texto, /^Pegue .+ saquinhos\. Cada um tem uma semente\.$/);
     assert.equal(etapa['voltar-a-escola'].lugar, 'ESCOLA');
     assert.equal(etapa.plantar.slots, cfg.beds);
     assert.equal(etapa.plantar.porSlot, cfg.total / cfg.beds);

@@ -442,9 +442,9 @@
             "tipo": "resumo",
             "titulo": "O PARQUE ESTÁ COM SEDE",
             "aprendizados": [
-              "Você mostrou a água ao Órbi",
-              "Você encontrou o porto e o parque",
-              "Você contou até quatro"
+              "O Órbi aprendeu que as plantas bebem água.",
+              "Você buscou quatro baldes de água.",
+              "Você foi ao porto e voltou ao parque."
             ],
             "recompensas": [
               "ADESIVO: FLOR DO PARQUE",
@@ -453,7 +453,7 @@
           },
           {
             "tipo": "falar",
-            "texto": "Você cuidou do parque! Olha as flores crescendo!"
+            "texto": "Você cuidou do parque! Vamos ver as flores crescendo?"
           }
         ],
         "etapa": "fecho"

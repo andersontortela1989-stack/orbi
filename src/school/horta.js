@@ -1,7 +1,9 @@
+// H3: sem o texto de tarefa do modelo antigo (nenhuma tela o mostrava). A
+// pergunta "quantas sementes" virou etapa de verdade, só onde `perguntarTotal`.
 export const HORTA_BANDS = {
-  '3-5': {total:3,beds:3,label:'3–5 anos',task:'Vamos levar três sementes. Toque para colocar uma de cada vez na cestinha.'},
-  '6-7': {total:4,beds:2,label:'6–7 anos',task:'Dois canteiros vão receber duas sementes cada. Quantas sementes precisamos levar?'},
-  '8-10': {total:6,beds:3,label:'8–10 anos',task:'Vamos repartir seis sementes igualmente entre três canteiros. Primeiro, separe as seis sementes.'},
+  '3-5': {total:3,beds:3,label:'3–5 anos'},
+  '6-7': {total:4,beds:2,label:'6–7 anos',perguntarTotal:true},
+  '8-10': {total:6,beds:3,label:'8–10 anos'},
 };
 export function createHorta(band) {
   const config=HORTA_BANDS[band];

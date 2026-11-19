@@ -1,6 +1,6 @@
 import { coordenadorAtividade } from '../activity/index.js';
 import { somSucesso } from '../audio/sons.js';
-import { criarHortaEscola } from '../school/horta-aventura.js';
+import { RECOMPENSA_HORTA, criarHortaEscola } from '../school/horta-aventura.js';
 import { useGame } from '../store/useGame.js';
 import { criarAventura } from './adventure-engine.js';
 import { PARQUE_COM_SEDE } from './parque-com-sede.js';
@@ -258,7 +258,10 @@ export function iniciarParqueComSede() {
  */
 export function iniciarHortaEscola(band) {
   if (!podeComecar()) return false;
-  const def = criarHortaEscola(band);
+  // H3: com o broto já nas recompensas, é repetição — o resumo celebra a
+  // ação e não anuncia o adesivo de novo.
+  const repetida = !!useGame.getState().recompensas?.includes(RECOMPENSA_HORTA);
+  const def = criarHortaEscola(band, { repetida });
   return def ? comecar(def) : false;
 }
 

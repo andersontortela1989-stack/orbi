@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { TINTAS } from '../brand/paleta3d.js';
+import * as THREE from 'three';
+import { PALETA3D, TINTAS } from '../brand/paleta3d.js';
 import { enviarEventoAventura } from '../adventure/runtime.js';
 import { useAdventure } from '../adventure/useAdventure.js';
-import { itensDaEtapa } from '../adventure/itens.js';
+import { RAIO_COLETA, SACO, itensDaEtapa } from '../adventure/itens.js';
 import { coordenadorAtividade } from '../activity/index.js';
 
-const RAIO_COLETA_2 = 2.7 * 2.7;
+const RAIO_COLETA_2 = RAIO_COLETA * RAIO_COLETA;
 
 function Balde({ pos }) {
   return (
@@ -30,20 +31,32 @@ function Balde({ pos }) {
 /**
  * Saco de semente da Horta (H1): saco claro amarrado, com um broto em cima —
  * nada de caramelo (é a cor dos pães da PADARIA, que não são coletáveis).
+ *
+ * H3: 1,3× maior, contorno navy pelo avesso (o mesmo material básico do
+ * contorno dos prédios e dos canteiros da ESCOLA) e amarrado coral, para
+ * destacar do asfalto. Quatro malhas; medidas em adventure/itens.js (SACO).
  */
 function Saco({ pos }) {
+  const { escala, corpo, amarrado, broto, contorno } = SACO;
+  const borda = contorno / escala; // espessura local, para dar 0,08 no mundo
   return (
-    <group position={[pos[0], 0, pos[1]]}>
-      <mesh position={[0, 0.5, 0]}>
-        <cylinderGeometry args={[0.42, 0.56, 1.0, 12]} />
+    <group position={[pos[0], 0, pos[1]]} scale={escala}>
+      <mesh position={[0, corpo.altura / 2, 0]}>
+        <cylinderGeometry
+          args={[corpo.raioTopo + borda, corpo.raioBase + borda, corpo.altura + 2 * borda, 12]}
+        />
+        <meshBasicMaterial color={PALETA3D.contorno} side={THREE.BackSide} />
+      </mesh>
+      <mesh position={[0, corpo.altura / 2, 0]}>
+        <cylinderGeometry args={[corpo.raioTopo, corpo.raioBase, corpo.altura, 12]} />
         <meshLambertMaterial color={TINTAS.paper} />
       </mesh>
-      <mesh position={[0, 1.04, 0]}>
-        <cylinderGeometry args={[0.2, 0.3, 0.12, 12]} />
-        <meshBasicMaterial color={TINTAS.inkSoft} />
+      <mesh position={[0, amarrado.y, 0]}>
+        <cylinderGeometry args={[amarrado.raioTopo, amarrado.raioBase, amarrado.altura, 12]} />
+        <meshBasicMaterial color={TINTAS.coral} />
       </mesh>
-      <mesh position={[0, 1.32, 0]} scale={[1, 0.6, 1]}>
-        <sphereGeometry args={[0.3, 10, 8]} />
+      <mesh position={[0, broto.y, 0]} scale={[1, broto.achatado, 1]}>
+        <sphereGeometry args={[broto.raio, 10, 8]} />
         <meshLambertMaterial color={TINTAS.grass} />
       </mesh>
     </group>

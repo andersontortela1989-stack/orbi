@@ -1155,6 +1155,15 @@ textarea:focus-visible {
   line-height: 1;
 }
 
+/* H3: adesivo de NÚMERO — o número grande no lugar do emoji. */
+.cad-numero {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: var(--weight-display-bold);
+  line-height: 1;
+  color: var(--text-strong);
+}
+
 /* Chip de LUGAR: a cor do próprio prédio vira o adesivo (zero banco novo). */
 .cad-chip {
   width: 38px;

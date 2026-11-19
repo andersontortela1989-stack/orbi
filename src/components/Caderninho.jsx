@@ -155,6 +155,11 @@ export function Caderninho() {
                       {c.bandeira ? (
                         /* adesivo de PAÍS (Frente 6): SVG da bandeira */
                         <Bandeira slug={c.bandeira} className="cad-bandeira" />
+                      ) : c.numero ? (
+                        /* H3: adesivo de NÚMERO — o número grande, sem emoji */
+                        <span className="cad-numero" aria-hidden="true">
+                          {c.numero}
+                        </span>
                       ) : c.emoji ? (
                         <span className="cad-emoji" aria-hidden="true">
                           {c.emoji}

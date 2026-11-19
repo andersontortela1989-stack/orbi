@@ -63,11 +63,16 @@ export const PARQUE_COM_SEDE = Object.freeze({
     {
       id: 'fecho',
       tipo: 'resumo',
-      fala: 'Você cuidou do parque! Olha as flores crescendo!',
+      // H3: as flores crescem quando o resumo fecha (FloresParque), então a
+      // fala convida a olhar.
+      fala: 'Você cuidou do parque! Vamos ver as flores crescendo?',
+      // H3 (g): a ação que o jogo observou, não a habilidade que supõe. A
+      // água vale também quando a resposta foi revelada: quem aprendeu foi o
+      // Órbi.
       aprendizados: [
-        'Você mostrou a água ao Órbi',
-        'Você encontrou o porto e o parque',
-        'Você contou até quatro',
+        'O Órbi aprendeu que as plantas bebem água.',
+        'Você buscou quatro baldes de água.',
+        'Você foi ao porto e voltou ao parque.',
       ],
       recompensas: ['ADESIVO: FLOR DO PARQUE', 'ACESSÓRIO: REGADOR'],
     },

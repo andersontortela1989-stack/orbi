@@ -1,4 +1,5 @@
 import { HORTA_BANDS } from './horta.js';
+import { FEMININO, MASCULINO, porExtenso } from '../missions/por-extenso.js';
 
 /**
  * A HORTA DA ESCOLA — a mesma horta do golden-rebuild, redita como `etapas[]`
@@ -12,12 +13,47 @@ import { HORTA_BANDS } from './horta.js';
  * Nenhum número de faixa está escrito aqui — tudo vem de HORTA_BANDS.
  */
 
-// Números por extenso: o Heitor lê palavra inteira (leitura global), e o TTS
-// pronuncia "três" melhor do que "3" no meio da frase.
-const FEMININO = { 1: 'uma', 2: 'duas', 3: 'três', 4: 'quatro', 5: 'cinco', 6: 'seis' };
-const MASCULINO = { 1: 'um', 2: 'dois', 3: 'três', 4: 'quatro', 5: 'cinco', 6: 'seis' };
+// Números por extenso (missions/por-extenso.js): o Heitor lê palavra inteira
+// (leitura global), e o TTS pronuncia "três" melhor do que "3" no meio da frase.
 
-const porExtenso = (n, tabela) => tabela[n] ?? String(n);
+/** O adesivo da Horta; tê-lo nas recompensas marca a Horta como repetida. */
+export const RECOMPENSA_HORTA = 'broto-da-escola';
+
+const maiuscula = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+
+/** "uma semente" / "duas sementes" — singular e plural certos. */
+const sementes = (n) => `${porExtenso(n, FEMININO)} semente${n === 1 ? '' : 's'}`;
+
+/**
+ * H3 (a): "quantas sementes precisamos levar?" — só nas faixas com
+ * `perguntarTotal` (hoje, a 6–7). Três cartas em ordem crescente, com o
+ * desenho da quantidade; a janela é sorteada entre {total−2…total},
+ * {total−1…total+1} e {total…total+2}, para a certa não ficar sempre no
+ * meio. A dica ajuda a pensar sem dizer o total; a revelação segue a regra
+ * do motor.
+ */
+function perguntaDoTotal(total, beds, porCanteiro, random) {
+  const cada = porExtenso(porCanteiro, FEMININO);
+  const inicio = Math.max(1, total - 2 + Math.min(2, Math.floor(random() * 3)));
+  return {
+    id: 'quantas-sementes',
+    tipo: 'pergunta',
+    texto:
+      `${maiuscula(porExtenso(beds, MASCULINO))} canteiros vão receber ${cada} sementes cada. ` +
+      'Quantas sementes precisamos levar?',
+    opcoes: [inicio, inicio + 1, inicio + 2].map((n) => ({
+      id: String(n),
+      rotulo: String(n),
+      emoji: '🌰'.repeat(n),
+      ...(n === total ? { correta: true } : {}),
+    })),
+    reforco: `Vamos contar de novo? ${maiuscula(Array(beds).fill(cada).join(' e mais '))}.`,
+    dica:
+      beds === 2
+        ? `Conte ${sementes(porCanteiro)} para um canteiro e ${cada} para o outro.`
+        : `Conte ${sementes(porCanteiro)} para cada um dos ${porExtenso(beds, MASCULINO)} canteiros.`,
+  };
+}
 
 /**
  * Monta a aventura da faixa pedida.
@@ -27,13 +63,19 @@ const porExtenso = (n, tabela) => tabela[n] ?? String(n);
  * etapa `distribuir` jamais fechar, e travar a criança no meio é pior que não
  * começar.
  *
+ * `repetida` (H3): a criança já tem o broto. O resumo celebra a ação e não
+ * anuncia o adesivo de novo (dívida 37).
+ *
+ * `random` sorteia a janela das cartas da pergunta (testes passam um fixo).
+ *
  * @param {'3-5'|'6-7'|'8-10'} band
+ * @param {{ repetida?: boolean, random?: () => number }} [opcoes]
  */
-export function criarHortaEscola(band) {
+export function criarHortaEscola(band, { repetida = false, random = Math.random } = {}) {
   const cfg = HORTA_BANDS[band];
   if (!cfg) return null;
 
-  const { total, beds, label } = cfg;
+  const { total, beds, label, perguntarTotal } = cfg;
   const porCanteiro = total / beds;
   if (!Number.isInteger(porCanteiro) || porCanteiro < 1) return null;
 
@@ -65,15 +107,16 @@ export function criarHortaEscola(band) {
         dica: 'O mercado é onde a gente compra comida.',
         destacarApos: 45,
       },
+      ...(perguntarTotal ? [perguntaDoTotal(total, beds, porCanteiro, random)] : []),
       {
         id: 'pegar-sementes',
         tipo: 'coletar',
         item: 'semente',
         quantidade: total,
-        // H1: os sacos de semente são coletados DIRIGINDO, como os baldes do
-        // parque (ItensAventura). O HORTA_BANDS.task do modelo antigo falava
-        // de tocar numa cestinha e fica só com horta.js.
-        texto: `Pegue ${porExtenso(total, MASCULINO)} sacos de sementes.`,
+        // H1: os saquinhos são coletados DIRIGINDO, como os baldes do parque
+        // (ItensAventura). H3 (j): cada saquinho carrega UMA semente — a
+        // coleta conta saquinhos, o plantio conta sementes, e os dois batem.
+        texto: `Pegue ${porExtenso(total, MASCULINO)} saquinhos. Cada um tem uma semente.`,
         dica: `Vamos contar juntos até ${porExtenso(total, MASCULINO)}.`,
       },
       {
@@ -91,7 +134,7 @@ export function criarHortaEscola(band) {
         item: 'semente',
         slots: beds,
         porSlot: porCanteiro,
-        texto: `Reparta as sementes nos canteiros: ${porExtenso(porCanteiro, FEMININO)} em cada um.`,
+        texto: `Plante ${sementes(porCanteiro)} em cada canteiro.`,
         dica: `São ${porExtenso(beds, MASCULINO)} canteiros, e todos recebem a mesma quantidade.`,
       },
       {
@@ -107,7 +150,7 @@ export function criarHortaEscola(band) {
       {
         id: 'premio',
         tipo: 'recompensa',
-        itens: ['broto-da-escola'],
+        itens: [RECOMPENSA_HORTA],
         descobertas: [
           { categoria: 'objetos', id: 'semente' },
           { categoria: 'objetos', id: 'broto-da-escola' },
@@ -119,13 +162,18 @@ export function criarHortaEscola(band) {
       {
         id: 'fecho',
         tipo: 'resumo',
-        fala: 'A professora Lia agradeceu! Olha os brotinhos no pátio da escola!',
+        // H3 (g): o resumo descreve a ação que o jogo observou, não a
+        // habilidade que supõe. Os brotos só nascem quando o resumo fecha
+        // (H2), por isso a fala convida a olhar, em vez de dizer "olha".
+        fala: repetida
+          ? 'Você cuidou da horta de novo! A professora Lia agradeceu.'
+          : 'A professora Lia agradeceu! Vamos ver os brotinhos nascendo?',
         aprendizados: [
-          `Você contou até ${porExtenso(total, MASCULINO)}`,
-          `Você repartiu as sementes em ${porExtenso(beds, MASCULINO)} canteiros`,
-          'Você encontrou o mercado e a escola',
+          `Você buscou ${porExtenso(total, MASCULINO)} saquinhos de semente.`,
+          `Você colocou ${sementes(porCanteiro)} em cada canteiro.`,
+          'Você foi ao mercado e voltou à escola.',
         ],
-        recompensas: ['ADESIVO: BROTO DA ESCOLA'],
+        recompensas: repetida ? [] : ['ADESIVO: BROTO DA ESCOLA'],
       },
     ],
   });
