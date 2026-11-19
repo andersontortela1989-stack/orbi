@@ -8,6 +8,16 @@
 const TENTATIVAS_ATE_REVELAR = 3;
 
 /**
+ * Limite de segurança da espera pelo fim da fala da revelação: se a voz não
+ * avisar o fim (síntese travada, aba em segundo plano), a aventura segue
+ * mesmo assim.
+ */
+export const LIMITE_ESPERA_FALA_MS = 10000;
+
+/** Tempo mínimo com a resposta revelada à vista, com ou sem voz. */
+export const TEMPO_DE_LEITURA_MS = 4200;
+
+/**
  * Inteiro >= 1, defensivo como o resto do motor (ver o `Math.max(0, Number(…))`
  * de `coletar` e de `tick`). Uma definição malformada rende uma etapa pobre,
  * nunca um crash no meio da brincadeira.
@@ -260,6 +270,26 @@ export function criarAventura(def) {
     // o timer declarado; o motor continua puro e testável.
     st.aguardandoContinuacao = true;
     const correta = atual.opcoes.find((item) => item.correta)?.id ?? null;
+    if (atual.revelacao) {
+      // Com `revelacao`, a pista (💡) e a resposta são textos diferentes, e a
+      // próxima etapa só fala depois de a revelação terminar: pelo menos
+      // 4,2 s (a carta certa à vista), no máximo o limite de segurança. A
+      // revelação interrompe a fila da voz: um reforço ainda tocando não a
+      // atrasa (conferência de 19/11: atrasada, ela era cortada pelo limite).
+      efeitos.push(
+        { tipo: 'revelar_resposta', opcao: correta },
+        { tipo: 'falar', texto: atual.revelacao, aguardarFim: true, interromper: true },
+        {
+          tipo: 'agendar',
+          depoisMs: TEMPO_DE_LEITURA_MS,
+          aposFala: true,
+          limiteMs: LIMITE_ESPERA_FALA_MS,
+          evento: { tipo: 'continuar' },
+        }
+      );
+      return efeitos;
+    }
+    // Sem `revelacao` (a pergunta do parque): exatamente como sempre foi.
     efeitos.push(
       { tipo: 'revelar_resposta', opcao: correta },
       { tipo: 'falar', texto: atual.dica },

@@ -52,6 +52,10 @@ function perguntaDoTotal(total, beds, porCanteiro, random) {
       beds === 2
         ? `Conte ${sementes(porCanteiro)} para um canteiro e ${cada} para o outro.`
         : `Conte ${sementes(porCanteiro)} para cada um dos ${porExtenso(beds, MASCULINO)} canteiros.`,
+    // A resposta, dita só ao revelar (3º erro). A pista acima não a diz.
+    revelacao:
+      `${maiuscula(sementes(porCanteiro))} em cada canteiro. ` +
+      `${maiuscula(Array(beds).fill(cada).join(' mais '))} são ${porExtenso(total, FEMININO)}.`,
   };
 }
 

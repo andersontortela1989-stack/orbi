@@ -3,12 +3,24 @@ import { somSucesso } from '../audio/sons.js';
 import { RECOMPENSA_HORTA, criarHortaEscola } from '../school/horta-aventura.js';
 import { useGame } from '../store/useGame.js';
 import { criarAventura } from './adventure-engine.js';
+import { criarEsperaDaFala } from './espera-fala.js';
 import { PARQUE_COM_SEDE } from './parque-com-sede.js';
 
 const ouvintes = new Set();
 const DONOS_DE_VOZ = new Set(['em_missao', 'historia', 'pergunta', 'resumo']);
 let corredor = null;
 let timerAgendado = null;
+// Revelação com `aguardarFim` (padrão da Carona, ver espera-fala.js): a fala
+// em curso — { motivo, espera } — e a espera que avança uma única vez.
+let falaPendente = null;
+let esperaAtual = null;
+
+function cancelarEspera() {
+  clearTimeout(timerAgendado);
+  timerAgendado = null;
+  esperaAtual?.cancelar();
+  esperaAtual = null;
+}
 let ui = {
   ativa: false,
   id: null,
@@ -58,9 +70,28 @@ function aplicarEfeitos(efeitos) {
 
       case 'falar': {
         const dono = coordenadorAtividade.estado().foco;
-        if (DONOS_DE_VOZ.has(dono)) {
-          coordenadorAtividade.falar(dono, efeito.texto);
+        if (!efeito.aguardarFim) {
+          if (DONOS_DE_VOZ.has(dono)) coordenadorAtividade.falar(dono, efeito.texto);
+          break;
         }
+        // Revelação: o navegador avisa o fim (`end`) ou o erro (`error`; a voz
+        // liga os dois ao onEnd). Sem voz (desligada, indisponível, sem
+        // foco), conta como terminada já: a espera segura o tempo de leitura.
+        // Um aviso desta fala que chegue depois do avanço é ignorado.
+        const fala = { motivo: null, espera: null };
+        falaPendente = fala;
+        const terminou = (motivo) => {
+          if (falaPendente !== fala) return;
+          if (fala.espera) fala.espera.falaTerminou(motivo);
+          else fala.motivo ??= motivo;
+        };
+        const falou =
+          DONOS_DE_VOZ.has(dono) &&
+          coordenadorAtividade.falar(dono, efeito.texto, {
+            interrupt: !!efeito.interromper,
+            onEnd: (ev) => terminou(ev?.type === 'error' ? 'erro' : 'fim_da_fala'),
+          });
+        if (!falou) terminou('sem_voz');
         break;
       }
 
@@ -147,11 +178,38 @@ function aplicarEfeitos(efeitos) {
         break;
 
       case 'agendar':
-        clearTimeout(timerAgendado);
-        timerAgendado = setTimeout(
-          () => enviarEventoAventura(efeito.evento),
-          efeito.depoisMs
-        );
+        cancelarEspera();
+        if (!efeito.aposFala) {
+          timerAgendado = setTimeout(
+            () => enviarEventoAventura(efeito.evento),
+            efeito.depoisMs
+          );
+          break;
+        }
+        {
+          // Espera o fim da fala anterior: no mínimo `depoisMs` (tempo de
+          // leitura, a carta revelada à vista), no máximo `limiteMs` (limite
+          // de segurança), avançando UMA vez — em vez de um atraso fixo que
+          // cortaria a fala.
+          const fala = falaPendente;
+          const espera = criarEsperaDaFala({
+            minimoMs: efeito.depoisMs,
+            limiteMs: efeito.limiteMs ?? efeito.depoisMs,
+            aoAvancar: (motivo) => {
+              if (esperaAtual !== espera) return;
+              esperaAtual = null;
+              falaPendente = null;
+              registrarEvento({ evento: 'revelacao_seguiu', dados: { motivo } });
+              enviarEventoAventura(efeito.evento);
+            },
+          });
+          esperaAtual = espera;
+          if (!fala) espera.falaTerminou('sem_voz');
+          else {
+            fala.espera = espera;
+            if (fala.motivo) espera.falaTerminou(fala.motivo);
+          }
+        }
         break;
 
       case 'telemetria':
@@ -159,8 +217,8 @@ function aplicarEfeitos(efeitos) {
         break;
 
       case 'fim':
-        clearTimeout(timerAgendado);
-        timerAgendado = null;
+        cancelarEspera();
+        falaPendente = null;
         ui = {
           ...ui,
           ativa: false,
@@ -256,12 +314,13 @@ export function iniciarParqueComSede() {
  * `registrarDescoberta` já ignoram repetido, então a recompensa é da primeira
  * conclusão e as repetições rendem só a fala e o resumo.
  */
-export function iniciarHortaEscola(band) {
+export function iniciarHortaEscola(band, { random } = {}) {
   if (!podeComecar()) return false;
   // H3: com o broto já nas recompensas, é repetição — o resumo celebra a
-  // ação e não anuncia o adesivo de novo.
+  // ação e não anuncia o adesivo de novo. `random` fixa o sorteio das cartas
+  // (testes e ponte de teste com ?medir=1); o jogo usa o padrão.
   const repetida = !!useGame.getState().recompensas?.includes(RECOMPENSA_HORTA);
-  const def = criarHortaEscola(band, { repetida });
+  const def = criarHortaEscola(band, { repetida, ...(random ? { random } : {}) });
   return def ? comecar(def) : false;
 }
 

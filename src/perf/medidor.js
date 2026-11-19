@@ -40,8 +40,9 @@ export function falhaDeCargaSimulada(search) {
 const RECUO_DO_PONTO = 8;
 
 // V1.3: MERCADO entra com o mesmo contrato da PADARIA (em frente à fachada,
-// fora da calçada e do sensor de chegada).
-const PONTOS_DE_MEDICAO = Object.freeze(['PADARIA', 'MERCADO']);
+// fora da calçada e do sensor de chegada). PARQUE: para conferir as flores do
+// parque no navegador (o carro larga diante do canteiro).
+const PONTOS_DE_MEDICAO = Object.freeze(['PADARIA', 'MERCADO', 'PARQUE']);
 
 /**
  * PONTO DE MEDIÇÃO FIXO (fatia V1): `?medir=1&ponto=PADARIA` (ou MERCADO,

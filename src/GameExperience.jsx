@@ -25,6 +25,8 @@ import {
 } from './components/MedidorDesempenho.jsx';
 import { CAMERA_2_5D } from './visual/world-style.js';
 import { falhaDeCargaSimulada, medicaoAtiva } from './perf/medidor.js';
+import { instalarPonteDeTeste } from './perf/ponte-teste.js';
+import { aventuraRuntime, enviarEventoAventura, iniciarHortaEscola } from './adventure/runtime.js';
 
 // Lido uma vez, ao carregar o jogo: sem `?medir=1` no endereço, nenhuma peça do
 // medidor monta — zero custo para a criança (fatia A3.1a).
@@ -35,6 +37,15 @@ const MEDIR =
 // a tela de falha de carga (<GameLoading falhou />) sem DevTools.
 const FALHA_SIMULADA =
   typeof window !== 'undefined' && falhaDeCargaSimulada(window.location.search);
+
+// Ponte de teste e registro de voz (perf/ponte-teste.js): só com `?medir=1`.
+if (MEDIR) {
+  instalarPonteDeTeste(window, window.location.search, {
+    enviar: enviarEventoAventura,
+    iniciarHorta: iniciarHortaEscola,
+    estado: () => aventuraRuntime.estado(),
+  });
+}
 
 /**
  * Fronteira pesada do aplicativo. Este arquivo concentra Three.js, Rapier e
