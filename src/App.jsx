@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { StartScreen } from './components/StartScreen.jsx';
 import { IntroChegada } from './components/IntroChegada.jsx';
 import { GameLoading } from './components/GameLoading.jsx';
+import { CargaSegura } from './ui/carga-segura.js';
 import { useGame } from './store/useGame.js';
 
 // Fronteira de code splitting: Three.js, Rapier e a cidade não fazem parte do
@@ -58,9 +59,13 @@ export default function App() {
     return <IntroChegada onConcluir={() => setFase('jogo')} />;
   }
 
+  // R2: se a parte do jogo não carregar, tela calma com TENTAR DE NOVO no
+  // lugar da tela vazia.
   return (
-    <Suspense fallback={<GameLoading />}>
-      <GameExperience />
-    </Suspense>
+    <CargaSegura tela={<GameLoading falhou />}>
+      <Suspense fallback={<GameLoading />}>
+        <GameExperience />
+      </Suspense>
+    </CargaSegura>
   );
 }

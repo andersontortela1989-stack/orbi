@@ -2209,6 +2209,9 @@ textarea:focus-visible {
   animation: gameLoadingFloat 1.8s var(--ease-soft) infinite;
 }
 
+/* R2: na tela de falha de carga o Órbi fica parado. */
+.game-loading-orbi.parado { animation: none; }
+
 .game-loading strong {
   font-family: var(--font-display);
   font-size: clamp(24px, 5vw, 38px);

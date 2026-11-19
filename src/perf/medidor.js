@@ -27,6 +27,14 @@ export function medicaoAtiva(search) {
   return new URLSearchParams(search).get('medir') === '1';
 }
 
+/**
+ * R2: `?medir=1&falha=carga` faz o GameExperience falhar de propósito, para o
+ * adulto ver a tela de falha de carga sem DevTools. Sem `?medir=1`, nunca.
+ */
+export function falhaDeCargaSimulada(search) {
+  return medicaoAtiva(search) && new URLSearchParams(search).get('falha') === 'carga';
+}
+
 // Distância da frente do lote ao CENTRO do carro no ponto de medição: fora da
 // calçada e do sensor de chegada (margem 3,5), para não disparar a missão.
 const RECUO_DO_PONTO = 8;

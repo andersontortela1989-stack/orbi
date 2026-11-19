@@ -24,18 +24,24 @@ import {
   MedidorDesempenho,
 } from './components/MedidorDesempenho.jsx';
 import { CAMERA_2_5D } from './visual/world-style.js';
-import { medicaoAtiva } from './perf/medidor.js';
+import { falhaDeCargaSimulada, medicaoAtiva } from './perf/medidor.js';
 
 // Lido uma vez, ao carregar o jogo: sem `?medir=1` no endereço, nenhuma peça do
 // medidor monta — zero custo para a criança (fatia A3.1a).
 const MEDIR =
   typeof window !== 'undefined' && medicaoAtiva(window.location.search);
 
+// R2: `?medir=1&falha=carga` simula a falha desta parte do jogo, para conferir
+// a tela de falha de carga (<GameLoading falhou />) sem DevTools.
+const FALHA_SIMULADA =
+  typeof window !== 'undefined' && falhaDeCargaSimulada(window.location.search);
+
 /**
  * Fronteira pesada do aplicativo. Este arquivo concentra Three.js, Rapier e
  * toda a simulação; App.jsx o importa de forma dinâmica somente após JOGAR.
  */
 export default function GameExperience() {
+  if (FALHA_SIMULADA) throw new Error('falha de carga simulada (?medir=1&falha=carga)');
   // O canvas ortográfico precisa nascer em paisagem. Uma vez liberado, nunca
   // desmonta ao inclinar o aparelho: o guard cobre a tela sem resetar a física.
   const [canvasLiberado, setCanvasLiberado] = useState(
