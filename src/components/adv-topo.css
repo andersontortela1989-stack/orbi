@@ -1,0 +1,37 @@
+/* Topo da aventura: a faixa do objetivo e, logo abaixo, o 💡 DICA, numa
+   coluna centrada no vão entre o cartão de moedas (esquerda) e os botões do
+   canto direito. Folga de cada lado = margem segura + a maior das duas
+   larguras (cartão: 220 px mínimos; botões: 112 + 32 + 56 = 200 px) + um
+   respiro. A faixa quebra em linhas dentro do vão em vez de passar por baixo
+   deles, e o DICA desce junto. Só a aventura usa a coluna: as outras faixas
+   (CHEGAMOS!, GPS, combustível) seguem como estão.
+   Importado pelo HUD: vai no CSS do pacote do jogo, não no CSS inicial. */
+.adv-topo {
+  --adv-folga: calc(max(var(--ui-safe-left), var(--ui-safe-right)) + 220px + var(--space-3));
+  position: fixed;
+  top: var(--ui-safe-top);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: max-content;
+  max-width: max(240px, calc(100vw - 2 * var(--adv-folga)));
+  pointer-events: none;
+}
+
+.adv-topo .mission-banner {
+  position: static;
+  transform: none;
+  max-width: 100%;
+}
+
+/* Deitado (mesma condição do HUD compacto): cartão clamp(126px, 22vw, 160px);
+   botões 84 + 16 + 42 = 142 px. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .adv-topo {
+    --adv-folga: calc(max(var(--ui-safe-left), var(--ui-safe-right)) + max(clamp(126px, 22vw, 160px), 142px) + var(--space-2));
+  }
+}

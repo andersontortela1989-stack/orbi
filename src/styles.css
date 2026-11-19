@@ -333,11 +333,7 @@ textarea:focus-visible {
 }
 
 .adv-ajuda {
-  position: fixed;
-  top: calc(var(--ui-safe-top) + 78px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 11;
+  pointer-events: auto;
   padding: var(--space-2) var(--space-4);
   background: var(--surface-card);
   border: var(--outline-thin) solid var(--outline-color);
@@ -350,13 +346,11 @@ textarea:focus-visible {
 
 /* H1 — cartão de repartir (plantar e regar na Horta). Sobre o mundo, sem
    escurecer a tela e sem tomar o foco: um botão grande por canteiro, abaixo
-   do objetivo e do 💡, longe dos controles de toque (cantos de baixo). */
+   do objetivo e do 💡, longe dos controles de toque (cantos de baixo). Mora
+   na coluna do topo da aventura (components/adv-topo.css): desce junto
+   quando a faixa quebra em linhas. */
 .adv-repartir {
-  position: fixed;
-  top: calc(var(--ui-safe-top) + 128px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 11;
+  pointer-events: auto;
   display: flex;
   gap: var(--space-3);
   padding: var(--space-3);
@@ -409,7 +403,6 @@ textarea:focus-visible {
 
 @media (max-height: 500px) and (orientation: landscape) {
   .adv-repartir {
-    top: calc(var(--ui-safe-top) + 112px);
     padding: var(--space-2);
     gap: var(--space-2);
   }
@@ -2084,7 +2077,6 @@ textarea:focus-visible {
   }
 
   .adv-ajuda {
-    top: calc(var(--ui-safe-top) + 80px);
     font-size: 12px;
     padding: 5px 10px;
   }

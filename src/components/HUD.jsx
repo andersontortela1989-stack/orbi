@@ -9,6 +9,8 @@ import { BICHO_POR_SLUG } from '../city/bichos.js';
 import { useAdventure } from '../adventure/useAdventure.js';
 import { enviarEventoAventura } from '../adventure/runtime.js';
 import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
+import { PainelDistribuir } from './PainelDistribuir.jsx';
+import './adv-topo.css';
 
 /**
  * HUD 2D — overlay React sobre o <Canvas>.
@@ -126,23 +128,33 @@ export function HUD() {
         </div>
       )}
 
-      {aventuraNoHud && (
-        <>
-          <div className="mission-banner mission-banner--ativa" role="status">
-            {aventura.objetivo}{contadorAventura}
-          </div>
-          <button
-            type="button"
-            className="adv-ajuda"
-            aria-label="ouvir uma dica"
-            onClick={(e) => {
-              enviarEventoAventura({ tipo: 'pedir_ajuda' });
-              e.currentTarget.blur();
-            }}
-          >
-            💡 DICA
-          </button>
-        </>
+      {/* Faixa da aventura, o 💡 logo abaixo e, ao plantar e regar, o cartão
+          dos canteiros: a mesma coluna, no vão entre o cartão de moedas e os
+          botões do canto direito. Texto longo quebra em linhas e o que vem
+          abaixo desce junto (nada passa por baixo de nada). O cartão decide
+          sozinho quando aparece, como antes. */}
+      {aventura.ativa && (
+        <div className="adv-topo">
+          {aventuraNoHud && (
+            <>
+              <div className="mission-banner mission-banner--ativa" role="status">
+                {aventura.objetivo}{contadorAventura}
+              </div>
+              <button
+                type="button"
+                className="adv-ajuda"
+                aria-label="ouvir uma dica"
+                onClick={(e) => {
+                  enviarEventoAventura({ tipo: 'pedir_ajuda' });
+                  e.currentTarget.blur();
+                }}
+              >
+                💡 DICA
+              </button>
+            </>
+          )}
+          <PainelDistribuir />
+        </div>
       )}
 
       {missaoAtiva && (
