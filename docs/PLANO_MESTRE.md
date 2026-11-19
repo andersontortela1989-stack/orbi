@@ -332,7 +332,7 @@ Uma fatia só começa quando estiver escrito, antes de qualquer código:
 
 | Medida | Linha de base | Teto proposto |
 |---|---|---|
-| Pacote inicial `index-*.js` | 195,70 kB | **200 kB**; acima disso, só com justificativa escrita |
+| Pacote inicial `index-*.js` | 195,70 kB | **205 kB** (era 200 kB até 19/11/2026); acima disso, só com justificativa escrita |
 | `GameExperience-*.js` | 3.121,23 kB | **3.200 kB** sem justificativa |
 | Chamadas de desenho (ponto fixo: início, painel aberto, notebook) | 290 | **+15% no máximo (≈ 335)** até a medição no celular dizer outra coisa |
 | Fluidez no celular | a medir (A3.2) | **alvo provisório:** até 2% de quadros acima de 50 ms na rota padrão e nenhum acima de 250 ms depois dos primeiros 10 s |
@@ -362,6 +362,16 @@ M1b custou +0,14 kB no pacote inicial (a sonda); a S1, +0.
 **Regra por fatia.** Cada fatia pode subir o pacote inicial em até 0,3 kB
 sobre a fatia anterior; acima disso, para e reporta. Os tetos da tabela
 continuam valendo para o total.
+
+**Teto do pacote inicial sobe para 205 kB (decisão do Anderson, 19/11/2026).**
+Depois do R1 (recarga única quando a parte do jogo some após uma promoção,
++0,28 kB) e do R2 (tela calma com TENTAR DE NOVO quando o jogo falha,
++0,50 kB, limite próprio autorizado para essa fatia), o pacote inicial ficou
+em 199,62 kB (gzip 65,09 kB), com folga de só 0,38 kB até os 200 kB. As duas
+proteções precisam estar no pacote inicial, porque agem justamente quando a
+parte carregada sob demanda falha. O novo teto é **205 kB**. A regra de no
+máximo +0,3 kB por fatia continua valendo. A dieta do pacote inicial está na
+dívida técnica (item 39).
 
 ### 2.5 Política de save
 

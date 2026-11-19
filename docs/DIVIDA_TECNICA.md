@@ -783,3 +783,20 @@ ESCOLA crescem só em altura, a partir da terra.
 **O que falta.** Conferir no jogo (código A da H1 mostra o estado antes de
 florescer) e decidir a correção: escalar cada flor em torno da própria base,
 ou esconder as flores antes de florescer.
+
+---
+
+## 39. Dieta do pacote inicial
+
+**Observado.** Com o R1 e o R2, o pacote inicial chegou a 199,62 kB, a 0,38 kB
+do antigo teto de 200 kB. O teto subiu para 205 kB (decisão do Anderson,
+19/11/2026), mas o pacote continua carregando partes que a criança não usa ao
+abrir o jogo.
+
+**Onde.** Pacote inicial `index-*.js`: Área dos Pais (`AreaPais.jsx`) e o
+importar/exportar do save (`src/save.js`).
+
+**Quando.** Fatia R2, 19/11/2026.
+
+**O que falta.** Avaliar carregar sob demanda a Área dos Pais e o
+importar/exportar do save. Fazer quando o teto de 205 kB apertar.
