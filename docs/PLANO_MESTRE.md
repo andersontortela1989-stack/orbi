@@ -189,6 +189,22 @@ hoje cerca de 10% do tanque.
 3. **Comparação de hipóteses** por parâmetros de medição (`?dpr=1`, `?aa=0`,
    `?balao=0`), que existem **só** com `?medir=1`. Nenhuma otimização entra no
    jogo sem ganho medido nessa comparação.
+   **Ferramentas de conferência (19/11/2026), também só com `?medir=1`:**
+   - `?ponto=PADARIA`, `MERCADO` ou `PARQUE`: o carro larga diante do lugar;
+   - `?faixa=3-5`, `6-7` ou `8-10`: a Horta da sessão usa essa faixa, sem
+     gravar nada no save;
+   - `?falha=carga`: mostra a tela calma de falha de carga (R2);
+   - ponte `window.__orbiTeste`: `horta({ cartas: 'baixas' | 'meio' |
+     'altas' })` começa a Horta com o sorteio das cartas fixo, `enviar(evento)`
+     manda um evento à aventura, `estado()` devolve o estado dela, e `vozes` é
+     o registro de voz: o texto entregue ao `speechSynthesis` e o momento em
+     que o navegador informou o fim (`end`) ou o erro (`error`). Só observa,
+     não muda a fala.
+
+   Sem `?medir=1`, nada disso existe: a ponte não é instalada e a voz não é
+   embrulhada (teste em `tests/revelacao-horta.test.js`). Nenhuma delas grava
+   no progresso salvo, e o pacote inicial não cresce (a ponte vem no pacote
+   do jogo).
 4. **Alternativa sem código:** depuração remota do Chrome por USB
    (`chrome://inspect`, painel Performance). Exige ativar a depuração USB no
    celular, o que é decisão e ação do Anderson.
@@ -334,6 +350,20 @@ Uma fatia só começa quando estiver escrito, antes de qualquer código:
   "sabe", "conhece" ou "aprendeu"; o que foi aprendido é do Órbi ("O Órbi
   aprendeu que as plantas bebem água"). Há teste para isso
   (`tests/horta-h3.test.js`).
+- **Revelação: texto próprio, espera a fala, mínimo 4,2 s, limite 10 s
+  (regra permanente, 19/11/2026).** Quando uma pergunta revela a resposta no
+  terceiro erro, a revelação tem texto próprio (campo `revelacao` da etapa,
+  diferente da pista do 💡) e explica a conta; a carta certa fica destacada
+  enquanto o Órbi fala, e a aventura só segue depois que o navegador informa
+  o fim da fala. Mínimo de 4,2 s com a carta à vista (`TEMPO_DE_LEITURA_MS`),
+  também sem voz, com a voz desligada ou com erro de síntese; limite de
+  segurança de 10 s (`LIMITE_ESPERA_FALA_MS`) se o navegador nunca responder;
+  avanço uma única vez (um fim que chega depois do limite não avança outra
+  etapa nem repete a instrução seguinte). É o padrão da Carona (`onEnd` com
+  temporizador de reserva e guarda contra conclusão dupla), em
+  `adventure/espera-fala.js`. Perguntas sem `revelacao` (a do parque) seguem
+  como antes. Testes: `tests/espera-fala.test.js`,
+  `tests/revelacao-voz.test.js` e `tests/revelacao-horta.test.js`.
 
 ### 2.4 Orçamento de desempenho
 
@@ -1505,6 +1535,18 @@ proposta sem uma hipótese nova.
 - **Tamanhos depois da H3:** pacote inicial 199,62 kB (igual ao R2 byte a
   byte), folga de 5,38 kB até o teto de 205 kB; `GameExperience` 3.162,04 kB
   (gzip 1.078,10 kB), +1,72 kB sobre o R2.
+- **Revelação da 6–7 e faixa da aventura (19/11/2026):** no terceiro erro, o
+  Órbi explica "Duas sementes em cada canteiro. Duas mais duas são quatro."
+  com o 4 destacado, e "Pegue quatro saquinhos…" só começa depois do fim da
+  fala (regra em 2.3). No topo da aventura, a faixa do objetivo, o 💡 DICA e
+  o cartão dos canteiros formam uma coluna no vão entre o cartão de moedas e
+  os botões do canto direito: a faixa quebra em linhas em vez de passar por
+  baixo deles, e o que vem abaixo desce junto (medido no DOM em 740×360 e
+  1280×720, sem sobreposição e dentro da tela em todas as etapas da Horta).
+- **Tamanhos depois da revelação:** pacote inicial 199,62 kB (igual à H3
+  byte a byte); CSS inicial 53,78 kB (cerca de 0,2 kB a menos: a coluna mora
+  no CSS do pacote do jogo); `GameExperience` 3.164,39 kB, +2,35 kB sobre a
+  H3.
 - **Próximas:** H4 (faixa na Área dos Pais, chave `faixaHorta` sem mudar
   `SAVE_VERSION`), H5 (README).
 - **H2b fica para depois da H4 (decisão de 18/11/2026):** canteiros 3D
