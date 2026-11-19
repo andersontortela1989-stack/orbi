@@ -7,12 +7,13 @@
  * brotos da ESCOLA, H2): o resumo cobre o mundo, e crescer atrás dele era
  * crescer sem ninguém ver. Com a flag vinda do save, já aparecem prontas.
  */
-// Cada flor crescida fica inteira no gramado verde, fora da trilha e dos
-// caminhos, com folga mínima de 0,5 (tests/flores-parque-gramado.test.js).
-// A 7ª saiu de (−10, 81), que encostava na borda do gramado.
+// Cada flor crescida fica inteira no gramado verde, longe da trilha, dos
+// caminhos, dos bancos e da placa PARQUE, com folga mínima de 0,5
+// (tests/flores-parque-gramado.test.js). Saíram de onde encostavam: (−10, 81)
+// na borda do gramado, (−21, 66) e (−6, 77) nos bancos, (−17, 80) na placa.
 export const POSICOES_FLORES = Object.freeze([
-  [-21, 66], [-17, 64], [-11, 64], [-7, 67],
-  [-21, 78], [-17, 80], [-9, 79.5], [-6, 77],
+  [-22, 67], [-17, 64], [-11, 64], [-7, 67],
+  [-21, 78], [-19, 79.5], [-9, 79.5], [-5, 76],
 ]);
 
 /** Tamanho do botão antes de florescer. */

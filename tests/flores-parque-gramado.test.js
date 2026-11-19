@@ -10,6 +10,10 @@ import { TODOS_PREDIOS } from '../src/city/bairros.js';
  * passava dela. Regra: cada flor CRESCIDA fica inteira no gramado verde, fora
  * da trilha amarela e dos caminhos em cruz, com MARGEM mínima de 0,5 unidade
  * do mundo (meia flor) entre o contorno dela e cada um desses limites.
+ * A mesma margem vale para os bancos e para a placa PARQUE (a conta de 19/11
+ * achou três flores encostadas neles). Os bancos contam SEMPRE, mesmo com
+ * "detalhes visuais" desligado (aí eles somem, mas a flor não pode depender
+ * disso para não ficar dentro de um banco quando ele volta).
  *
  * A geometria vem do próprio desenho (OpenPark.jsx e FloresParque.jsx): se o
  * parque mudar, o teste acompanha.
@@ -84,4 +88,62 @@ test('as 8 flores crescidas ficam fora dos caminhos, a pelo menos 0,5 deles', ()
       assert.ok(folga >= MARGEM, `(${x}, ${z}): ${folga.toFixed(2)} do caminho ${caixa.join('×')} (mínimo ${MARGEM})`);
     }
   }
+});
+
+// ------------------------------------------------- bancos e placa PARQUE
+
+// Bancos: [x, z, rotação] de cada um e o assento (que cobre os pés).
+const bancos = (() => {
+  const lista = PARQUE.match(/function Bancos\(\)[\s\S]*?\{\[(\[[^\]]+\](?:, \[[^\]]+\])*)\]\.map/);
+  if (!lista) return null;
+  return [...lista[1].matchAll(/\[([-\d.]+), ([-\d.]+), ([^\]]+)\]/g)].map((m) => ({
+    x: Number(m[1]),
+    z: Number(m[2]),
+    rot: m[3].trim() === 'Math.PI' ? Math.PI : Number(m[3]),
+  }));
+})();
+const assento = PARQUE.match(/function Bancos\(\)[\s\S]*?<boxGeometry args=\{\[([\d.]+), [\d.]+, ([\d.]+)\]\} \/>/);
+
+// Placa: grupo em [0, 0, z], dois postes em ±x com raio da base, e a tábua.
+const placa = PARQUE.match(
+  /function PlacaParque\(\)[\s\S]*?<group position=\{\[0, 0, ([\d.]+)\]\}>\s*\{\[-([\d.]+), ([\d.]+)\]\.map[\s\S]*?<cylinderGeometry args=\{\[[\d.]+, ([\d.]+),[\s\S]*?<boxGeometry args=\{\[([\d.]+), [\d.]+, ([\d.]+)\]\} \/>/
+);
+
+test('bancos e placa foram lidos do desenho', () => {
+  assert.ok(bancos && bancos.length === 2, 'dois bancos em OpenPark.jsx');
+  assert.ok(assento, 'assento dos bancos');
+  assert.ok(placa, 'placa PARQUE');
+  assert.equal(Number(placa[2]), Number(placa[3]), 'postes simétricos');
+});
+
+test('as 8 flores crescidas ficam a pelo menos 0,5 dos bancos (com ou sem detalhes visuais)', () => {
+  const [w, d] = [Number(assento[1]), Number(assento[2])];
+  const perto = [];
+  for (const [x, z] of POSICOES_FLORES) {
+    for (const b of bancos) {
+      // ponto da flor no espaço do banco (rotação em torno de y)
+      const dx = x - CX - b.x, dz = z - CZ - b.z;
+      const lx = dx * Math.cos(b.rot) - dz * Math.sin(b.rot);
+      const lz = dx * Math.sin(b.rot) + dz * Math.cos(b.rot);
+      const folga = ateCaixa([lx, lz], [w, d]) - RAIO_FLOR;
+      if (folga < MARGEM) perto.push(`(${x}, ${z}): ${folga.toFixed(2)} do banco em [${b.x}, ${b.z}]`);
+    }
+  }
+  assert.deepEqual(perto, [], `mínimo ${MARGEM}`);
+});
+
+test('as 8 flores crescidas ficam a pelo menos 0,5 da placa PARQUE', () => {
+  const pz = Number(placa[1]);
+  const px = Number(placa[2]);
+  const raioPoste = Number(placa[4]);
+  const [w, d] = [Number(placa[5]), Number(placa[6])];
+  const perto = [];
+  for (const [x, z] of POSICOES_FLORES) {
+    const p = [x - CX, z - CZ - pz];
+    const tabua = ateCaixa(p, [w, d]);
+    const postes = Math.min(...[-px, px].map((sx) => Math.hypot(p[0] - sx, p[1]) - raioPoste));
+    const folga = Math.min(tabua, postes) - RAIO_FLOR;
+    if (folga < MARGEM) perto.push(`(${x}, ${z}): ${folga.toFixed(2)} da placa`);
+  }
+  assert.deepEqual(perto, [], `mínimo ${MARGEM}`);
 });
