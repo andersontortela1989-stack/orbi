@@ -1552,3 +1552,86 @@ proposta sem uma hipótese nova.
 - **H2b fica para depois da H4 (decisão de 18/11/2026):** canteiros 3D
   mostrando as sementes e a terra molhada durante o plantio e a rega. O mundo
   tem 3 canteiros e a faixa 6–7 usa 2; só faz sentido com a faixa escolhida.
+
+### Estilo realista — piloto da esquina PADARIA + MERCADO
+
+- **Aprovado dirigindo no notebook (20/11/2026).** Só em `?estilo=real`; o
+  estilo padrão não muda. Mesma câmera, mesmas ruas, mesmos colisores e
+  sensores: para os dois lotes, a cidade monta só o colisor do lote, igual
+  ao do Building, e o desenho vem do piloto. O realista anterior (V1:
+  `PredioReal`, `RuaReal`, `visual/estilo-real/`, `PreCompilar`) continua
+  no repositório, fora do pacote do jogo; retirar o código é decisão
+  pendente.
+- **Orçamento do piloto.** Desenho próprio da esquina: 7 chamadas (4 malhas
+  mescladas com cor por vértice — opaco, brilho, contorno e sombra
+  simulada —, 2 letreiros e a mancha de contato sob os pneus) e 5.804
+  triângulos; sem textura nova, sem shadow map, sem pós-processamento. Por
+  lugar: PADARIA 3.174 triângulos (letreiro incluso), MERCADO 2.374, mancha
+  256. **A PADARIA passa 174 triângulos da regra 7 (3.000 por lugar)**; as
+  chamadas ficam dentro (as malhas são compartilhadas pelos dois lugares).
+  Decisão pendente: aceitar com justificativa escrita ou simplificar (os 9
+  pães das vitrines com 8 lados em vez de 10 tiram cerca de 180 triângulos).
+- **Cena inteira, mesmo enquadramento** (carro junto à porta do MERCADO):
+
+  | Medida | Padrão | Piloto |
+  |---|---|---|
+  | Chamadas, 1280×720 | 203 | 175 |
+  | Triângulos, 1280×720 | 28.556 | 33.272 |
+  | Chamadas, 740×360 | 118 | 90 |
+  | Triângulos, 740×360 | 20.708 | 25.424 |
+  | Materiais na cena | 412 | 385 |
+  | Programas de shader | 14 | 16 |
+
+- **Pacote separado.** O piloto chega num pacote próprio
+  (`EsquinaReal-*.js`, 16,98 kB, gzip 7,01 kB), carregado com
+  `lazy(() => import('./EsquinaReal.jsx'))` só em `?estilo=real`; o estilo
+  padrão não baixa nada dele (conferido na rede em duas execuções com cache
+  vazio). Pacote inicial idêntico ao de `8ba9fe5` byte a byte, a não ser
+  pelo nome do pacote do jogo; `GameExperience` 3.152,56 kB, 12,06 kB a
+  menos que em `8ba9fe5` (a V1 saiu do pacote). Duas regras para isso não
+  mudar: (1) **fábrica sem imports** — `EsquinaReal.jsx` e
+  `visual/esquina/esquina.js` não importam nada do jogo, nem JSX; React, as
+  classes do three (pelo nome, nunca `* as THREE`), R3F, drei e o estado
+  entram por parâmetro. Um pacote sob demanda que importasse do pacote do
+  jogo obrigaria esse pacote a exportar nomes a mais, e o `import()` do
+  pacote inicial ganharia um `.then` (+13 B, medido); (2) **cores uma a
+  uma** — passar `PALETA3D` ou `TINTAS` inteiros impediria o empacotador de
+  descartar as cores sem uso, e o pacote inicial, onde a paleta mora,
+  cresceria (+203 B, medido).
+- **Primeira aparição sem pico: montar escondido, `compileAsync` e desenho
+  invisível antes de mostrar.** Medido no navegador: compilar antes não
+  basta. O custo do primeiro uso (verificação dos programas, envio da
+  textura dos letreiros e a espera pela GPU que esse envio provoca) cai no
+  primeiro DESENHO — e, com a esquina fora da câmera, esse desenho só
+  aconteceria quando a criança chegasse lá. Por isso, quando o pacote chega,
+  a esquina monta escondida (`visible` falso); `gl.compileAsync` compila os
+  materiais dela com as luzes da cena; espera-se o `onSync` dos 2
+  letreiros (com prazo de 4 s, para nunca ficar escondida); um desenho de
+  1×1 pixel (tesoura), com a cena inteira e sem o corte pela câmera, roda
+  dentro do quadro antes do desenho normal, que cobre esse pixel; só então
+  a esquina aparece. Evidência (Chrome por software, sem compilação
+  paralela): antes, o quadro da aparição durou 300 ms e o seguinte 1.350 ms,
+  com 16 verificações de programa e uma espera de 1.056 ms em
+  `getExtension('EXT_texture_filter_anisotropic')` no primeiro envio da
+  textura; depois, em três execuções, o quadro da aparição durou 16,6 a
+  16,8 ms (mediana 16,7) e nenhuma espera de 1 ms ou mais aconteceu nele nem
+  depois — tudo caiu nos três quadros anteriores, com a esquina escondida.
+  O custo não some: vai para o carregamento. Medir no aparelho.
+- **Critério de fluidez.** Preservar a fluidez da base: uma piora só conta
+  se aparecer de forma repetida no piloto, acima da variação do próprio
+  padrão entre passagens. O alvo provisório de 2.4 continua valendo para a
+  rota padrão. A medição no ambiente de conferência não vale (desenho por
+  software); fica pendente no notebook e no celular.
+- **Roteiro de fluidez.** Mesmo progresso salvo nos dois estilos, com a
+  missão longe da esquina (por exemplo ZOO), Modo Tranquilo igual em todas
+  as passagens (anotar), celular com bateria acima de 50% e sem economia de
+  energia, notebook em 1280×720 e celular deitado. Endereços:
+  `/?medir=1&ponto=MERCADO` (padrão) e `/?estilo=real&medir=1&ponto=MERCADO`
+  (piloto). Percurso de cerca de 30 s: JOGAR e 10 s parado; ré até o meio
+  da rua, direita até o fim da rua junto à PADARIA; voltar, passar devagar
+  diante da porta do MERCADO e parar 2 s; seguir pela curva até a saída,
+  sem parar; no painel MEDINDO, COPIAR RESUMO. Ordem: aquecimento (uma
+  passagem em cada estilo, sem anotar), depois Padrão 1 → Piloto 1 →
+  Padrão 2 → Piloto 2 → Padrão 3 → Piloto 3, recarregando a página antes de
+  cada passagem. Anotar por passagem: aparelho, estilo, mediana, p95, % de
+  quadros acima de 50 ms e Modo Tranquilo.

@@ -913,3 +913,47 @@ ficaram na branch congelada.
 
 **O que falta.** Decidir pela matriz pedagógica o que entra no jogo e o que
 sai do código.
+
+---
+
+## 46. Hipótese da travada ao responder pergunta: espera pela GPU no primeiro desenho de texturas novas
+
+**Observado (no piloto da esquina, não na pergunta).** Medido no navegador
+em 20/11/2026 (Chrome sem interface, desenho por software, sem compilação
+paralela de shaders), envolvendo as chamadas do WebGL com cronômetro e
+anotando o quadro de cada uma: no primeiro desenho da esquina, a página
+parou 1.056 ms numa única chamada,
+`getExtension('EXT_texture_filter_anisotropic')`, feita pelo three ao
+configurar a textura dos letreiros (`setTextureParameters`) no primeiro
+envio dela. A chamada em si é barata; o custo é a página esperar a GPU
+terminar o que estava na fila, inclusive os programas recém-enfileirados.
+No quadro da aparição houve 16 verificações de programa no primeiro uso; a
+espera de 1.056 ms veio no quadro seguinte. Compilar
+antes (`gl.compile` um quadro antes) não evitou o pico: o custo cai no
+primeiro DESENHO. O conserto do piloto (montar escondido, `compileAsync` e
+um desenho de 1×1 pixel antes de mostrar) levou o quadro da aparição de
+300 ms para 16,6 a 16,8 ms (mediana 16,7) — detalhes em
+`docs/PLANO_MESTRE.md` §10, "Estilo realista — piloto da esquina".
+
+**Hipótese (não verificada no fluxo da pergunta).** A travada ao responder
+pergunta pode ser o mesmo mecanismo: algo desenhado pela primeira vez logo
+depois da resposta, cujo primeiro uso força a espera pela GPU. No 3D do
+jogo não há textura carregada de arquivo nem criada à mão; as texturas são
+as dos textos 3D (o atlas de letras do troika, que é enviado de novo quando
+entram letras ainda não usadas). Candidatos, a conferir: o marcador e os
+textos da próxima missão, letras novas em letreiros e recompensas que
+aparecem no mundo. O painel da pergunta é DOM e não entra nessa conta.
+
+**Onde.** Ainda não se sabe. A instrumentação do piloto mediu
+`getExtension`, `getProgramParameter`, `getProgramInfoLog`, `texImage2D` e
+`texSubImage2D` por quadro, com um marcador no primeiro quadro em que a
+coisa nova aparece.
+
+**Quando.** Piloto da esquina, 20/11/2026.
+
+**O que falta.** Na sessão de diagnóstico (`?medir=1`), medir a janela da
+resposta com essa mesma instrumentação e aplicar o critério de causa
+identificada de `docs/PLANO_MESTRE.md` §10. Se a hipótese se confirmar, o
+conserto é o do piloto: desenhar uma vez, invisível, antes de a criança
+precisar ver. No celular, com compilação paralela, o tamanho do pico pode
+ser outro; só a medição no aparelho diz.
