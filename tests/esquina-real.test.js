@@ -377,6 +377,19 @@ test('orçamento da esquina: poucas chamadas de desenho para os dois prédios', 
   assert.ok(triangulos <= 16000, `triângulos ${triangulos}`);
 });
 
+test('orçamento por lugar (regra 7 do estilo real): até 6 chamadas e 3.000 triângulos, sem exceção', () => {
+  // docs/PLANO_MESTRE.md, "Estilo real — regras de legibilidade", regra 7.
+  // Chamadas do lugar: as malhas mescladas em que ele tem peças, mais o
+  // letreiro (2 triângulos por letra, como em orcamentoDaEsquina).
+  for (const slug of SLUGS_ESQUINA) {
+    const letreiro = letreirosDaEsquina().find((t) => t.slug === slug);
+    const triangulos = montarMalhaEsquina(PECAS[slug]).triangulos + letreiro.texto.length * 2;
+    const chamadas = new Set(PECAS[slug].map((p) => p.camada)).size + 1;
+    assert.ok(triangulos <= 3000, `${slug}: ${triangulos} triângulos (regra: até 3.000)`);
+    assert.ok(chamadas <= 6, `${slug}: ${chamadas} chamadas (regra: até 6)`);
+  }
+});
+
 // ------------------------------------------------- acabamento (20/11/2026)
 // Avaliado na câmera do jogo (1280×720 e 740×360): vitrines mais altas,
 // portas com recuo visível, pães grandes, produtos simplificados, a faixa

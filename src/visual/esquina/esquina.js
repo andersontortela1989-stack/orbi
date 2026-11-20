@@ -168,11 +168,15 @@ export function criarEsquina({ THREE, PALETA3D, TINTAS, SOMBRA_SOLIDA, LOTES, SL
     return caixa(id, 'fachada', [(a0 + a1) / 2, PISO + 0.03, (fundo + face + fora) / 2], [a1 - a0 + 0.2, 0.06, face + fora - fundo], COR.pedra);
   }
 
-  /** Pão GRANDE de vitrine (elipsoide deitado): legível no celular. */
+  /**
+   * Pão GRANDE de vitrine (elipsoide deitado): legível no celular. 8 lados
+   * (eram 10): os 9 pães custavam 180 triângulos a mais e a PADARIA passava
+   * da regra 7 do estilo real (3.000 por lugar).
+   */
   const PAO_VITRINE = Object.freeze({ raio: 0.32, esc: Object.freeze([1.45, 0.8, 0.85]) });
   const paoDeVitrine = (id, pos, cor, rotY = 0) => ({
     id, zona: 'corpo', camada: 'opaco', forma: 'esfera', pos, raio: PAO_VITRINE.raio, esc: [...PAO_VITRINE.esc],
-    lados: 10, aneis: 6, rot: [0, rotY, 0], cor,
+    lados: 8, aneis: 6, rot: [0, rotY, 0], cor,
   });
 
   /**

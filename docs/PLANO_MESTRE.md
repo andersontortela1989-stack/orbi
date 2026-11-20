@@ -1564,21 +1564,21 @@ proposta sem uma hipótese nova.
   pendente.
 - **Orçamento do piloto.** Desenho próprio da esquina: 7 chamadas (4 malhas
   mescladas com cor por vértice — opaco, brilho, contorno e sombra
-  simulada —, 2 letreiros e a mancha de contato sob os pneus) e 5.804
+  simulada —, 2 letreiros e a mancha de contato sob os pneus) e 5.624
   triângulos; sem textura nova, sem shadow map, sem pós-processamento. Por
-  lugar: PADARIA 3.174 triângulos (letreiro incluso), MERCADO 2.374, mancha
-  256. **A PADARIA passa 174 triângulos da regra 7 (3.000 por lugar)**; as
-  chamadas ficam dentro (as malhas são compartilhadas pelos dois lugares).
-  Decisão pendente: aceitar com justificativa escrita ou simplificar (os 9
-  pães das vitrines com 8 lados em vez de 10 tiram cerca de 180 triângulos).
+  lugar: PADARIA 2.994 triângulos (letreiro incluso), MERCADO 2.374, mancha
+  256; 5 chamadas por lugar (as 4 malhas compartilhadas e o letreiro).
+  Dentro da regra 7 (6 chamadas e 3.000 triângulos por lugar), sem exceção,
+  conferido por teste (`tests/esquina-real.test.js`). A PADARIA chegou a ter
+  3.174: em 20/11/2026 os 9 pães das vitrines passaram de 10 para 8 lados.
 - **Cena inteira, mesmo enquadramento** (carro junto à porta do MERCADO):
 
   | Medida | Padrão | Piloto |
   |---|---|---|
   | Chamadas, 1280×720 | 203 | 175 |
-  | Triângulos, 1280×720 | 28.556 | 33.272 |
+  | Triângulos, 1280×720 | 28.556 | 33.092 |
   | Chamadas, 740×360 | 118 | 90 |
-  | Triângulos, 740×360 | 20.708 | 25.424 |
+  | Triângulos, 740×360 | 20.708 | 25.244 |
   | Materiais na cena | 412 | 385 |
   | Programas de shader | 14 | 16 |
 
