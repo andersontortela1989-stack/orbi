@@ -3,7 +3,7 @@ import { useGame } from '../store/useGame.js';
 import { somSucesso, somTique } from '../audio/sons.js';
 import { falarDaAtividade } from '../activity/index.js';
 import { useRegistrarAtividade } from '../activity/useActivity.js';
-import { litrosFaltando, postoAtivo } from '../economia.js';
+import { convitePosto, litrosFaltando, postoAtivo } from '../economia.js';
 import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 
 /**
@@ -56,7 +56,7 @@ export function RefuelPanel() {
       const n = litrosFaltando(useGame.getState().combustivel);
       setMeta(n);
       concluido.current = false;
-      falarDaAtividade('abastecendo', `Me ajuda a contar? Faltam ${n}!`, {
+      falarDaAtividade('abastecendo', convitePosto(n), {
         interrupt: true,
       });
     }

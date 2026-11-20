@@ -32,6 +32,7 @@
 import { ANIMAIS } from './missoes-ciencias.js';
 import { CANTEIRO } from '../city/canteiro.js';
 import { PAISES } from './paises.js';
+import { FEMININO, porExtenso } from './por-extenso.js';
 
 /** Lugar tem chegada viva? (MissionController decide abrir o painel.) */
 export function temChegadaViva(slug) {
@@ -187,10 +188,12 @@ function sortearPerguntaPaes(lugar) {
     dica: 'MOSTRA PRO ÓRBI!',
     descoberta: { categoria: 'contagens', id: String(n) },
     frasePergunta: 'Quantos pães tem aqui?',
-    fraseAcerto: `Isso! São ${n} pães! Você conta muito bem!`,
+    // número por extenso: a voz recebe "três", não "3" (20/11/2026)
+    fraseAcerto: `Isso! São ${porExtenso(n)} pães!`,
     // não vaza a resposta: a dica é contar de novo, não a cor/som do alvo
     fraseTenteDeNovo: 'Hmm, vamos contar de novo?',
-    fraseRevela: `São ${n} pães! ${n} pãezinhos!`,
+    // a resposta uma vez só, sem repetir o número em "pãezinhos"
+    fraseRevela: `São ${porExtenso(n)} pães.`,
   };
 }
 
@@ -223,10 +226,11 @@ function sortearPerguntaArvores(lugar) {
     dica: 'CONTE AS ÁRVORES DO CANTEIRO!',
     descoberta: { categoria: 'contagens', id: String(n) },
     frasePergunta: 'Quantas árvores tem no canteiro do parque? Vamos contar?',
-    fraseAcerto: `Isso! São ${n} árvores! Você conta muito bem!`,
+    // número por extenso (árvore é feminino: "duas", se um dia forem duas)
+    fraseAcerto: `Isso! São ${porExtenso(n, FEMININO)} árvores! Você conta muito bem!`,
     // não vaza a resposta: a dica é contar de novo
     fraseTenteDeNovo: 'Hmm, vamos contar de novo?',
-    fraseRevela: `São ${n} árvores! ${n} arvorezinhas!`,
+    fraseRevela: `São ${porExtenso(n, FEMININO)} árvores! ${capitalizar(porExtenso(n, FEMININO))} arvorezinhas!`,
   };
 }
 

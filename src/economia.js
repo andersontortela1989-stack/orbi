@@ -10,6 +10,8 @@
  *   - "afinar sentindo" — estes valores são pra você ajustar pelo feel.
  */
 
+import { porExtenso } from './missions/por-extenso.js';
+
 // Capacidade do tanque em "litros" (a unidade que a criança CONTA ao abastecer).
 // 10 mantém o "FALTAM N LITROS" sempre dentro de 1–10 (BNCC 2º ano: número 1–15).
 export const TANQUE_LITROS = 10;
@@ -41,6 +43,14 @@ export function litrosFaltando(combustivel) {
   const pctPorLitro = 100 / TANQUE_LITROS;
   const faltam = Math.ceil((100 - combustivel) / pctPorLitro);
   return Math.max(1, Math.min(TANQUE_LITROS, faltam));
+}
+
+/**
+ * Fala do convite do posto, com o número por extenso: a voz recebe
+ * "quatro", não "4" ("Me ajuda a contar? Faltam quatro!"; "Falta um!").
+ */
+export function convitePosto(n) {
+  return `Me ajuda a contar? ${n === 1 ? 'Falta' : 'Faltam'} ${porExtenso(n)}!`;
 }
 
 /**
