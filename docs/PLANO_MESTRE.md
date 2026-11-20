@@ -1635,3 +1635,34 @@ proposta sem uma hipótese nova.
   Padrão 2 → Piloto 2 → Padrão 3 → Piloto 3, recarregando a página antes de
   cada passagem. Anotar por passagem: aparelho, estilo, mediana, p95, % de
   quadros acima de 50 ms e Modo Tranquilo.
+
+### Fatia da regra de ajuda — itens registrados
+
+O escopo desta fatia ainda não está descrito neste documento; a entrada foi
+criada em 20/11/2026 para guardar o item abaixo. Relacionadas, para quando o
+escopo for escrito: dívidas 34, 40 e 41 de `docs/DIVIDA_TECNICA.md`.
+
+- **Teste geral "nenhuma fala com algarismo", pelo coordenador de
+  atividades.** Em 20/11/2026 as contagens faladas passaram a ir por extenso
+  (Horta: plantio, rega e coleta; parque: coleta dos baldes; perguntas de
+  chegada da PADARIA e do PARQUE; convite do posto), cada caso com teste
+  próprio (`tests/horta-contagem-falada.test.js`,
+  `tests/contagem-por-extenso.test.js`). Falta o teste geral:
+  - **Ponto central:** `criarCoordenadorAtividade({ voz })`
+    (`src/activity/activity-machine.js`). Toda fala das atividades passa por
+    `falar(dono, texto)` antes de chegar a `voz.falar`, e o coordenador já
+    aceita uma voz falsa, que só registra os textos.
+  - **O teste:** criar o coordenador com a voz falsa e passar por ele a Horta
+    nas três faixas e o parque, do começo ao resumo; todas as perguntas de
+    chegada, com vários sorteios por lugar; o convite do posto de 1 a 10; os
+    fatos de número do Caderninho. Nenhum texto registrado pode ter
+    algarismo.
+  - **Limite:** os componentes não rodam nos testes; o teste cobre os
+    geradores de texto.
+  - **A abertura (`IntroChegada`)** chama a voz direto (`falar` de
+    `src/audio/voz.js`), fora do coordenador. Levá-la a passar pelo
+    coordenador ou fazê-la entrar no teste por outro caminho (por exemplo,
+    os textos da abertura num módulo de dados que o teste lê).
+  - **No navegador:** o registro do `?medir=1` (`__orbiTeste.vozes`) guarda
+    tudo o que foi entregue à voz e serve para a mesma conferência numa
+    sessão real.
