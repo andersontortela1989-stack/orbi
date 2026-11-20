@@ -1,4 +1,22 @@
-import { useEffect, useRef } from 'react';
+import { createElement, Fragment, lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  BackSide,
+  BoxGeometry,
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  CylinderGeometry,
+  Euler,
+  Matrix4,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  Quaternion,
+  SphereGeometry,
+  Vector3,
+  Vector4,
+} from 'three';
+import { useFrame, useThree } from '@react-three/fiber';
+import { Text } from '@react-three/drei';
 import { Car } from './Car.jsx';
 import { Ground } from './Ground.jsx';
 import { City } from './City.jsx';
@@ -23,8 +41,52 @@ import { perfilVisual } from '../visual/world-style.js';
 import { RoadNetwork } from './RoadNetwork.jsx';
 import { CityLife } from './CityLife.jsx';
 import { Landscape } from './Landscape.jsx';
-import { PreCompilar } from './PreCompilar.jsx';
-import { estiloReal } from '../visual/estilo.js';
+import { SLUGS_ESQUINA, estiloReal } from '../visual/estilo.js';
+import { PALETA3D, SOMBRA_SOLIDA, TINTAS } from '../brand/paleta3d.js';
+import { TODOS_PREDIOS } from '../city/bairros.js';
+
+// Piloto da esquina (`?estilo=real`): pacote próprio, baixado só quando o
+// estilo é pedido — o estilo padrão não carrega nada dele. As dependências
+// entram por parâmetro (só o que o jogo já usa, pelo nome: nada de
+// `* as THREE`), para o pacote do piloto não importar nada do pacote do
+// jogo e o pacote inicial não mudar.
+const EsquinaReal = lazy(() =>
+  import('./EsquinaReal.jsx').then((m) => ({
+    default: m.criarEsquinaReal({
+      React: { createElement, Fragment, useEffect, useMemo, useRef, useState },
+      THREE: {
+        BackSide, BoxGeometry, BufferAttribute, BufferGeometry, Color, CylinderGeometry, Euler,
+        Matrix4, MeshBasicMaterial, MeshStandardMaterial, Quaternion, SphereGeometry, Vector3, Vector4,
+      },
+      useFrame,
+      useThree,
+      Text,
+      useGame,
+      perfilVisual,
+      // cores e medidas uma a uma: objetos inteiros escapariam do
+      // descarte de cores sem uso, e o pacote inicial cresceria
+      PALETA3D: {
+        calcada: PALETA3D.calcada,
+        contorno: PALETA3D.contorno,
+        predios: { PADARIA: PALETA3D.predios.PADARIA, MERCADO: PALETA3D.predios.MERCADO },
+        pao: { casca: PALETA3D.pao.casca, lateral: PALETA3D.pao.lateral },
+      },
+      TINTAS: {
+        ink: TINTAS.ink, violetDeep: TINTAS.violetDeep, violet: TINTAS.violet, sunDeep: TINTAS.sunDeep,
+        sunSoft: TINTAS.sunSoft, grass: TINTAS.grass, grassDeep: TINTAS.grassDeep, white: TINTAS.white,
+        coral: TINTAS.coral, coralSoft: TINTAS.coralSoft, blue: TINTAS.blue, blueSoft: TINTAS.blueSoft,
+      },
+      SOMBRA_SOLIDA: { dx: SOMBRA_SOLIDA.dx, dz: SOMBRA_SOLIDA.dz, cor: SOMBRA_SOLIDA.cor, opacidade: SOMBRA_SOLIDA.opacidade },
+      LOTES: Object.fromEntries(
+        SLUGS_ESQUINA.map((slug) => {
+          const { pos, size } = TODOS_PREDIOS.find((p) => p.slug === slug);
+          return [slug, { pos, size }];
+        })
+      ),
+      SLUGS_ESQUINA,
+    }),
+  }))
+);
 
 export function Game() {
   const carRef = useRef(null);
@@ -147,9 +209,14 @@ export function Game() {
 
       <CameraFollow targetRef={carRef} />
 
-      {/* Estilo real (V1): compila os shaders na carga, não na primeira
-          aparição. Por último, para a cena já estar montada. */}
-      {estiloReal && <PreCompilar />}
+      {/* Piloto da esquina (`?estilo=real`): PADARIA, MERCADO, calçadas e a
+          mancha de contato dos pneus. Por último, para a cena já estar
+          montada quando ele pré-compila os programas. */}
+      {estiloReal && (
+        <Suspense fallback={null}>
+          <EsquinaReal targetRef={carRef} />
+        </Suspense>
+      )}
     </>
   );
 }

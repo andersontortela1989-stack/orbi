@@ -1,14 +1,12 @@
 import { Fragment, useMemo } from 'react';
 import * as THREE from 'three';
+import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { Building } from './Building.jsx';
 import { OpenPark } from './OpenPark.jsx';
 import { AderecosLugar } from './AderecosLugar.jsx';
-import { PredioReal } from './PredioReal.jsx';
-import { RuaReal } from './RuaReal.jsx';
 import { BAIRROS } from '../city/bairros.js';
 import { ADERECOS } from '../city/identidade.js';
-import { estiloReal } from '../visual/estilo.js';
-import { PREDIOS_REAIS } from '../visual/estilo-real/predio-real.js';
+import { SLUGS_ESQUINA, estiloReal } from '../visual/estilo.js';
 import { TINTAS } from '../brand/paleta3d.js';
 
 function geometriaRetanguloArredondado(largura, profundidade, raio) {
@@ -80,9 +78,13 @@ export function City() {
           {bairro.predios.map((p) => (
             p.slug === 'PARQUE' ? (
               <OpenPark key={p.slug} floorPos={p.pos} />
-            ) : estiloReal && PREDIOS_REAIS[p.slug] ? (
-              // Estilo real (V1, `?estilo=real`): mesmo lote, outro desenho.
-              <PredioReal key={p.slug} predio={p} />
+            ) : estiloReal && SLUGS_ESQUINA.includes(p.slug) ? (
+              // Piloto da esquina (`?estilo=real`): o desenho chega sob
+              // demanda (EsquinaReal, montado pelo Game); aqui fica só o
+              // colisor do lote, idêntico ao do Building.
+              <RigidBody key={p.slug} type="fixed" colliders={false} position={[p.pos[0], p.size[1] / 2, p.pos[1]]}>
+                <CuboidCollider args={[p.size[0] / 2, p.size[1] / 2, p.size[2] / 2]} />
+              </RigidBody>
             ) : (
               <Fragment key={p.slug}>
                 <Building
@@ -100,9 +102,6 @@ export function City() {
           ))}
         </group>
       ))}
-      {/* Estilo real (V1.3): meio-fio, calçada e mobiliário da rua entre a
-          PADARIA e o MERCADO. */}
-      {estiloReal && <RuaReal />}
     </>
   );
 }
