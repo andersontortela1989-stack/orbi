@@ -4,6 +4,7 @@
  * Recebe eventos e devolve efeitos declarativos. Não conhece React, Zustand,
  * Three.js, áudio nem timers reais; por isso todo o fluxo roda em node:test.
  */
+import { porExtenso } from '../missions/por-extenso.js';
 
 const TENTATIVAS_ATE_REVELAR = 3;
 
@@ -378,7 +379,8 @@ export function criarAventura(def) {
             texto: atual.texto,
             contador: { atual: st.coletado, total: atual.quantidade },
           },
-          { tipo: 'falar', texto: String(st.coletado) },
+          // Por extenso, como no repartir: a voz recebe "dois", não "2".
+          { tipo: 'falar', texto: porExtenso(st.coletado) },
           ...(st.coletado >= atual.quantidade ? avancar() : []),
         ];
 
@@ -400,6 +402,7 @@ export function criarAventura(def) {
         if (st.distribuido[slot] >= porSlot) return [];
 
         st.distribuido = st.distribuido.map((n, i) => (i === slot ? n + 1 : n));
+        const encheu = st.distribuido[slot] >= porSlot;
         const completo = st.distribuido.every((n) => n >= porSlot);
         return [
           {
@@ -413,9 +416,13 @@ export function criarAventura(def) {
               item: atual.item,
             },
           },
-          // Fala a conta DO canteiro tocado, não o total acumulado: o que se
-          // aprende aqui é que cada um recebe a mesma quantidade.
-          { tipo: 'falar', texto: String(st.distribuido[slot]) },
+          // Fala o TOTAL repartido até agora, por extenso: "um, dois, três".
+          // Antes falava a conta do canteiro tocado — com uma por canteiro,
+          // "um, um, um" (relato de 20/11/2026, faixa 3–5). Que cada canteiro
+          // recebe a mesma quantidade fica com `aoEncher`, dito só no toque
+          // que enche o canteiro ("Este canteiro tem duas.").
+          { tipo: 'falar', texto: porExtenso(somar(st.distribuido)) },
+          ...(encheu && atual.aoEncher ? [{ tipo: 'falar', texto: atual.aoEncher }] : []),
           ...(completo ? avancar() : []),
         ];
       }

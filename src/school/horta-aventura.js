@@ -140,6 +140,10 @@ export function criarHortaEscola(band, { repetida = false, random = Math.random 
         porSlot: porCanteiro,
         texto: `Plante ${sementes(porCanteiro)} em cada canteiro.`,
         dica: `São ${porExtenso(beds, MASCULINO)} canteiros, e todos recebem a mesma quantidade.`,
+        // A voz conta o total plantado ("um, dois, três…"); com mais de uma
+        // por canteiro, o toque que enche um canteiro diz também quantas ele
+        // tem — a mesma quantidade em todos é o que se reparte aqui.
+        ...(porCanteiro > 1 ? { aoEncher: `Este canteiro tem ${porExtenso(porCanteiro, FEMININO)}.` } : {}),
       },
       {
         id: 'regar',

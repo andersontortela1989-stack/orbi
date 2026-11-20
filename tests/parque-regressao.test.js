@@ -22,6 +22,10 @@ import { ROTEIROS_PARQUE } from './fixtures/roteiro-parque.mjs';
  * H3 (19/11/2026): regravado SÓ nas três linhas e na fala do resumo (regra
  * de texto: a ação observada, não a habilidade suposta). Todo o resto da
  * gravação ficou idêntico.
+ *
+ * 20/11/2026: regravadas SÓ as 4 falas da coleta dos baldes, de "1", "2",
+ * "3", "4" para "um", "dois", "três", "quatro" (a voz recebe o número por
+ * extenso, como no plantio e na rega da Horta). Todo o resto ficou idêntico.
  */
 
 const GRAVADO = JSON.parse(

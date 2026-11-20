@@ -82,7 +82,7 @@ test('preencher um canteiro mostra o progresso e NÃO conclui a etapa', () => {
   });
   assert.equal(aventura.etapa().id, 'repartir', 'ainda na etapa');
   assert.equal(de(efeitos, 'resumo').length, 0, 'não avançou pro fecho');
-  assert.deepEqual(de(efeitos, 'falar').map((e) => e.texto), ['1']);
+  assert.deepEqual(de(efeitos, 'falar').map((e) => e.texto), ['um'], 'o total, por extenso');
 });
 
 test('preencher todos os canteiros conclui e avança sozinho', () => {
@@ -147,7 +147,9 @@ test('pedir ajuda fala a dica e conta como apoio, sem penalidade', () => {
   assert.deepEqual(aventura.estado().distribuido, [0, 0], 'ajuda não preenche nada');
 });
 
-test('duas por canteiro: fala a conta DO canteiro tocado e só conclui no último', () => {
+// 20/11/2026: com uma por canteiro, a conta DO canteiro dava "um, um, um".
+// A fala passou a ser o TOTAL repartido até agora, por extenso.
+test('duas por canteiro: fala o total repartido, por extenso, e só conclui no último', () => {
   const aventura = doisPorCanteiro();
   aventura.iniciar();
 
@@ -161,9 +163,38 @@ test('duas por canteiro: fala a conta DO canteiro tocado e só conclui no últim
   const ultimo = aventura.enviar(por('semente', 1));
   falas.push(de(ultimo, 'falar')[0].texto);
 
-  assert.deepEqual(falas, ['1', '1', '2', '2'], 'conta do canteiro, não o total');
+  assert.deepEqual(falas, ['um', 'dois', 'três', 'quatro'], 'o total, não a conta do canteiro');
   assert.deepEqual(contador(ultimo).slots, [2, 2]);
   assert.equal(aventura.etapa().id, 'fim');
+});
+
+test('aoEncher: a frase vem depois da contagem, só no toque que enche o canteiro', () => {
+  const aventura = criarAventura({
+    id: 'teste-distribuir-cheio',
+    titulo: 'TESTE CHEIO',
+    etapas: [
+      {
+        id: 'repartir',
+        tipo: 'distribuir',
+        item: 'semente',
+        slots: 2,
+        porSlot: 2,
+        texto: 'Duas sementes em cada canteiro.',
+        aoEncher: 'Este canteiro tem duas.',
+      },
+      FECHO,
+    ],
+  });
+  aventura.iniciar();
+
+  const falas = [0, 1, 1, 0].map((slot) => de(aventura.enviar(por('semente', slot)), 'falar').map((e) => e.texto));
+
+  assert.deepEqual(falas, [
+    ['um'],
+    ['dois'],
+    ['três', 'Este canteiro tem duas.'],
+    ['quatro', 'Este canteiro tem duas.', 'Pronto!'],
+  ]);
 });
 
 test('o snapshot anterior não muda quando um canteiro é preenchido depois', () => {

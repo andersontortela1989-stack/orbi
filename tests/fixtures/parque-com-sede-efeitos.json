@@ -249,7 +249,7 @@
           },
           {
             "tipo": "falar",
-            "texto": "1"
+            "texto": "um"
           }
         ],
         "etapa": "contar-baldes"
@@ -280,7 +280,7 @@
           },
           {
             "tipo": "falar",
-            "texto": "2"
+            "texto": "dois"
           }
         ],
         "etapa": "contar-baldes"
@@ -302,7 +302,7 @@
           },
           {
             "tipo": "falar",
-            "texto": "3"
+            "texto": "três"
           }
         ],
         "etapa": "contar-baldes"
@@ -324,7 +324,7 @@
           },
           {
             "tipo": "falar",
-            "texto": "4"
+            "texto": "quatro"
           },
           {
             "tipo": "telemetria",

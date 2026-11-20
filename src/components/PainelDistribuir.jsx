@@ -13,7 +13,8 @@ const MARCAS = {
  * Cartão de repartir (H1) — um botão grande por canteiro, nas etapas
  * `distribuir` (plantar e regar na Horta). Fica SOBRE o mundo, sem tomar o
  * foco: a etapa acontece com a missão no topo, como coletar e ir_para.
- * O Órbi fala a conta do canteiro tocado (o motor emite a fala).
+ * O Órbi fala o total repartido até agora, por extenso, e — com mais de um
+ * por canteiro — quantos tem o canteiro que encheu (o motor emite a fala).
  * Canteiro cheio fica desabilitado; nada pune nem trava.
  */
 export function PainelDistribuir() {
