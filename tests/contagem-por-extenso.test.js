@@ -15,7 +15,8 @@ import * as economia from '../src/economia.js';
  *   - convite do posto: "Me ajuda a contar? Faltam quatro!" ("Falta um!"
  *     no singular);
  *   - pergunta de chegada do PARQUE (árvores do canteiro), pronta para
- *     quando o PARQUE entrar no roteiro.
+ *     quando o PARQUE entrar no roteiro, no mesmo formato da PADARIA:
+ *     "Isso! São quatro árvores!" e "São quatro árvores.".
  */
 
 const SEM_ALGARISMO = /^[^0-9]*$/;
@@ -59,6 +60,7 @@ test('PARQUE: as falas da pergunta das árvores não têm algarismo', () => {
   assert.equal(p.resposta, String(n));
   for (const fala of falasDaChegada(p)) assert.match(fala, SEM_ALGARISMO, `"${fala}"`);
   assert.equal(n, 4);
-  assert.equal(p.fraseAcerto, 'Isso! São quatro árvores! Você conta muito bem!');
-  assert.equal(p.fraseRevela, 'São quatro árvores! Quatro arvorezinhas!');
+  // alinhada à PADARIA (20/11/2026): sem elogio e sem repetir o número
+  assert.equal(p.fraseAcerto, 'Isso! São quatro árvores!');
+  assert.equal(p.fraseRevela, 'São quatro árvores.');
 });

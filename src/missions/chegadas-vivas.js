@@ -226,11 +226,12 @@ function sortearPerguntaArvores(lugar) {
     dica: 'CONTE AS ÁRVORES DO CANTEIRO!',
     descoberta: { categoria: 'contagens', id: String(n) },
     frasePergunta: 'Quantas árvores tem no canteiro do parque? Vamos contar?',
-    // número por extenso (árvore é feminino: "duas", se um dia forem duas)
-    fraseAcerto: `Isso! São ${porExtenso(n, FEMININO)} árvores! Você conta muito bem!`,
+    // número por extenso (árvore é feminino: "duas", se um dia forem duas);
+    // no formato da PADARIA: sem elogio e sem repetir o número
+    fraseAcerto: `Isso! São ${porExtenso(n, FEMININO)} árvores!`,
     // não vaza a resposta: a dica é contar de novo
     fraseTenteDeNovo: 'Hmm, vamos contar de novo?',
-    fraseRevela: `São ${porExtenso(n, FEMININO)} árvores! ${capitalizar(porExtenso(n, FEMININO))} arvorezinhas!`,
+    fraseRevela: `São ${porExtenso(n, FEMININO)} árvores.`,
   };
 }
 
