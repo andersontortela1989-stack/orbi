@@ -1636,11 +1636,42 @@ proposta sem uma hipótese nova.
   cada passagem. Anotar por passagem: aparelho, estilo, mediana, p95, % de
   quadros acima de 50 ms e Modo Tranquilo.
 
-### Fatia da regra de ajuda — itens registrados
+### Fatia da regra de ajuda
 
-O escopo desta fatia ainda não está descrito neste documento; a entrada foi
-criada em 20/11/2026 para guardar o item abaixo. Relacionadas, para quando o
-escopo for escrito: dívidas 34, 40 e 41 de `docs/DIVIDA_TECNICA.md`.
+**PROPOSTA — aguardando revisão profissional (educadora, fonoaudióloga ou
+terapeuta ocupacional).** Escopo registrado em 20/11/2026; nada aqui está
+aprovado para implementar.
+
+**Regra única de ajuda, igual nas perguntas de chegada e nas de aventura:**
+
+1. **Reouvir (🔊):** sempre disponível. É acesso, não ajuda: não conta como
+   ajuda.
+2. **Pista (💡):** pode ser pedida a qualquer momento. Aponta uma relação e
+   nunca nomeia a resposta. Registrada como "usou pista".
+3. **Resposta:** revelada no 3º erro, com texto próprio de revelação que
+   explica (campo `revelacao`), seguida da espera pela fala (regra da
+   revelação em 2.3). Registrada como "viu a resposta".
+
+Cada pergunta declara o objetivo que exercita, e é o objetivo que decide se
+uma pista ajuda ou entrega (exemplo: "2 + 2 + 2").
+
+**O que a fatia muda** (dívidas de `docs/DIVIDA_TECNICA.md`):
+
+- **Dívidas 34 e 41:** as perguntas de chegada passam a revelar no 3º erro
+  (hoje revelam no 2º, `MAX_TENTATIVAS = 2`) e ganham pista e revelação
+  explicada.
+- **Dívida 40:** a dica da pergunta do parque deixa de entregar a resposta
+  (hoje diz "É a água!"), e as cartas deixam de ter a certa sempre na
+  primeira posição.
+- **Ordem das cartas:** decidir uma regra para todas as perguntas. Hoje as
+  perguntas de chegada embaralham, a do parque é fixa e a da Horta 6–7 é
+  crescente, com janela sorteada.
+- **Teste geral "nenhuma fala com algarismo"** (item abaixo, já registrado).
+
+**Depende** da H4 (faixa da criança) e da revisão profissional do texto das
+pistas.
+
+**Itens registrados:**
 
 - **Teste geral "nenhuma fala com algarismo", pelo coordenador de
   atividades.** Em 20/11/2026 as contagens faladas passaram a ir por extenso
