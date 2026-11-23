@@ -145,6 +145,7 @@ function sortearPerguntaCorFruta(lugar) {
     tituloAntes: 'QUAL FRUTA É',
     tituloDestaque: cor.toUpperCase(),
     tituloDepois: '?',
+    destaqueNeutro: true,
     mostra: null,
     opcoes,
     dica: 'MOSTRA PRO ÓRBI!',
@@ -285,7 +286,8 @@ function sortearPerguntaBandeira(lugar) {
     valor: p.slug,
     emoji: null,
     bandeira: p.slug, // carta renderiza <Bandeira> (SVG) no lugar do emoji
-    rotulo: p.slug,   // ler o nome do país é parte da pedagogia (cf. ZOO)
+    rotulo: null,     // nome já está no enunciado/áudio; evita repetição visual
+    ariaLabel: p.slug, // preserva o nome do país para acessibilidade
   }));
 
   return {

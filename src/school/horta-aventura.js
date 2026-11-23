@@ -120,6 +120,8 @@ export function criarHortaEscola(band, { repetida = false, random = Math.random 
         // H1: os saquinhos são coletados DIRIGINDO, como os baldes do parque
         // (ItensAventura). H3 (j): cada saquinho carrega UMA semente — a
         // coleta conta saquinhos, o plantio conta sementes, e os dois batem.
+        // Faixa visual enxuta no celular deitado; a voz mantém a explicação inteira.
+        objetivo: 'Pegue os saquinhos',
         texto: `Pegue ${porExtenso(total, MASCULINO)} saquinhos. Cada um tem uma semente.`,
         dica: `Vamos contar juntos até ${porExtenso(total, MASCULINO)}.`,
       },

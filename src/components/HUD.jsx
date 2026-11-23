@@ -87,7 +87,7 @@ export function HUD() {
     !abastecendo &&
     !vazio;
   const contadorAventura = aventura.contador
-    ? ` ${aventura.contador.atual}/${aventura.contador.total}`
+    ? ` · ${aventura.contador.atual}/${aventura.contador.total}`
     : '';
 
   // Botão de céu (dia/entardecer/noite) — a criança comanda. Voz curiosa no

@@ -123,7 +123,13 @@ export function ChegadaVivaPanel() {
             {pergunta.tituloDestaque && (
               <>
                 {' '}
-                <span className="viva-som">{pergunta.tituloDestaque}</span>
+                <span
+                  className={
+                    'viva-som' + (pergunta.destaqueNeutro ? ' viva-som--neutro' : '')
+                  }
+                >
+                  {pergunta.tituloDestaque}
+                </span>
               </>
             )}
             {pergunta.tituloDepois}
@@ -167,6 +173,7 @@ export function ChegadaVivaPanel() {
                 key={o.valor}
                 type="button"
                 tabIndex={-1}
+                aria-label={o.ariaLabel || undefined}
                 className={'viva-carta' + (certa ? ' viva-carta--certa' : '')}
                 onClick={(e) => {
                   responder(o.valor);
@@ -181,11 +188,13 @@ export function ChegadaVivaPanel() {
                     {o.emoji}
                   </span>
                 )}
-                <span
-                  className={o.emoji || o.bandeira ? 'viva-nome' : 'viva-numero'}
-                >
-                  {o.rotulo}
-                </span>
+                {o.rotulo && (
+                  <span
+                    className={o.emoji || o.bandeira ? 'viva-nome' : 'viva-numero'}
+                  >
+                    {o.rotulo}
+                  </span>
+                )}
               </button>
             );
           })}

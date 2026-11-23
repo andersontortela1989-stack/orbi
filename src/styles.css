@@ -383,7 +383,12 @@ textarea:focus-visible {
 
 .adv-ajuda {
   pointer-events: auto;
-  padding: var(--space-2) var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--space-4);
   background: var(--surface-card);
   border: var(--outline-thin) solid var(--outline-color);
   border-radius: var(--radius-pill);
@@ -916,6 +921,16 @@ textarea:focus-visible {
   color: var(--orbi-sun-deep);
 }
 
+/* Destaque neutro para perguntas de COR (MERCADO): evita conflito visual
+   como a palavra "ROXA" escrita em amarelo ao lado da banana. */
+.viva-som--neutro {
+  color: var(--text-strong);
+  background: var(--surface-base);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-2);
+}
+
 /* Fileira de itens pra CONTAR (chegada viva da PADARIA): pães grandes e
    separados — dá pra contar com o dedo na tela. */
 .viva-mostra {
@@ -959,6 +974,7 @@ textarea:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   flex: 1 1 110px;
   min-width: min(110px, 100%);
@@ -1758,31 +1774,49 @@ textarea:focus-visible {
   94%           { transform: translateY(-2px) scale(1.03); }
 }
 
-/* link discreto "ver a história de novo" */
+/* link discreto "ver a história de novo" — fora do .start-screen escalado,
+   com área tocável mínima de 44×44 px preservada em qualquer tela. */
 .start-historia {
+  position: fixed;
+  left: var(--ui-safe-left);
+  bottom: var(--ui-safe-bottom);
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 12px;
   font-family: var(--font-body);
   font-weight: var(--weight-body-bold);
   font-size: var(--text-body);
-  color: rgba(255, 255, 255, .8);            /* sussurra sobre o crepúsculo */
+  color: rgba(255, 255, 255, .82);           /* sussurra sobre o crepúsculo */
   background: none;
   border: none;
-  border-bottom: 2px dashed rgba(255, 255, 255, .4);
-  padding: 2px 2px;
   cursor: pointer;
-  transition: color var(--dur-quick) var(--ease-soft), border-color var(--dur-quick) var(--ease-soft);
+  transition: color var(--dur-quick) var(--ease-soft);
 }
-.start-historia:hover { color: #fff; border-color: rgba(255, 255, 255, .7); }
+.start-historia-texto {
+  border-bottom: 2px dashed rgba(255, 255, 255, .4);
+  padding-bottom: 2px;
+  transition: border-color var(--dur-quick) var(--ease-soft);
+}
+.start-historia:hover { color: #fff; }
+.start-historia:hover .start-historia-texto { border-color: rgba(255, 255, 255, .7); }
 
 /* ---- cantinhos ---- */
 /* .start-controls / .start-rbtn saíram com o botão de som (tema cantado
    removido); voltam com o tema novo numa atualização futura. */
 .start-parents {
-  position: absolute;
-  bottom: 26px;
-  right: 34px;
-  z-index: 4;
+  position: fixed;
+  bottom: var(--ui-safe-bottom);
+  right: var(--ui-safe-right);
+  z-index: 25;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
   gap: 9px;
   white-space: nowrap;
   font-family: var(--font-display);
@@ -1792,7 +1826,7 @@ textarea:focus-visible {
   background: rgba(28, 39, 70, .22);
   border: var(--outline-thin) solid rgba(255, 255, 255, .4);
   border-radius: var(--radius-pill);
-  padding: 8px 16px;
+  padding: 10px 16px;
   cursor: pointer;
 }
 .start-parents:hover { color: #fff; border-color: rgba(255, 255, 255, .7); }
@@ -2143,7 +2177,9 @@ textarea:focus-visible {
 
   .adv-ajuda {
     font-size: 12px;
-    padding: 5px 10px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 var(--space-3);
   }
   .adv-overlay {
     padding:

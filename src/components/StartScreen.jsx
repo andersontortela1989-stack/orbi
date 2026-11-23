@@ -183,32 +183,35 @@ export function StartScreen({ onPlay, onVerHistoria, onPrepararJogo }) {
             JOGAR
           </button>
 
-          {/* discreto: só depois da intro vista (adendo de narrativa) */}
-          {introVista && onVerHistoria && (
-            <button className="start-historia" onClick={onVerHistoria}>
-              ver a história de novo
-            </button>
-          )}
         </div>
+      </div>
 
-        {/* CANTINHOS: só "Área dos pais" por ora — o botão de som saiu com o
-            tema cantado (ver doc do componente); volta com o tema novo. */}
+      {/* Overlay da Área dos pais e atalhos fixos — filhos de .orbi-start (NÃO
+          de .start-screen, que tem transform: scale()): preservam alvo mínimo
+          de 44×44 px sem encolher junto com a ilustração. */}
+      {!paisAberto && introVista && onVerHistoria && (
         <button
+          type="button"
+          className="start-historia"
+          onClick={onVerHistoria}
+        >
+          <span className="start-historia-texto">ver a história de novo</span>
+        </button>
+      )}
+      {!paisAberto && (
+        <button
+          type="button"
           className="start-parents"
           onClick={() => setPaisAberto(true)}
           aria-label="Área dos pais"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <rect x="4" y="10" width="16" height="11" rx="3" fill="#fff" stroke="#46557E" strokeWidth="2.4" />
             <path d="M8 10 V7 a4 4 0 0 1 8 0 V10" stroke="#46557E" strokeWidth="2.4" fill="none" />
           </svg>
           Área dos pais
         </button>
-      </div>
-
-      {/* Overlay da Área dos pais — filho de .orbi-start (NÃO de .start-screen,
-          que tem transform: scale()): position:fixed lá dentro seria escalado.
-          Fica FORA da moldura escalada, ocupando a viewport inteira. */}
+      )}
       {paisAberto && <AreaPais onFechar={() => setPaisAberto(false)} />}
       {!paisAberto && <SensorySettings variant="start" />}
 

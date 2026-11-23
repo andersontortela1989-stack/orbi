@@ -149,7 +149,7 @@ export function criarAventura(def) {
           PEDIR_MISSAO,
           {
             tipo: 'objetivo',
-            texto: atual.texto,
+            texto: atual.objetivo ?? atual.texto,
             contador: { atual: 0, total: atual.quantidade },
           },
           { tipo: 'falar', texto: atual.texto }
@@ -174,7 +174,7 @@ export function criarAventura(def) {
           PEDIR_MISSAO,
           {
             tipo: 'objetivo',
-            texto: atual.texto,
+            texto: atual.objetivo ?? atual.texto,
             contador: {
               atual: 0,
               total: slots * porSlot,
@@ -376,7 +376,7 @@ export function criarAventura(def) {
         return [
           {
             tipo: 'objetivo',
-            texto: atual.texto,
+            texto: atual.objetivo ?? atual.texto,
             contador: { atual: st.coletado, total: atual.quantidade },
           },
           // Por extenso, como no repartir: a voz recebe "dois", não "2".
@@ -407,7 +407,7 @@ export function criarAventura(def) {
         return [
           {
             tipo: 'objetivo',
-            texto: atual.texto,
+            texto: atual.objetivo ?? atual.texto,
             contador: {
               atual: somar(st.distribuido),
               total: slots * porSlot,
