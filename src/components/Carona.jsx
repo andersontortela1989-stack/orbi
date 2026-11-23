@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Cachorro } from './Bichos.jsx';
@@ -9,6 +10,10 @@ import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
 import { useActivity, useRegistrarAtividade } from '../activity/useActivity.js';
 import { somSucesso } from '../audio/sons.js';
 import { ZINDEX_BALAO_MUNDO } from '../visual/world-style.js';
+import {
+  SELETORES_CONTROLES_HUD,
+  calcularDesvioBalao,
+} from '../ui/balao-carona.js';
 import {
   CARONA_ESPERA_POS as ESPERA_POS,
   CARONA_EMBARQUE_SIZE as EMBARQUE_SIZE,
@@ -44,6 +49,7 @@ import {
 // em bairros.js) moram em city/carona.js. Aqui ficam só as medidas visuais.
 const ESPERA_HEADING = 0.5;
 const ESCALA_CAO = 1.6; // régua visual dos Bichos ("metade de um carro")
+const BALAO_ALTURA_Y = 3.2;
 
 const RECOMPENSA = 3; // +moedas na entrega (decisão do gate)
 
@@ -52,6 +58,9 @@ export function Carona({ targetRef }) {
   const atividade = useActivity();
   useRegistrarAtividade('carona', aBordo);
   const passageiroRef = useRef(null);
+  const balaoRef = useRef(null);
+  const ancoraBalaoRef = useRef(new Vector3(ESPERA_POS[0], BALAO_ALTURA_Y, ESPERA_POS[1]));
+  const ultimoTransformRef = useRef('');
   const entregandoRef = useRef(false);
   const entregaTO = useRef(null);
 
@@ -62,13 +71,59 @@ export function Carona({ targetRef }) {
 
   // Passageiro segue o carro — só LÊ a posição (como Moedas/BlobShadow), fora
   // da cadeia load-bearing Car→FuelController. Zero física, zero colisão.
-  useFrame(() => {
-    if (!aBordo) return;
-    const rb = targetRef.current;
-    const grp = passageiroRef.current;
-    if (!rb || !grp) return;
-    const t = rb.translation();
-    grp.position.set(t.x, 1.1, t.z);
+  // Quando o cão está esperando, também ajusta o desvio visual do balão para
+  // não passar por trás da engrenagem, do sol nem dos demais controles do HUD.
+  useFrame(({ camera, gl }) => {
+    if (aBordo) {
+      const rb = targetRef.current;
+      const grp = passageiroRef.current;
+      if (!rb || !grp) return;
+      const t = rb.translation();
+      grp.position.set(t.x, 1.1, t.z);
+      return;
+    }
+
+    const el = balaoRef.current;
+    if (!el || typeof document === 'undefined' || typeof window === 'undefined') return;
+
+    const width = el.offsetWidth;
+    const height = el.offsetHeight;
+    if (!width || !height) return;
+
+    const canvasRect = gl.domElement.getBoundingClientRect();
+    const projetado = ancoraBalaoRef.current
+      .set(ESPERA_POS[0], BALAO_ALTURA_Y, ESPERA_POS[1])
+      .project(camera);
+
+    const x = canvasRect.left + (projetado.x * 0.5 + 0.5) * canvasRect.width;
+    const y = canvasRect.top + (-projetado.y * 0.5 + 0.5) * canvasRect.height;
+
+    const obstaculos = [];
+    for (const ctrl of document.querySelectorAll(SELETORES_CONTROLES_HUD)) {
+      const r = ctrl.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        obstaculos.push({
+          left: r.left,
+          top: r.top,
+          right: r.right,
+          bottom: r.bottom,
+        });
+      }
+    }
+
+    const { dx, dy, desviado } = calcularDesvioBalao(
+      { x, y, width, height },
+      obstaculos,
+      { width: window.innerWidth, height: window.innerHeight }
+    );
+
+    const proximoTransform = desviado
+      ? `translate3d(${Math.round(dx)}px, ${Math.round(dy)}px, 0)`
+      : '';
+    if (proximoTransform !== ultimoTransformRef.current) {
+      ultimoTransformRef.current = proximoTransform;
+      el.style.transform = proximoTransform;
+    }
   });
 
   const embarcar = () => {
@@ -135,11 +190,11 @@ export function Carona({ targetRef }) {
                  não painel, e por isso escapava da defesa 1. */}
           {atividade.hud !== 'painel' && (
             <Html
-              position={[ESPERA_POS[0], 3.2, ESPERA_POS[1]]}
+              position={[ESPERA_POS[0], BALAO_ALTURA_Y, ESPERA_POS[1]]}
               center
               zIndexRange={ZINDEX_BALAO_MUNDO}
             >
-              <div className="carona-balao">🐶 PARQUE?</div>
+              <div ref={balaoRef} className="carona-balao">🐶 PARQUE?</div>
             </Html>
           )}
 

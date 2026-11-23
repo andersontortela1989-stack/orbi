@@ -131,14 +131,28 @@ export function ChegadaVivaPanel() {
           <BotaoRepetirFala />
         </div>
 
-        {/* Fileira de itens pra CONTAR (PADARIA): pães grandes e separados,
-            dá pra contar com o dedo na tela. aria-hidden: a quantidade é a
-            resposta — o conteúdo acessível é a pergunta falada. */}
+        {/* Fileira de itens pra CONTAR (PADARIA) ou dois agrupamentos
+            separados (ESCOLA: 2 de um lado, 3 do outro). aria-hidden: a
+            quantidade é a resposta — o conteúdo acessível é a pergunta falada. */}
         {pergunta.mostra && (
-          <div className="viva-mostra" aria-hidden="true">
-            {Array.from({ length: pergunta.mostra.quantidade }).map((_, i) => (
-              <span key={i}>{pergunta.mostra.emoji}</span>
-            ))}
+          <div
+            className={
+              'viva-mostra' +
+              (pergunta.mostra.grupos ? ' viva-mostra--grupos' : '')
+            }
+            aria-hidden="true"
+          >
+            {pergunta.mostra.grupos
+              ? pergunta.mostra.grupos.map((qtd, gIdx) => (
+                  <div className="viva-mostra-grupo" key={gIdx}>
+                    {Array.from({ length: qtd }).map((_, i) => (
+                      <span key={i}>{pergunta.mostra.emoji}</span>
+                    ))}
+                  </div>
+                ))
+              : Array.from({ length: pergunta.mostra.quantidade }).map((_, i) => (
+                  <span key={i}>{pergunta.mostra.emoji}</span>
+                ))}
           </div>
         )}
 

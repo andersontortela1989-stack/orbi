@@ -12,6 +12,7 @@ import {
 import { useAdventure } from '../adventure/useAdventure.js';
 import { aventuraAtiva as aventuraEstaAtiva } from '../adventure/runtime.js';
 import { conviteHortaDaSessao } from '../adventure/convites.js';
+import { resolverPosChegada } from '../missions/chegada-ordem.js';
 import { podePedirProxima } from '../missions/roteiro.js';
 import { marcar } from '../perf/sonda.js';
 import { useMarcarTroca } from '../perf/useMarcarTroca.js';
@@ -78,16 +79,15 @@ export function MissionController() {
     }
     proximaPendente.current = false;
     const atual = useGame.getState().missao;
-    if (atual?.tipo === 'gps' && temChegadaViva(atual.destino)) {
-      useGame.getState().abrirChegadaViva(atual.destino);
-    } else {
-      // H1: na ESCOLA, uma vez por sessão, a Horta convida ANTES de o
-      // roteiro avançar. A próxima parada é marcada em silêncio (o efeito de
-      // narração não fala com aventura ativa) e volta a ser pedida quando a
-      // Horta termina ou é recusada (F1, efeito 2b).
-      conviteHortaDaSessao.tentar(atual);
-      useGame.getState().proximaMissao();
-    }
+    // Ordem na ESCOLA: na 1ª chegada elegível da sessão, o convite da Horta
+    // tem prioridade sobre qualquer pergunta escolar; a pergunta só abre em
+    // chegadas posteriores (regra pura em missions/chegada-ordem.js).
+    resolverPosChegada(atual, {
+      conviteHorta: conviteHortaDaSessao,
+      temChegadaViva,
+      abrirChegadaViva: useGame.getState().abrirChegadaViva,
+      proximaMissao: useGame.getState().proximaMissao,
+    });
   };
 
   // 1) BOOT — começa o roteiro. Só age com a posição ainda nula: o StrictMode

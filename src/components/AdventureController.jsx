@@ -27,34 +27,38 @@ function AdventurePanel() {
 
   if (painel.tipo === 'mensagem') {
     return (
-      <div className="adv-overlay">
+      <div className="adv-overlay adv-overlay--mensagem">
         <div className="adv-painel adv-painel--mensagem" role="dialog" aria-modal="true">
-          <div className="adv-selo">NOVA AVENTURA</div>
-          <div className="adv-titulo">{aventura.titulo}</div>
-          <p className="adv-texto">{painel.texto}</p>
-          <button
-            type="button"
-            className="adv-continuar"
-            onClick={(e) => {
-              enviarEventoAventura({ tipo: 'toque' });
-              e.currentTarget.blur();
-            }}
-          >
-            {painel.botao}
-          </button>
-          {/* H1: convite que pode ser recusado — sem perder nada. */}
-          {painel.botaoSecundario && (
+          <div className="adv-corpo adv-corpo--mensagem">
+            <div className="adv-selo">NOVA AVENTURA</div>
+            <div className="adv-titulo">{aventura.titulo}</div>
+            <p className="adv-texto">{painel.texto}</p>
+          </div>
+          <div className="adv-acoes">
             <button
               type="button"
-              className="adv-ajuda-painel"
+              className="adv-continuar"
               onClick={(e) => {
-                enviarEventoAventura({ tipo: 'recusar' });
+                enviarEventoAventura({ tipo: 'toque' });
                 e.currentTarget.blur();
               }}
             >
-              {painel.botaoSecundario}
+              {painel.botao}
             </button>
-          )}
+            {/* H1: convite que pode ser recusado — sem perder nada. */}
+            {painel.botaoSecundario && (
+              <button
+                type="button"
+                className="adv-ajuda-painel"
+                onClick={(e) => {
+                  enviarEventoAventura({ tipo: 'recusar' });
+                  e.currentTarget.blur();
+                }}
+              >
+                {painel.botaoSecundario}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -110,24 +114,32 @@ function AdventurePanel() {
   return (
     <div className="adv-overlay adv-overlay--resumo">
       <div className="adv-painel adv-painel--resumo" role="dialog" aria-modal="true">
-        <div className="adv-selo">AVENTURA CONCLUÍDA</div>
-        <div className="adv-titulo">{painel.titulo}</div>
-        <ul className="adv-aprendizados">
-          {painel.aprendizados.map((item) => <li key={item}>{item}</li>)}
-        </ul>
-        <div className="adv-recompensas">
-          {painel.recompensas.map((item) => <span key={item}>{item}</span>)}
+        <div className="adv-cabecalho">
+          <div className="adv-selo">AVENTURA CONCLUÍDA</div>
+          <div className="adv-titulo">{painel.titulo}</div>
         </div>
-        <button
-          type="button"
-          className="adv-continuar"
-          onClick={(e) => {
-            enviarEventoAventura({ tipo: 'toque' });
-            e.currentTarget.blur();
-          }}
-        >
-          CONTINUAR EXPLORANDO
-        </button>
+        <div className="adv-corpo adv-corpo--resumo">
+          <ul className="adv-aprendizados">
+            {painel.aprendizados.map((item) => <li key={item}>{item}</li>)}
+          </ul>
+          {painel.recompensas.length > 0 && (
+            <div className="adv-recompensas">
+              {painel.recompensas.map((item) => <span key={item}>{item}</span>)}
+            </div>
+          )}
+        </div>
+        <div className="adv-acoes">
+          <button
+            type="button"
+            className="adv-continuar"
+            onClick={(e) => {
+              enviarEventoAventura({ tipo: 'toque' });
+              e.currentTarget.blur();
+            }}
+          >
+            CONTINUAR EXPLORANDO
+          </button>
+        </div>
       </div>
     </div>
   );

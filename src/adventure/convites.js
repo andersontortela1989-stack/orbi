@@ -44,6 +44,9 @@ export function criarConviteHorta(iniciar, faixa = FAIXA_HORTA_PADRAO) {
       feito = true;
       return true;
     },
+    jaOferecido() {
+      return feito;
+    },
   });
 }
 

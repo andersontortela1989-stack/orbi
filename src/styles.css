@@ -212,6 +212,13 @@ textarea:focus-visible {
   background: rgba(28, 39, 70, 0.22);
 }
 
+.adv-overlay--mensagem,
+.adv-overlay--resumo {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .adv-overlay--resumo {
   align-items: center;
   background: rgba(28, 39, 70, 0.45);
@@ -238,6 +245,48 @@ textarea:focus-visible {
 
 .adv-painel--mensagem { max-width: 640px; }
 .adv-painel--resumo { max-width: 680px; }
+
+.adv-painel--mensagem,
+.adv-painel--resumo {
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.adv-cabecalho {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.adv-corpo {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.adv-corpo--resumo {
+  padding-bottom: var(--space-2);
+}
+
+.adv-acoes {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
 
 .adv-selo {
   font-family: var(--font-display);
@@ -876,6 +925,22 @@ textarea:focus-visible {
   gap: var(--space-4);
   font-size: 48px;
   line-height: 1;
+}
+
+.viva-mostra--grupos {
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.viva-mostra-grupo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-base);
+  border: var(--outline-thin) solid var(--outline-color);
+  border-radius: var(--radius-lg);
 }
 
 .viva-cartas {
@@ -2082,15 +2147,40 @@ textarea:focus-visible {
   }
   .adv-overlay {
     padding:
-      max(var(--space-3), env(safe-area-inset-top, 0px))
+      max(var(--space-2), env(safe-area-inset-top, 0px))
       max(var(--space-3), env(safe-area-inset-right, 0px))
-      max(var(--space-3), env(safe-area-inset-bottom, 0px))
+      max(var(--space-2), env(safe-area-inset-bottom, 0px))
       max(var(--space-3), env(safe-area-inset-left, 0px));
   }
   .adv-painel {
     padding: var(--space-3) var(--space-4);
     gap: var(--space-2);
     max-height: calc(100dvh - var(--space-5));
+  }
+  .adv-painel--mensagem,
+  .adv-painel--resumo {
+    max-height: 100%;
+  }
+  .adv-cabecalho { gap: var(--space-1); }
+  .adv-selo { padding: var(--space-1) var(--space-3); font-size: 11px; }
+  .adv-corpo { gap: var(--space-2); }
+  .adv-corpo--resumo { padding-bottom: var(--space-2); }
+  .adv-aprendizados { gap: var(--space-2); }
+  .adv-aprendizados li {
+    padding: var(--space-2) var(--space-3);
+    font-size: 14px;
+    line-height: 1.25;
+  }
+  .adv-recompensas span {
+    padding: var(--space-1) var(--space-3);
+    font-size: 12px;
+  }
+  .adv-acoes {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 2px solid rgba(28, 39, 70, 0.12);
   }
   .adv-titulo { font-size: 20px; }
   .adv-texto { font-size: 16px; }
@@ -2103,7 +2193,10 @@ textarea:focus-visible {
     font-size: 15px;
   }
   .adv-emoji { font-size: 34px; }
+  .adv-continuar,
+  .adv-ajuda-painel { min-height: 44px; }
   .adv-continuar { padding: var(--space-2) var(--space-4); font-size: 16px; }
+  .adv-ajuda-painel { padding: var(--space-2) var(--space-4); font-size: 14px; }
 
   .posto-painel,
   .garagem-painel,
@@ -2133,6 +2226,8 @@ textarea:focus-visible {
   .viva-numero { font-size: 38px; }
   .viva-nome { font-size: 15px; }
   .viva-mostra { font-size: 32px; gap: var(--space-2); }
+  .viva-mostra--grupos { gap: var(--space-4); }
+  .viva-mostra-grupo { padding: var(--space-1) var(--space-3); gap: var(--space-1); }
 
   .cad-overlay,
   .pais-overlay {

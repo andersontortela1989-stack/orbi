@@ -306,6 +306,36 @@ function sortearPerguntaBandeira(lugar) {
   };
 }
 
+// ============================ ESCOLA ===================================
+// Pergunta de referência das maçãs (2 + 3 = 5): dois agrupamentos separados
+// (2 de um lado, 3 do outro), cartas 4, 5 e 6, pista e revelação por extenso
+// (sem algarismos nas falas). Ativa apenas esta pergunta na ESCOLA.
+
+function sortearPerguntaEscola(lugar) {
+  const opcoes = embaralhar([4, 5, 6]).map((v) => ({
+    valor: String(v),
+    emoji: null, // sem emoji → número grande (padrão PADARIA/PARQUE)
+    rotulo: String(v),
+  }));
+
+  return {
+    lugar,
+    habilidade: 'contagem',
+    resposta: '5',
+    tituloAntes: 'HAVIA 2 MAÇÃS E CHEGARAM MAIS 3. QUANTAS FICARAM?',
+    tituloDestaque: '',
+    tituloDepois: '',
+    mostra: { emoji: '🍎', grupos: [2, 3] },
+    opcoes,
+    dica: 'CONTE AS DUAS E CONTINUE CONTANDO AS QUE CHEGARAM.',
+    descoberta: { categoria: 'contagens', id: '5' },
+    frasePergunta: 'Havia duas maçãs. Chegaram mais três. Quantas ficaram?',
+    fraseAcerto: 'Isso! Duas e mais três são cinco maçãs!',
+    fraseTenteDeNovo: 'Conte as duas e continue contando as que chegaram.',
+    fraseRevela: 'Duas e mais três são cinco maçãs.',
+  };
+}
+
 // slug do prédio → gerador de pergunta.
 const GERADORES = {
   ZOO: sortearPerguntaAnimal,
@@ -313,6 +343,7 @@ const GERADORES = {
   PADARIA: sortearPerguntaPaes,
   PARQUE: sortearPerguntaArvores,
   'ESTÁDIO': sortearPerguntaBandeira,
+  ESCOLA: sortearPerguntaEscola,
 };
 
 // Invariante de montabilidade do quiz de bandeiras (mesmo espírito do contrato
