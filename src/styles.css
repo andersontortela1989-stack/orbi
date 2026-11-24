@@ -1778,8 +1778,8 @@ textarea:focus-visible {
    com área tocável mínima de 44×44 px preservada em qualquer tela. */
 .start-historia {
   position: fixed;
-  left: var(--ui-safe-left);
-  bottom: var(--ui-safe-bottom);
+  left: max(18px, var(--ui-safe-left));
+  bottom: max(18px, var(--ui-safe-bottom));
   z-index: 25;
   display: inline-flex;
   align-items: center;
@@ -1809,8 +1809,8 @@ textarea:focus-visible {
    removido); voltam com o tema novo numa atualização futura. */
 .start-parents {
   position: fixed;
-  bottom: var(--ui-safe-bottom);
-  right: var(--ui-safe-right);
+  bottom: max(18px, var(--ui-safe-bottom));
+  right: max(18px, var(--ui-safe-right));
   z-index: 25;
   display: inline-flex;
   align-items: center;
@@ -2420,7 +2420,7 @@ textarea:focus-visible {
 .sensory-trigger--start {
   position: fixed;
   left: max(18px, env(safe-area-inset-left, 0px));
-  bottom: max(18px, env(safe-area-inset-bottom, 0px));
+  top: max(18px, env(safe-area-inset-top, 0px));
   z-index: 55;
   min-height: 48px;
   display: inline-flex;
