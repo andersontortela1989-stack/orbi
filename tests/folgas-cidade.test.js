@@ -147,9 +147,9 @@ test('geometria: distância com sinal entre retângulos e de ponto a retângulo'
 });
 
 test('inventário carregado: nada medido no vazio', () => {
-  assert.equal(PREDIOS_COM_BUILDING.length, 10);
-  assert.equal(LOTES_VISUAIS.length, 13);
-  assert.equal(SENSORES.length, 15);
+  assert.equal(PREDIOS_COM_BUILDING.length, 11);
+  assert.equal(LOTES_VISUAIS.length, 14);
+  assert.equal(SENSORES.length, 16);
   assert.equal(MOEDAS.length, 30);
   assert.equal(BICHOS.length, 5);
   assert.ok(PARQUE, 'PARQUE existe em bairros.js');

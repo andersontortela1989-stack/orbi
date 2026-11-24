@@ -29,6 +29,7 @@ const ESTILOS = Object.freeze({
   POSTO:    { telhado: 'posto',    acento: TINTAS.blue,      janela: '#FFF0B0', texto: TINTAS.white },
   GARAGEM:  { telhado: 'plano',    acento: TINTAS.violet,    janela: '#BEEBFF', texto: TINTAS.white },
   'ESTÁDIO': { telhado: 'domo',    acento: TINTAS.sun,       janela: '#E6F8FF', texto: TINTAS.ink },
+  'SHOPPING': { telhado: 'plano',   acento: TINTAS.sun,       janela: '#FFF1C2', texto: TINTAS.ink },
 });
 
 function Telhado({ tipo, w, h, l, acento }) {

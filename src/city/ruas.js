@@ -22,6 +22,9 @@ export const CAMINHOS = Object.freeze([
   [[0, -4], [12, -7], [22, -12], [34, -16]],
   // anel curto de serviços do centro
   [[-34, 24], [-27, 17], [-18, 8], [-4, 3], [11, 6], [22, 15]],
+  // expansão Shopping (Fatia 1): bifurca antes da garagem e segue pela
+  // frente (+Z) do bairro SHOPPING, com saída livre para retorno.
+  [[20, -12], [21, -29], [34, -31], [47, -30], [54, -21], [58, -17], [66, -17], [74, -17], [84, -17]],
 ]);
 
 export const TENSAO_RUA = 0.35;

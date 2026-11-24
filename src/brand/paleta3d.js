@@ -72,11 +72,12 @@ export const PALETA3D = {
 
   // chãos dos bairros — família -soft da marca + paper: distintos entre si,
   // calmos, e mantêm o papel da Fatia 7 (a cor do chão avisa o bairro)
-  chaoCentro:  '#B9B4C8',
-  chaoMercado: '#C8AF72',
-  chaoPorto:   '#83B9CE',
-  chaoParque:  '#80B58B',
-  chaoEstadio: '#C89891',
+  chaoCentro:   '#B9B4C8',
+  chaoMercado:  '#C8AF72',
+  chaoPorto:    '#83B9CE',
+  chaoParque:   '#80B58B',
+  chaoEstadio:  '#C89891',
+  chaoShopping: '#B4A9D6',
 
   // sticker dos prédios (Fatia B): contorno navy + placa branca de letreiro
   // com texto navy — TODO letreiro tem a mesma cara (previsibilidade TEA)
@@ -105,6 +106,7 @@ export const PALETA3D = {
     POSTO:    TINTAS.sunSoft,   // energia
     GARAGEM:  TINTAS.blueSoft,  // oficina calma (serviço, como o POSTO)
     'ESTÁDIO': TINTAS.skyDeep,  // arena céu (Frente 6 — única tinta inédita)
+    SHOPPING: TINTAS.violet,    // passeio/lojas (expansão Shopping Fatia 1)
   },
 
   // carro — avatar do Heitor: evolução pro coral oficial, não troca
