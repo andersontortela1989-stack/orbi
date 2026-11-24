@@ -3,6 +3,7 @@ import { useGame } from '../store/useGame.js';
 import { somSucesso } from '../audio/sons.js';
 import { falarDaAtividade } from '../activity/index.js';
 import { useRegistrarAtividade } from '../activity/useActivity.js';
+import { finalizarChegadaViva } from '../missions/visita-livre.js';
 import { Bandeira } from './Bandeira.jsx';
 import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
 import { useMarcarTroca } from '../perf/useMarcarTroca.js';
@@ -17,11 +18,11 @@ const MAX_TENTATIVAS = 2;
  * CHEGADA VIVA — a pergunta do Órbi na chegada.
  *
  * Abre quando a store tem `chegadaViva` (setada pelo MissionController após a
- * celebração da chegada no lugar). O painel é GENÉRICO: todo o conteúdo —
- * título, cartas, dica, frases de voz, habilidade registrada e a fileira
- * opcional de itens pra contar — vem pronto da pergunta (chegadas-vivas.js).
- * ZOO = sons de animais; MERCADO = cores de frutas; PADARIA = contagem de
- * pães (cartas de número, sem emoji).
+ * celebração da chegada no lugar, ou por visita livre no Shopping). O painel é
+ * GENÉRICO: todo o conteúdo — título, cartas, dica, frases de voz, habilidade
+ * registrada e a fileira opcional de itens pra contar — vem pronto da pergunta
+ * (chegadas-vivas.js). ZOO = sons de animais; MERCADO = cores de frutas;
+ * PADARIA = contagem de pães (cartas de número, sem emoji).
  *
  * Feedback ASSIMÉTRICO ESTRITO (guard-rail TEA):
  *  - acerto  → festa contida: somSucesso + voz + carta acesa em Sol;
@@ -70,13 +71,14 @@ export function ChegadaVivaPanel() {
     if (d) useGame.getState().registrarDescoberta(d.categoria, d.id);
   };
 
-  // Fecha o painel e segue o fluxo normal — só o painel pede a próxima
-  // parada do roteiro quando há chegada viva (o MissionController delega pra cá).
+  // Fecha o painel e segue o fluxo: em missão do roteiro pede a próxima
+  // parada; em visita livre devolve a direção mantendo a parada atual intacta.
   const finalizar = () => {
+    const perguntaAtual = pergunta;
     clearTimeout(fecharTO.current);
     fecharTO.current = setTimeout(() => {
-      useGame.getState().fecharChegadaViva();
-      useGame.getState().proximaMissao();
+      const { fecharChegadaViva, proximaMissao } = useGame.getState();
+      finalizarChegadaViva(perguntaAtual, { fecharChegadaViva, proximaMissao });
     }, FECHAR_MS);
   };
 

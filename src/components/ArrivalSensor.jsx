@@ -7,11 +7,20 @@ import { PADDING_CHEGADA } from '../city/geometria.js';
  * DINÂMICO entra (na cena atual, só o carro é dinâmico — filtro por bodyType
  * ignora chão e prédios fixos que ficam dentro do volume).
  *
+ * `onLeave` (opcional) avisa quando o carro sai do sensor — usado para evitar
+ * reabertura em loop em visitas livres enquanto o carro continua na vaga.
+ *
  * `padding` controla o raio extra além das paredes do prédio.
  * O volume é mais alto que o prédio (h em y) pra garantir que o chassi do
  * carro (y ≈ 1) sempre esteja dentro independente da altura do prédio.
  */
-export function ArrivalSensor({ floorPos, size, padding = PADDING_CHEGADA, onArrival }) {
+export function ArrivalSensor({
+  floorPos,
+  size,
+  padding = PADDING_CHEGADA,
+  onArrival,
+  onLeave,
+}) {
   const [x, z] = floorPos;
   const [w, h, l] = size;
 
@@ -30,6 +39,15 @@ export function ArrivalSensor({ floorPos, size, padding = PADDING_CHEGADA, onArr
             onArrival();
           }
         }}
+        onIntersectionExit={
+          onLeave
+            ? (payload) => {
+                if (payload.other.rigidBody?.isDynamic?.()) {
+                  onLeave();
+                }
+              }
+            : undefined
+        }
       />
     </RigidBody>
   );

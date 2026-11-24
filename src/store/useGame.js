@@ -198,9 +198,15 @@ export const useGame = create(
       // === Chegada viva ===
       // Abre a mini-interação do lugar (se ele tiver uma): a pergunta sai
       // PRONTA do registry (animal + opções embaralhadas + frases de voz).
-      abrirChegadaViva: (lugar) => {
+      abrirChegadaViva: (lugar, opcoes) => {
         const pergunta = sortearChegadaViva(lugar);
-        if (pergunta) set({ chegadaViva: pergunta });
+        if (!pergunta) return false;
+        set({
+          chegadaViva: opcoes?.visitaLivre
+            ? { ...pergunta, visitaLivre: true }
+            : pergunta,
+        });
+        return true;
       },
       fecharChegadaViva: () => set({ chegadaViva: null }),
 
