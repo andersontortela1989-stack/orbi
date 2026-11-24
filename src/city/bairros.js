@@ -205,6 +205,24 @@ export const BAIRROS = [
       },
     ],
   },
+
+  {
+    // Expansão Sítio (Fatia 1) — espaço aberto rural no quadrante sudoeste,
+    // com porteira, pasto de cavalos e rio com peixinhos, ligado ao eixo sul.
+    slug: 'SÍTIO',
+    corChao: PALETA3D.chaoSitio,
+    chao: { centro: [-70, -32], tamanho: [44, 36] },
+    predios: [
+      {
+        slug: 'SÍTIO',
+        pos: [-70, -34],
+        size: [18, 5, 14],
+        cor: PALETA3D.predios['SÍTIO'],
+        pedido: 'O que é sítio? Vamos conhecer?',
+        chegada: 'Uau! Então isso é um sítio! Aqui tem cavalos no pasto e peixinhos no rio!',
+      },
+    ],
+  },
 ];
 
 /** Lista achatada de todos os prédios da cidade (todos os bairros). */

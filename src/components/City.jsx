@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { Building } from './Building.jsx';
 import { OpenPark } from './OpenPark.jsx';
+import { OpenSitio } from './OpenSitio.jsx';
 import { AderecosLugar } from './AderecosLugar.jsx';
 import { BAIRROS } from '../city/bairros.js';
 import { ADERECOS } from '../city/identidade.js';
@@ -78,6 +79,8 @@ export function City() {
           {bairro.predios.map((p) => (
             p.slug === 'PARQUE' ? (
               <OpenPark key={p.slug} floorPos={p.pos} />
+            ) : p.slug === 'SÍTIO' ? (
+              <OpenSitio key={p.slug} floorPos={p.pos} />
             ) : estiloReal && SLUGS_ESQUINA.includes(p.slug) ? (
               // Piloto da esquina (`?estilo=real`): o desenho chega sob
               // demanda (EsquinaReal, montado pelo Game); aqui fica só o

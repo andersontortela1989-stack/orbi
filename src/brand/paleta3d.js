@@ -78,6 +78,7 @@ export const PALETA3D = {
   chaoParque:   '#80B58B',
   chaoEstadio:  '#C89891',
   chaoShopping: '#B4A9D6',
+  chaoSitio:    '#A3C68C',
 
   // sticker dos prédios (Fatia B): contorno navy + placa branca de letreiro
   // com texto navy — TODO letreiro tem a mesma cara (previsibilidade TEA)
@@ -107,6 +108,7 @@ export const PALETA3D = {
     GARAGEM:  TINTAS.blueSoft,  // oficina calma (serviço, como o POSTO)
     'ESTÁDIO': TINTAS.skyDeep,  // arena céu (Frente 6 — única tinta inédita)
     SHOPPING: TINTAS.violet,    // passeio/lojas (expansão Shopping Fatia 1)
+    'SÍTIO':  TINTAS.grassSoft, // campo/pasto (expansão Sítio Fatia 1)
   },
 
   // carro — avatar do Heitor: evolução pro coral oficial, não troca
@@ -144,6 +146,23 @@ export const PALETA3D = {
     bico:     TINTAS.sunDeep, // pato, galinha
     mancha:   TINTAS.ink,     // manchas vaca/cachorro (no TOPO — câmera alta)
     crista:   TINTAS.coral,   // galinha
+  },
+
+  // Sítio (expansão Sítio Fatia 1) — cores de campo/madeira/água próprias,
+  // fora do âmbar da moeda (sun) para não parecer coletável.
+  sitio: {
+    pasto:        '#84B974',
+    trilha:       '#D8C59A',
+    cerca:        '#A6754B',
+    madeira:      '#795132',
+    margem:       '#D6C296',
+    rio:          TINTAS.water,
+    rioFundo:     TINTAS.blueDeep,
+    cavaloMarrom: '#8E5A38',
+    cavaloCreme:  '#E7D6B7',
+    cavaloCanela: '#A86B43',
+    crina:        TINTAS.ink,
+    peixe:        TINTAS.coral,
   },
 
   // props do cenário (Fatia C — decoração pura, ver Cenario.jsx)

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { TODOS_PREDIOS } from '../src/city/bairros.js';
+import { SITIO_AREA_MEIAS } from '../src/city/sitio.js';
 import { GARAGEM_POS, GARAGEM_SIZE } from '../src/city/garagem.js';
 import { MOEDAS } from '../src/city/moedas.js';
 import { BICHOS } from '../src/city/bichos.js';
@@ -94,8 +95,9 @@ function semViolacoes(violacoes, oque) {
 //  Elementos da cidade
 // ===================================================================
 
-const PREDIOS_COM_BUILDING = TODOS_PREDIOS.filter((p) => p.slug !== 'PARQUE');
+const PREDIOS_COM_BUILDING = TODOS_PREDIOS.filter((p) => p.slug !== 'PARQUE' && p.slug !== 'SÍTIO');
 const PARQUE = TODOS_PREDIOS.find((p) => p.slug === 'PARQUE');
+const SITIO = TODOS_PREDIOS.find((p) => p.slug === 'SÍTIO');
 
 const calcada = (slug, pos, [w, , l]) =>
   caixa(`calçada ${slug}`, slug, pos, w / 2 + CALCADA_POR_LADO, l / 2 + CALCADA_POR_LADO);
@@ -117,8 +119,16 @@ const GRAMADO_PARQUE = caixa(
   GRAMADO_RAIO * GRAMADO_ESCALA[1]
 );
 
-/** Lotes visuais: calçadas + gramado do PARQUE (que não tem colisor). */
-const LOTES_VISUAIS = [...LOTES_COM_COLISOR, GRAMADO_PARQUE];
+const AREA_SITIO = caixa(
+  'área SÍTIO',
+  'SÍTIO',
+  SITIO.pos,
+  SITIO_AREA_MEIAS.hx,
+  SITIO_AREA_MEIAS.hz
+);
+
+/** Lotes visuais: calçadas + espaços abertos (PARQUE e SÍTIO, sem colisor). */
+const LOTES_VISUAIS = [...LOTES_COM_COLISOR, GRAMADO_PARQUE, AREA_SITIO];
 
 const sensor = (nome, lugar, pos, [w, , l], padding) =>
   caixa(nome, lugar, pos, w / 2 + padding, l / 2 + padding);
@@ -148,8 +158,8 @@ test('geometria: distância com sinal entre retângulos e de ponto a retângulo'
 
 test('inventário carregado: nada medido no vazio', () => {
   assert.equal(PREDIOS_COM_BUILDING.length, 11);
-  assert.equal(LOTES_VISUAIS.length, 14);
-  assert.equal(SENSORES.length, 16);
+  assert.equal(LOTES_VISUAIS.length, 15);
+  assert.equal(SENSORES.length, 17);
   assert.equal(MOEDAS.length, 30);
   assert.equal(BICHOS.length, 5);
   assert.ok(PARQUE, 'PARQUE existe em bairros.js');
