@@ -6,7 +6,7 @@
  * Sem React, sem Rapier e sem store: testável diretamente em node:test.
  */
 
-export const LUGARES_VISITA_LIVRE = Object.freeze(['SHOPPING']);
+export const LUGARES_VISITA_LIVRE = Object.freeze(['SHOPPING', 'SÍTIO']);
 export const FOCOS_VISITA_LIVRE = Object.freeze(['explorando', 'em_missao']);
 
 /** O lugar pode abrir sua chegada viva espontaneamente fora do roteiro? */

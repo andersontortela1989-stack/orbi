@@ -415,6 +415,91 @@ function sortearPerguntaShopping(lugar) {
   };
 }
 
+// ============================= SÍTIO ===================================
+// Associação rural (ciências da vida): 4 elementos claros do campo —
+// incluindo o cavalo do pasto e o peixe do rio visíveis em OpenSitio.
+
+export const ELEMENTOS_SITIO = Object.freeze([
+  Object.freeze({
+    slug: 'CAVALO',
+    emoji: '🐴',
+    tituloAntes: 'QUEM VIVE',
+    tituloDestaque: 'NO PASTO',
+    frasePergunta: 'Quem vive no pasto do sítio?',
+    fraseAcerto: 'Isso! O cavalo vive no pasto do sítio!',
+    fraseTenteDeNovo: 'Hmm, vamos pensar de novo? Quem vive no pasto?',
+    fraseRevela: 'É o cavalo! O cavalo vive no pasto do sítio!',
+  }),
+  Object.freeze({
+    slug: 'PEIXE',
+    emoji: '🐟',
+    tituloAntes: 'QUEM NADA',
+    tituloDestaque: 'NO RIO',
+    frasePergunta: 'Quem nada no rio do sítio?',
+    fraseAcerto: 'Isso! O peixe nada na água do rio!',
+    fraseTenteDeNovo: 'Hmm, vamos pensar de novo? Quem nada no rio?',
+    fraseRevela: 'É o peixe! O peixe nada na água do rio!',
+  }),
+  Object.freeze({
+    slug: 'ABELHA',
+    emoji: '🐝',
+    tituloAntes: 'QUEM FAZ',
+    tituloDestaque: 'MEL',
+    frasePergunta: 'Quem faz mel nas flores do sítio?',
+    fraseAcerto: 'Isso! A abelha faz mel pertinho das flores!',
+    fraseTenteDeNovo: 'Hmm, vamos pensar de novo? Quem faz mel?',
+    fraseRevela: 'É a abelha! A abelha faz mel pertinho das flores!',
+  }),
+  Object.freeze({
+    slug: 'GALINHA',
+    emoji: '🐔',
+    tituloAntes: 'QUEM BOTA',
+    tituloDestaque: 'OVO',
+    frasePergunta: 'Quem bota ovo no sítio?',
+    fraseAcerto: 'Isso! A galinha bota ovo no sítio!',
+    fraseTenteDeNovo: 'Hmm, vamos pensar de novo? Quem bota ovo?',
+    fraseRevela: 'É a galinha! A galinha bota ovo no sítio!',
+  }),
+]);
+
+let ultimoElementoSitio = null;
+
+/** Pergunta do Sítio: associa cada animal ao seu lugar ou papel no campo. */
+function sortearPerguntaSitio(lugar) {
+  const certo =
+    sortearItem(ELEMENTOS_SITIO.filter((e) => e.slug !== ultimoElementoSitio)) ??
+    ELEMENTOS_SITIO[0];
+  ultimoElementoSitio = certo.slug;
+
+  const distratoras = embaralhar(
+    ELEMENTOS_SITIO.filter((e) => e.slug !== certo.slug)
+  ).slice(0, 2);
+
+  const opcoes = embaralhar([certo, ...distratoras]).map((e) => ({
+    valor: e.slug,
+    emoji: e.emoji,
+    rotulo: e.slug,
+  }));
+
+  return {
+    lugar,
+    habilidade: 'cienciasVida',
+    resposta: certo.slug,
+    tituloAntes: certo.tituloAntes,
+    tituloDestaque: certo.tituloDestaque,
+    tituloDepois: '?',
+    destaqueNeutro: true,
+    mostra: null,
+    opcoes,
+    dica: 'MOSTRA PRO ÓRBI!',
+    descoberta: { categoria: 'lugares', id: 'SÍTIO' },
+    frasePergunta: certo.frasePergunta,
+    fraseAcerto: certo.fraseAcerto,
+    fraseTenteDeNovo: certo.fraseTenteDeNovo,
+    fraseRevela: certo.fraseRevela,
+  };
+}
+
 // slug do prédio → gerador de pergunta.
 const GERADORES = {
   ZOO: sortearPerguntaAnimal,
@@ -424,6 +509,7 @@ const GERADORES = {
   'ESTÁDIO': sortearPerguntaBandeira,
   ESCOLA: sortearPerguntaEscola,
   SHOPPING: sortearPerguntaShopping,
+  'SÍTIO': sortearPerguntaSitio,
 };
 
 // Invariante de montabilidade do quiz de bandeiras (mesmo espírito do contrato
