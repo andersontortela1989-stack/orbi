@@ -338,6 +338,83 @@ function sortearPerguntaEscola(lugar) {
   };
 }
 
+// ============================ SHOPPING =================================
+// Associação funcional no cotidiano (leitura global + rotina): 4 estações
+// bem distintas do shopping, sem excesso visual nem algarismos nas falas.
+
+export const ESTACOES_SHOPPING = Object.freeze([
+  Object.freeze({
+    slug: 'LIVRARIA',
+    emoji: '📚',
+    itemFala: 'um livro',
+    itemTitulo: 'UM LIVRO',
+    fraseAcerto: 'Isso! Na livraria tem livros para ler!',
+    fraseRevela: 'É na livraria! Na livraria tem livros para ler!',
+  }),
+  Object.freeze({
+    slug: 'CAFETERIA',
+    emoji: '🧃',
+    itemFala: 'um suco',
+    itemTitulo: 'UM SUCO',
+    fraseAcerto: 'Isso! Na cafeteria a gente pede suco e lanche!',
+    fraseRevela: 'É na cafeteria! Na cafeteria a gente pede suco e lanche!',
+  }),
+  Object.freeze({
+    slug: 'ROUPAS',
+    emoji: '👕',
+    itemFala: 'uma camiseta',
+    itemTitulo: 'UMA CAMISETA',
+    fraseAcerto: 'Isso! Na loja de roupas a gente escolhe camisetas!',
+    fraseRevela: 'É na loja de roupas! Lá a gente escolhe camisetas!',
+  }),
+  Object.freeze({
+    slug: 'BRINQUEDOS',
+    emoji: '🧸',
+    itemFala: 'um ursinho',
+    itemTitulo: 'UM URSINHO',
+    fraseAcerto: 'Isso! Na loja de brinquedos tem ursinhos e jogos!',
+    fraseRevela: 'É na loja de brinquedos! Lá tem ursinhos e jogos!',
+  }),
+]);
+
+let ultimaEstacaoShopping = null;
+
+/** Pergunta do Shopping: associa um item do dia a dia à sua estação. */
+function sortearPerguntaShopping(lugar) {
+  const certa =
+    sortearItem(ESTACOES_SHOPPING.filter((e) => e.slug !== ultimaEstacaoShopping)) ??
+    ESTACOES_SHOPPING[0];
+  ultimaEstacaoShopping = certa.slug;
+
+  const distratoras = embaralhar(
+    ESTACOES_SHOPPING.filter((e) => e.slug !== certa.slug)
+  ).slice(0, 2);
+
+  const opcoes = embaralhar([certa, ...distratoras]).map((e) => ({
+    valor: e.slug,
+    emoji: e.emoji,
+    rotulo: e.slug,
+  }));
+
+  return {
+    lugar,
+    habilidade: 'leituraGlobal',
+    resposta: certa.slug,
+    tituloAntes: 'ONDE TEM',
+    tituloDestaque: certa.itemTitulo,
+    tituloDepois: '?',
+    destaqueNeutro: true,
+    mostra: null,
+    opcoes,
+    dica: 'MOSTRA PRO ÓRBI!',
+    descoberta: { categoria: 'lugares', id: 'SHOPPING' },
+    frasePergunta: `Onde a gente encontra ${certa.itemFala} no shopping?`,
+    fraseAcerto: certa.fraseAcerto,
+    fraseTenteDeNovo: `Hmm, vamos pensar de novo? Onde fica ${certa.itemFala}?`,
+    fraseRevela: certa.fraseRevela,
+  };
+}
+
 // slug do prédio → gerador de pergunta.
 const GERADORES = {
   ZOO: sortearPerguntaAnimal,
@@ -346,6 +423,7 @@ const GERADORES = {
   PARQUE: sortearPerguntaArvores,
   'ESTÁDIO': sortearPerguntaBandeira,
   ESCOLA: sortearPerguntaEscola,
+  SHOPPING: sortearPerguntaShopping,
 };
 
 // Invariante de montabilidade do quiz de bandeiras (mesmo espírito do contrato
