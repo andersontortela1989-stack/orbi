@@ -25,9 +25,10 @@ export const CAMINHOS = Object.freeze([
   // expansão Shopping (Fatia 1): bifurca antes da garagem e segue pela
   // frente (+Z) do bairro SHOPPING, com saída livre para retorno.
   [[20, -12], [21, -29], [34, -31], [47, -30], [54, -21], [58, -17], [66, -17], [74, -17], [84, -17]],
-  // expansão Sítio (Fatia 1): sai do eixo central ao norte do Estádio e
-  // chega diante da porteira (+Z) do SÍTIO, com saída livre para retorno.
-  [[-3, -10], [-14, -11], [-28, -12], [-42, -14], [-52, -18], [-62, -19], [-70, -19], [-82, -19]],
+  // expansão Sítio (Fatia 1): bifurca do eixo central em [0, -4] (espelho
+  // da garagem), contorna o poste [-12, -12] e as moedas pelo norte e chega
+  // diante da porteira (+Z) do SÍTIO, com saída livre para retorno.
+  [[0, -4], [-12, -5], [-22, -5], [-31, -7], [-37, -14], [-48, -18], [-60, -19], [-70, -19], [-82, -19]],
 ]);
 
 export const TENSAO_RUA = 0.35;

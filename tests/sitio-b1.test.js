@@ -7,6 +7,7 @@ import { CAMINHOS, LARGURA_RUA_BORDA, TENSAO_RUA } from '../src/city/ruas.js';
 import { CALCADA_POR_LADO } from '../src/city/geometria.js';
 import { GARAGEM_POS, GARAGEM_SIZE } from '../src/city/garagem.js';
 import { POSTO_POS, POSTO_SIZE } from '../src/city/posto.js';
+import { MOEDAS } from '../src/city/moedas.js';
 import {
   CAVALOS_SITIO, PASTO_SITIO, PEIXES_SITIO,
   PORTEIRA_SITIO, RIO_SITIO, SITIO_AREA_MEIAS,
@@ -90,6 +91,34 @@ test('Sítio (Fatia 1): estrada chega na porteira (+Z) sem invadir calçadas e r
     const { centro: [cx, cz], tamanho: [w, l] } = BAIRROS.find((b) => b.slug === slug).chao;
     for (const [rx, rz] of rochas) {
       assert.ok(!(Math.abs(rx - cx) <= w / 2 + 1 && Math.abs(rz - cz) <= l / 2 + 1), `rocha em ${slug}`);
+    }
+  }
+});
+
+test('Sítio (Fatia 1): estrada respeita folga contra todos os postes e moedas', () => {
+  const curva = new THREE.CatmullRomCurve3(
+    CAMINHOS[6].map(([x, z]) => new THREE.Vector3(x, 0, z)), false, 'catmullrom', TENSAO_RUA
+  );
+  const pontos = curva.getSpacedPoints(180);
+  const meiaBorda = LARGURA_RUA_BORDA / 2;
+
+  const cenario = fs.readFileSync(new URL('../src/components/Cenario.jsx', import.meta.url), 'utf8');
+  const blocoPostes = cenario.match(/const POSTES = \[([\s\S]*?)\];/);
+  assert.ok(blocoPostes, 'POSTES encontrado em Cenario.jsx');
+  const postes = [...blocoPostes[1].matchAll(/\[(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\]/g)].map((m) => [
+    Number(m[1]),
+    Number(m[2]),
+  ]);
+  assert.ok(postes.length >= 6);
+
+  for (const pt of pontos) {
+    for (const [px, pz] of postes) {
+      const d = Math.hypot(pt.x - px, pt.z - pz);
+      assert.ok(d >= meiaBorda + 0.5, `estrada invadiu poste [${px}, ${pz}] (dist ${d.toFixed(2)})`);
+    }
+    for (const [mx, mz] of MOEDAS) {
+      const d = Math.hypot(pt.x - mx, pt.z - mz);
+      assert.ok(d > meiaBorda, `estrada passou sobre moeda [${mx}, ${mz}] (dist ${d.toFixed(2)})`);
     }
   }
 });
