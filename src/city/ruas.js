@@ -38,5 +38,6 @@ export const LARGURA_RUA_BORDA = 7.6;
 // O ramal do Sítio termina com uma tampa redonda do mesmo raio da borda,
 // preservando o eixo e as folgas do traçado original.
 export const TAMPAS_ARREDONDADAS = Object.freeze([
+  Object.freeze({ caminho: 5, centro: Object.freeze(CAMINHOS[5][CAMINHOS[5].length - 1]), raio: LARGURA_RUA_BORDA / 2 }),
   Object.freeze({ caminho: 6, centro: Object.freeze(CAMINHOS[6][CAMINHOS[6].length - 1]), raio: LARGURA_RUA_BORDA / 2 }),
 ]);
