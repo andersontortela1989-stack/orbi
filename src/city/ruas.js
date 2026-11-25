@@ -28,9 +28,15 @@ export const CAMINHOS = Object.freeze([
   // expansão Sítio (Fatia 1): bifurca do eixo central em [0, -4] (espelho
   // da garagem), contorna o poste [-12, -12] e as moedas pelo norte e chega
   // diante da porteira (+Z) do SÍTIO, com saída livre para retorno.
-  [[0, -4], [-12, -5], [-22, -5], [-31, -7], [-37, -14], [-48, -18], [-60, -19], [-70, -19], [-82, -19]],
+  [[0, -4], [-12, -5], [-22, -5], [-31, -7], [-37, -14], [-48, -18], [-60, -19], [-70, -19], [-78, -19]],
 ]);
 
 export const TENSAO_RUA = 0.35;
 export const LARGURA_RUA = 6.5;
 export const LARGURA_RUA_BORDA = 7.6;
+
+// O ramal do Sítio termina com uma tampa redonda do mesmo raio da borda,
+// preservando o eixo e as folgas do traçado original.
+export const TAMPAS_ARREDONDADAS = Object.freeze([
+  Object.freeze({ caminho: 6, centro: Object.freeze(CAMINHOS[6][CAMINHOS[6].length - 1]), raio: LARGURA_RUA_BORDA / 2 }),
+]);

@@ -1,6 +1,6 @@
 /**
- * SÍTIO (expansão Sítio — Fatia 1) — dados puros do espaço aberto rural
- * (porteira, pasto dos cavalos e rio com peixinhos).
+ * SÍTIO (expansão Sítio — Fatia 1 + polimento) — dados puros do espaço aberto
+ * rural (porteira, pasto dos cavalos e rio sinuoso com peixinhos).
  *
  * Coordenadas locais ao centro do lugar SÍTIO em bairros.js ([-70, -34]).
  * Sem React, sem Three.js e sem colisores invisíveis: o carro entra pela
@@ -29,11 +29,30 @@ export const CAVALOS_SITIO = Object.freeze([
   Object.freeze({ id: 'cavalo-3', pos: Object.freeze([-8.2, 1.4]),   heading: 2.35, pelagem: 'cavaloCanela' }),
 ]);
 
-// Rio calmo (metade leste)
+// Rio calmo (metade leste) — tramos orgânicos para evitar cara de tanque/piscina
 export const RIO_SITIO = Object.freeze({
   centro: Object.freeze([8.6, -1.4]),
   tamanho: Object.freeze([9.4, 13.6]),
 });
+
+export const TRAMOS_RIO_SITIO = Object.freeze([
+  Object.freeze({ pos: Object.freeze([8.2, -5.8]), rx: 3.1, rz: 3.4, rotY: 0.22 }),
+  Object.freeze({ pos: Object.freeze([9.1, -1.4]), rx: 3.4, rz: 3.7, rotY: -0.25 }),
+  Object.freeze({ pos: Object.freeze([8.3, 3.1]),  rx: 2.9, rz: 3.3, rotY: 0.18 }),
+]);
+
+export const MARGEM_TRAMOS_RIO = Object.freeze([
+  Object.freeze({ pos: Object.freeze([8.2, -5.8]), rx: 4.1, rz: 4.3, rotY: 0.22 }),
+  Object.freeze({ pos: Object.freeze([9.1, -1.4]), rx: 4.4, rz: 4.6, rotY: -0.25 }),
+  Object.freeze({ pos: Object.freeze([8.3, 3.1]),  rx: 3.9, rz: 4.2, rotY: 0.18 }),
+]);
+
+export const PEDRINHAS_RIO_SITIO = Object.freeze([
+  Object.freeze({ pos: Object.freeze([5.3, -4.4]), raio: 0.34 }),
+  Object.freeze({ pos: Object.freeze([11.9, -2.6]), raio: 0.38 }),
+  Object.freeze({ pos: Object.freeze([5.6, 1.4]),  raio: 0.32 }),
+  Object.freeze({ pos: Object.freeze([11.4, 3.6]),  raio: 0.36 }),
+]);
 
 // 3 peixinhos no rio (no Modo Tranquilo ficam parados na posição base)
 export const PEIXES_SITIO = Object.freeze([

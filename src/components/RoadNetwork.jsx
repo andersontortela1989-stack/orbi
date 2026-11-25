@@ -2,7 +2,13 @@ import { useMemo } from 'react';
 import { Instance, Instances } from '@react-three/drei';
 import * as THREE from 'three';
 import { PALETA3D } from '../brand/paleta3d.js';
-import { CAMINHOS, LARGURA_RUA, LARGURA_RUA_BORDA, TENSAO_RUA } from '../city/ruas.js';
+import {
+  CAMINHOS,
+  LARGURA_RUA,
+  LARGURA_RUA_BORDA,
+  TAMPAS_ARREDONDADAS,
+  TENSAO_RUA,
+} from '../city/ruas.js';
 
 /**
  * Ruas curvas do Órbi 2,5D. São uma pele visual sobre o Ground físico:
@@ -92,6 +98,29 @@ export function RoadNetwork({ tranquilo = false }) {
               side={THREE.DoubleSide}
             />
           </mesh>
+          {TAMPAS_ARREDONDADAS.filter((tampa) => tampa.caminho === i).map((tampa) => (
+            <group key={`ponta-arredondada-${i}`}>
+              <mesh
+                position={[tampa.centro[0], 0.027, tampa.centro[1]]}
+                rotation={[-Math.PI / 2, 0, 0]}
+              >
+                <circleGeometry args={[tampa.raio, 48]} />
+                <meshBasicMaterial color={PALETA3D.ruaBorda} side={THREE.DoubleSide} />
+              </mesh>
+              <mesh
+                position={[tampa.centro[0], 0.032, tampa.centro[1]]}
+                rotation={[-Math.PI / 2, 0, 0]}
+              >
+                <circleGeometry args={[LARGURA_RUA / 2, 48]} />
+                <meshStandardMaterial
+                  color={PALETA3D.rua}
+                  roughness={0.92}
+                  metalness={0}
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
+            </group>
+          ))}
         </group>
       ))}
 

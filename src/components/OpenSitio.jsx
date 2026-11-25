@@ -1,21 +1,69 @@
 import { Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { PALETA3D, SOMBRA_SOLIDA, TINTAS } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
 import { perfilVisual } from '../visual/world-style.js';
 import {
   CAVALOS_SITIO,
+  MARGEM_TRAMOS_RIO,
   PASTO_SITIO,
+  PEDRINHAS_RIO_SITIO,
   PEIXES_SITIO,
   PORTEIRA_SITIO,
-  RIO_SITIO,
+  TRAMOS_RIO_SITIO,
 } from '../city/sitio.js';
 
 const DEITADO = [-Math.PI / 2, 0, 0];
 const TRACO_CAVALO = 0.12;
 const ESCALA_CAVALO = 1.45;
+
+function geometriaCursoRio(curso, largura) {
+  const curva = new THREE.CatmullRomCurve3(
+    curso.map(([x, z]) => new THREE.Vector3(x, 0, z)),
+    false,
+    'catmullrom',
+    0.35
+  );
+  const segmentos = 72;
+  const centros = curva.getSpacedPoints(segmentos);
+  const meiaLargura = largura / 2;
+  const esquerda = [];
+  const direita = [];
+
+  centros.forEach((ponto, i) => {
+    const tangente = curva.getTangentAt(i / segmentos);
+    const nx = -tangente.z;
+    const nz = tangente.x;
+    esquerda.push([ponto.x + nx * meiaLargura, ponto.z + nz * meiaLargura]);
+    direita.push([ponto.x - nx * meiaLargura, ponto.z - nz * meiaLargura]);
+  });
+
+  const contorno = [...esquerda];
+  const fim = centros.at(-1);
+  const tangenteFim = curva.getTangentAt(1);
+  const anguloFim = Math.atan2(tangenteFim.z, tangenteFim.x);
+  for (let i = 1; i <= 12; i += 1) {
+    const angulo = anguloFim + Math.PI / 2 - (i * Math.PI / 12);
+    contorno.push([fim.x + Math.cos(angulo) * meiaLargura, fim.z + Math.sin(angulo) * meiaLargura]);
+  }
+
+  contorno.push(...direita.reverse());
+  const inicio = centros[0];
+  const tangenteInicio = curva.getTangentAt(0);
+  const anguloInicio = Math.atan2(tangenteInicio.z, tangenteInicio.x);
+  for (let i = 1; i <= 12; i += 1) {
+    const angulo = anguloInicio - Math.PI / 2 - (i * Math.PI / 12);
+    contorno.push([inicio.x + Math.cos(angulo) * meiaLargura, inicio.z + Math.sin(angulo) * meiaLargura]);
+  }
+
+  const forma = new THREE.Shape();
+  forma.moveTo(contorno[0][0], -contorno[0][1]);
+  contorno.slice(1).forEach(([x, z]) => forma.lineTo(x, -z));
+  forma.closePath();
+  return new THREE.ShapeGeometry(forma);
+}
 
 function ContornoCaixa({ position, size }) {
   const [w, h, l] = size;
@@ -163,10 +211,8 @@ function CercadoPasto() {
   );
 }
 
-/** Rio calmo com margem de areia e 3 peixinhos (imóveis no Modo Tranquilo). */
-function RioSitio({ animar, tranquilo }) {
-  const [cx, cz] = RIO_SITIO.centro;
-  const [w, l] = RIO_SITIO.tamanho;
+/** Rio sinuoso com pedrinhas e 3 peixinhos (imóveis no Modo Tranquilo). */
+function RioSitio({ animar, tranquilo, mostrarPedras }) {
   const peixesRef = useRef([]);
 
   useFrame((estado) => {
@@ -181,19 +227,28 @@ function RioSitio({ animar, tranquilo }) {
 
   return (
     <group>
-      <mesh position={[cx, 0.028, cz]} rotation={DEITADO}>
-        <planeGeometry args={[w + 2.2, l + 2.0]} />
-        <meshStandardMaterial color={PALETA3D.sitio.margem} roughness={0.94} />
-      </mesh>
-      <mesh position={[cx, 0.036, cz]} rotation={DEITADO}>
-        <planeGeometry args={[w, l]} />
-        <meshStandardMaterial
-          color={PALETA3D.sitio.rio}
-          emissive={PALETA3D.sitio.rioFundo}
-          emissiveIntensity={tranquilo ? 0.06 : 0.18}
-          roughness={0.3}
-        />
-      </mesh>
+      {MARGEM_TRAMOS_RIO.map((tramo, idx) => (
+        <group key={`margem-${idx}`} position={[tramo.pos[0], 0.028, tramo.pos[1]]} rotation={[0, tramo.rotY, 0]}>
+          <mesh rotation={DEITADO} scale={[tramo.rx, tramo.rz, 1]}>
+            <circleGeometry args={[1, 32]} />
+            <meshStandardMaterial color={PALETA3D.sitio.margem} roughness={0.94} />
+          </mesh>
+        </group>
+      ))}
+      {TRAMOS_RIO_SITIO.map((tramo, idx) => (
+        <group key={`agua-${idx}`} position={[tramo.pos[0], 0.036, tramo.pos[1]]} rotation={[0, tramo.rotY, 0]}>
+          <mesh rotation={DEITADO} scale={[tramo.rx, tramo.rz, 1]}>
+            <circleGeometry args={[1, 32]} />
+            <meshStandardMaterial color={PALETA3D.sitio.rio} emissive={PALETA3D.sitio.rioFundo} emissiveIntensity={tranquilo ? 0.06 : 0.18} roughness={0.3} />
+          </mesh>
+        </group>
+      ))}
+      {mostrarPedras && PEDRINHAS_RIO_SITIO.map((pedra, idx) => (
+        <mesh key={`pedra-${idx}`} position={[pedra.pos[0], 0.09, pedra.pos[1]]}>
+          <dodecahedronGeometry args={[pedra.raio, 0]} />
+          <meshLambertMaterial color={TINTAS.inkSoft} />
+        </mesh>
+      ))}
       {PEIXES_SITIO.map((p, i) => (
         <group
           key={p.id}
@@ -230,9 +285,21 @@ export function OpenSitio({ floorPos }) {
         <meshStandardMaterial color={PALETA3D.sitio.trilha} roughness={0.94} />
       </mesh>
 
+      {/* Bolsão arredondado de acesso/retorno logo na frente da porteira */}
+      <group position={[-4.5, 0.024, PORTEIRA_SITIO.z + 3.1]}>
+        <mesh rotation={DEITADO} scale={[8.2, 4.2, 1]}>
+          <circleGeometry args={[1, 32]} />
+          <meshStandardMaterial color={PALETA3D.sitio.trilha} roughness={0.94} />
+        </mesh>
+      </group>
+
       <PorteiraSitio />
       <CercadoPasto />
-      <RioSitio animar={visual.animacoes} tranquilo={visual.tranquilo} />
+      <RioSitio
+        animar={visual.animacoes}
+        tranquilo={visual.tranquilo}
+        mostrarPedras={visual.detalhes}
+      />
 
       {CAVALOS_SITIO.map((c) => (
         <group key={c.id}>
