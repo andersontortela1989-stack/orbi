@@ -6,6 +6,8 @@
  * Sem React, sem Rapier e sem store: testável diretamente em node:test.
  */
 
+import { criarEsperaDaFala } from '../adventure/espera-fala.js';
+
 export const LUGARES_VISITA_LIVRE = Object.freeze(['SHOPPING', 'SÍTIO']);
 export const FOCOS_VISITA_LIVRE = Object.freeze(['explorando', 'em_missao']);
 
@@ -101,4 +103,39 @@ export function finalizarChegadaViva(
   }
   proximaMissao();
   return 'proxima_missao';
+}
+
+/**
+ * Narra a frase final da chegada viva (acerto ou revelacao) e so fecha o
+ * painel quando a voz termina — evitando que o calar() do coordenador corte
+ * explicacoes mais longas (Shopping e Sitio) aos 2,2 s.
+ */
+export function encerrarChegadaVivaAposFala({
+  texto,
+  falar,
+  aoFechar,
+  minimoMs = 2200,
+  limiteMs = 9000,
+  relogio,
+}) {
+  const espera = criarEsperaDaFala({
+    minimoMs,
+    limiteMs,
+    aoAvancar: () => aoFechar(),
+    ...(relogio ? { relogio } : {}),
+  });
+
+  const falou = Boolean(
+    texto &&
+      falar(texto, {
+        interrupt: true,
+        onEnd: (ev) =>
+          espera.falaTerminou(ev?.type === 'error' ? 'erro' : 'fim_da_fala'),
+      })
+  );
+  if (!falou) {
+    espera.falaTerminou('sem_voz');
+  }
+
+  return espera;
 }

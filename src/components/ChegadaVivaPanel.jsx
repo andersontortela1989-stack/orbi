@@ -3,7 +3,10 @@ import { useGame } from '../store/useGame.js';
 import { somSucesso } from '../audio/sons.js';
 import { falarDaAtividade } from '../activity/index.js';
 import { useRegistrarAtividade } from '../activity/useActivity.js';
-import { finalizarChegadaViva } from '../missions/visita-livre.js';
+import {
+  encerrarChegadaVivaAposFala,
+  finalizarChegadaViva,
+} from '../missions/visita-livre.js';
 import { Bandeira } from './Bandeira.jsx';
 import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
 import { useMarcarTroca } from '../perf/useMarcarTroca.js';
@@ -11,6 +14,7 @@ import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 // Tempo entre resolver (acerto ou revelação) e fechar o painel — a frase
 // final começa e a carta certa acende antes de o fluxo seguir.
 const FECHAR_MS = 2200;
+const LIMITE_FECHAR_MS = 9000;
 // Toques errados até o Órbi revelar a resposta — ninguém fica preso.
 const MAX_TENTATIVAS = 2;
 
@@ -48,18 +52,23 @@ export function ChegadaVivaPanel() {
   const [acertou, setAcertou] = useState(false);
   const [revelada, setRevelada] = useState(false);
   const resolvido = useRef(false);
-  const fecharTO = useRef(null);
+  const esperaFechar = useRef(null);
 
   // Ao abrir: zera o estado local e narra a pergunta (na fila da voz).
   useEffect(() => {
     if (pergunta) {
+      esperaFechar.current?.cancelar();
+      esperaFechar.current = null;
       setTentativas(0);
       setAcertou(false);
       setRevelada(false);
       resolvido.current = false;
       falarDaAtividade('pergunta', pergunta.frasePergunta);
     }
-    return () => clearTimeout(fecharTO.current);
+    return () => {
+      esperaFechar.current?.cancelar();
+      esperaFechar.current = null;
+    };
   }, [pergunta]);
 
   if (!pergunta) return null;
@@ -73,13 +82,19 @@ export function ChegadaVivaPanel() {
 
   // Fecha o painel e segue o fluxo: em missão do roteiro pede a próxima
   // parada; em visita livre devolve a direção mantendo a parada atual intacta.
-  const finalizar = () => {
+  const finalizar = (textoFinal) => {
     const perguntaAtual = pergunta;
-    clearTimeout(fecharTO.current);
-    fecharTO.current = setTimeout(() => {
-      const { fecharChegadaViva, proximaMissao } = useGame.getState();
-      finalizarChegadaViva(perguntaAtual, { fecharChegadaViva, proximaMissao });
-    }, FECHAR_MS);
+    esperaFechar.current?.cancelar();
+    esperaFechar.current = encerrarChegadaVivaAposFala({
+      texto: textoFinal,
+      falar: (texto, opts) => falarDaAtividade('pergunta', texto, opts),
+      aoFechar: () => {
+        const { fecharChegadaViva, proximaMissao } = useGame.getState();
+        finalizarChegadaViva(perguntaAtual, { fecharChegadaViva, proximaMissao });
+      },
+      minimoMs: FECHAR_MS,
+      limiteMs: LIMITE_FECHAR_MS,
+    });
   };
 
   const responder = (valor) => {
@@ -91,8 +106,7 @@ export function ChegadaVivaPanel() {
       registrarHabilidade(pergunta.habilidade, true);
       registrarDescoberta();
       somSucesso();
-      falarDaAtividade('pergunta', pergunta.fraseAcerto, { interrupt: true });
-      finalizar();
+      finalizar(pergunta.fraseAcerto);
       return;
     }
 
@@ -108,8 +122,7 @@ export function ChegadaVivaPanel() {
       // descoberto: o Órbi ensinou de qualquer jeito — o adesivo entra no
       // Caderninho sem rastro de falha.
       registrarDescoberta();
-      falarDaAtividade('pergunta', pergunta.fraseRevela, { interrupt: true });
-      finalizar();
+      finalizar(pergunta.fraseRevela);
     } else {
       falarDaAtividade('pergunta', pergunta.fraseTenteDeNovo, { interrupt: true });
     }
