@@ -1,6 +1,7 @@
 import { iniciarHortaEscola } from './runtime.js';
 import { medicaoAtiva } from '../perf/medidor.js';
 import { HORTA_BANDS } from '../school/horta.js';
+import { lerFaixaEtaria } from '../faixa-etaria.js';
 
 /**
  * CONVITE DA HORTA (H1) — quando a Horta da escola é oferecida à criança.
@@ -26,13 +27,15 @@ export const FAIXA_HORTA_PADRAO = '3-5';
  * desconhecida, vale a faixa padrão.
  */
 export function faixaDaHorta(search) {
-  if (!medicaoAtiva(search)) return FAIXA_HORTA_PADRAO;
+  const escolhida = lerFaixaEtaria();
+  const base = Object.hasOwn(HORTA_BANDS, escolhida) ? escolhida : FAIXA_HORTA_PADRAO;
+  if (!medicaoAtiva(search)) return base;
   const faixa = new URLSearchParams(search).get('faixa');
-  return Object.hasOwn(HORTA_BANDS, faixa) ? faixa : FAIXA_HORTA_PADRAO;
+  return Object.hasOwn(HORTA_BANDS, faixa) ? faixa : base;
 }
 
 /** `iniciar(faixa)` devolve true quando a aventura de fato começou. */
-export function criarConviteHorta(iniciar, faixa = FAIXA_HORTA_PADRAO) {
+export function criarConviteHorta(iniciar, faixa = FAIXA_HORTA_PADRAO, resolverFaixa = null) {
   let feito = false;
   return Object.freeze({
     tentar(missao) {
@@ -40,7 +43,8 @@ export function criarConviteHorta(iniciar, faixa = FAIXA_HORTA_PADRAO) {
       if (missao?.tipo !== 'gps' || missao.destino !== 'ESCOLA' || !missao.concluida) {
         return false;
       }
-      if (!iniciar(faixa)) return false;
+      const faixaAtual = typeof resolverFaixa === 'function' ? resolverFaixa() : faixa;
+      if (!iniciar(faixaAtual)) return false;
       feito = true;
       return true;
     },
@@ -53,5 +57,6 @@ export function criarConviteHorta(iniciar, faixa = FAIXA_HORTA_PADRAO) {
 /** O convite desta sessão (o MissionController usa este). */
 export const conviteHortaDaSessao = criarConviteHorta(
   iniciarHortaEscola,
-  faixaDaHorta(typeof location !== 'undefined' ? location.search : '')
+  faixaDaHorta(typeof location !== 'undefined' ? location.search : ''),
+  () => faixaDaHorta(typeof location !== 'undefined' ? location.search : '')
 );

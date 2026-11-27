@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Orbi } from './Orbi.jsx';
 import { AreaPais } from './AreaPais.jsx';
+import { BotaoAreaPais } from './BotaoAreaPais.jsx';
 import { SensorySettings } from './SensorySettings.jsx';
 import { OrientationGuard } from './OrientationGuard.jsx';
 import { useGame } from '../store/useGame.js';
@@ -199,18 +200,10 @@ export function StartScreen({ onPlay, onVerHistoria, onPrepararJogo }) {
         </button>
       )}
       {!paisAberto && (
-        <button
-          type="button"
+        <BotaoAreaPais
           className="start-parents"
-          onClick={() => setPaisAberto(true)}
-          aria-label="Área dos pais"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="4" y="10" width="16" height="11" rx="3" fill="#fff" stroke="#46557E" strokeWidth="2.4" />
-            <path d="M8 10 V7 a4 4 0 0 1 8 0 V10" stroke="#46557E" strokeWidth="2.4" fill="none" />
-          </svg>
-          Área dos pais
-        </button>
+          onAbrir={() => setPaisAberto(true)}
+        />
       )}
       {paisAberto && <AreaPais onFechar={() => setPaisAberto(false)} />}
       {!paisAberto && <SensorySettings variant="start" />}

@@ -2702,3 +2702,124 @@ html.orbi-modo-tranquilo .sensory-panel {
   line-height: 1.35;
   margin-top: calc(-1 * var(--space-2));
 }
+
+
+/* ===== H4 — Faixa de apoio (Área dos Pais) e Portão Parental ===== */
+.pais-faixas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pais-faixa-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  text-align: left;
+  background: #ffffff;
+  border: 2.5px solid var(--outline-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-main);
+  transition: background-color 140ms ease, transform 120ms ease;
+}
+
+.pais-faixa-card--ativa {
+  background: var(--orbi-blue-soft);
+  box-shadow: var(--solid-1);
+}
+
+.pais-faixa-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.pais-faixa-rotulo {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: var(--weight-display-bold);
+}
+
+.pais-faixa-sub {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.pais-faixa-desc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-soft);
+}
+
+.pais-faixa-salvo {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.start-parents-wrap {
+  position: relative;
+}
+
+.start-parents {
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.start-parents-conteudo {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.start-parents-barra {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: rgba(70, 85, 126, 0.18);
+  pointer-events: none;
+  transition: width 120ms ease-out;
+}
+
+.start-parents--segurando .start-parents-barra {
+  width: 100%;
+  transition: width var(--portao-ms, 1500ms) linear;
+}
+
+.start-parents-dica {
+  position: fixed;
+  left: 16px;
+  bottom: 68px;
+  z-index: 30;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface-card);
+  border: 2px solid var(--outline-color);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pais-faixa-card,
+  .start-parents-barra {
+    transition: none;
+  }
+}
