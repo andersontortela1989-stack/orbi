@@ -3,6 +3,7 @@ import { Building } from './Building.jsx';
 import { ZoneSensor } from './ZoneSensor.jsx';
 import { useGame } from '../store/useGame.js';
 import { PALETA3D } from '../brand/paleta3d.js';
+import { POSTO_POS, POSTO_SIZE } from '../city/posto.js';
 
 /**
  * Posto de gasolina (Fatia 5). MESMA linguagem visual dos prédios da cidade:
@@ -11,10 +12,9 @@ import { PALETA3D } from '../brand/paleta3d.js';
  * store que o carro está perto do posto → abre a interação de abastecimento.
  *
  * Posicionado num canto livre do mapa (à esquerda, longe dos 3 prédios da
- * cidade e do spawn em 0,0), pra navegação continuar legível.
+ * cidade e do spawn em 0,0), pra navegação continuar legível. Posição e
+ * tamanho moram em city/posto.js.
  */
-const POSTO_POS = [-34, 24]; // [x, z] no plano — área aberta, sem sobrepor a cidade
-const POSTO_SIZE = [12, 5, 12]; // [w, h, l] — baixo e largo, cara de posto
 
 export function GasStation() {
   const setPostoPerto = useGame((s) => s.setPostoPerto);

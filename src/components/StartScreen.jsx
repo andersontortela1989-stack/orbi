@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Orbi } from './Orbi.jsx';
 import { AreaPais } from './AreaPais.jsx';
+import { BotaoAreaPais } from './BotaoAreaPais.jsx';
+import { SensorySettings } from './SensorySettings.jsx';
+import { OrientationGuard } from './OrientationGuard.jsx';
 import { useGame } from '../store/useGame.js';
 
 /**
@@ -96,7 +99,7 @@ function Raw({ html, className, style }) {
   return <div className={className} style={style} aria-hidden="true" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-export function StartScreen({ onPlay, onVerHistoria }) {
+export function StartScreen({ onPlay, onVerHistoria, onPrepararJogo }) {
   const introVista = useGame((s) => s.introVista);
   const [scale, setScale] = useState(1);
   const [pose, setPose] = useState('acenando');
@@ -119,6 +122,8 @@ export function StartScreen({ onPlay, onVerHistoria }) {
   const jogar = () => {
     if (busy.current) return;
     busy.current = true;
+    // Usa o respiro visual da comemoração para baixar a experiência 3D.
+    onPrepararJogo?.();
 
     const reduz =
       typeof window !== 'undefined' &&
@@ -179,33 +184,34 @@ export function StartScreen({ onPlay, onVerHistoria }) {
             JOGAR
           </button>
 
-          {/* discreto: só depois da intro vista (adendo de narrativa) */}
-          {introVista && onVerHistoria && (
-            <button className="start-historia" onClick={onVerHistoria}>
-              ver a história de novo
-            </button>
-          )}
         </div>
-
-        {/* CANTINHOS: só "Área dos pais" por ora — o botão de som saiu com o
-            tema cantado (ver doc do componente); volta com o tema novo. */}
-        <button
-          className="start-parents"
-          onClick={() => setPaisAberto(true)}
-          aria-label="Área dos pais"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <rect x="4" y="10" width="16" height="11" rx="3" fill="#fff" stroke="#46557E" strokeWidth="2.4" />
-            <path d="M8 10 V7 a4 4 0 0 1 8 0 V10" stroke="#46557E" strokeWidth="2.4" fill="none" />
-          </svg>
-          Área dos pais
-        </button>
       </div>
 
-      {/* Overlay da Área dos pais — filho de .orbi-start (NÃO de .start-screen,
-          que tem transform: scale()): position:fixed lá dentro seria escalado.
-          Fica FORA da moldura escalada, ocupando a viewport inteira. */}
+      {/* Overlay da Área dos pais e atalhos fixos — filhos de .orbi-start (NÃO
+          de .start-screen, que tem transform: scale()): preservam alvo mínimo
+          de 44×44 px sem encolher junto com a ilustração. */}
+      {!paisAberto && introVista && onVerHistoria && (
+        <button
+          type="button"
+          className="start-historia"
+          onClick={onVerHistoria}
+        >
+          <span className="start-historia-texto">ver a história de novo</span>
+        </button>
+      )}
+      {!paisAberto && (
+        <BotaoAreaPais
+          className="start-parents"
+          onAbrir={() => setPaisAberto(true)}
+        />
+      )}
       {paisAberto && <AreaPais onFechar={() => setPaisAberto(false)} />}
+      {!paisAberto && <SensorySettings variant="start" />}
+
+      {/* A4.1 — o mesmo aviso de virar o celular do jogo, só em aparelho de
+          toque. Some com a Área dos pais aberta: o adulto nunca fica preso
+          atrás do aviso (e ela se abre também em paisagem). */}
+      {!paisAberto && <OrientationGuard somenteToque />}
     </div>
   );
 }

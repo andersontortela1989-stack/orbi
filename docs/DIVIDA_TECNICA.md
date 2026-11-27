@@ -1,0 +1,959 @@
+# Dívida técnica — Órbi
+
+Registro do que foi observado e ainda **não** foi resolvido. Uma entrada por
+item. Nada aqui é correção: é memória, para que um achado não se perca entre
+uma fatia e outra.
+
+Cada entrada diz **o que foi observado**, **onde**, **quando** e **o que falta
+verificar ou decidir**. Item sem "o que falta" não pertence a este arquivo —
+ou já foi resolvido, ou vira fatia.
+
+Levantado nos testes de setembro de 2026, na branch
+`codex/activity-coordinator-p0`.
+
+---
+
+## 1. Painel de pergunta transparente
+
+**Observado.** No quiz de bandeiras do ESTÁDIO ("Qual bandeira é da
+Argentina?"), o painel deixou ver o mundo 3D por trás. Não foi possível
+distinguir, a olho, se a transparência dura só a entrada ou permanece com o
+painel aberto.
+
+**Onde.** `src/components/ChegadaVivaPanel.jsx:115` (`.viva-painel`), estilos em
+`src/styles.css`.
+
+**Quando.** Teste no notebook, 23/09/2026.
+
+**O que falta verificar.** A leitura do código dá uma hipótese forte, ainda não
+confirmada: o fundo é `--surface-card` → `--orbi-white` → `#FFFFFF`, **opaco**;
+mas o painel roda `animation: postoEntra var(--dur-calm)`, e essa animação vai
+de `opacity: 0` a `1` em **320 ms**. Ou seja, a transparência provavelmente é a
+entrada, não o estado final.
+
+Teste barato que decide: ligar `prefers-reduced-motion` no sistema. Sob ele o
+CSS já aplica `.viva-painel { animation: none; }` — se a transparência sumir, era
+a animação; se continuar, o problema é outro e aí sim há bug.
+
+Se for a animação, vale decidir separadamente se 320 ms de fade é adequado ao
+perfil TEA, ou se painel deve aparecer seco. A mesma animação é usada por **oito**
+painéis (posto, garagem, chegada viva, caderninho, área dos pais, aventura,
+conforto) — mexer nela afeta todos.
+
+---
+
+## 2. `esbuild` usado sem declaração
+
+**Observado.** `tests/garagem-saida.test.js` faz `import { transform } from
+'esbuild'` para compilar o painel real em memória. O pacote existe em
+`node_modules` porque o **vite** o traz, mas **não está declarado** no
+`package.json` — nem em `dependencies`, nem em `devDependencies`.
+
+**Onde.** `tests/garagem-saida.test.js:6`; `package.json`.
+
+**Quando.** Escrita da fatia da saída da garagem, 22/09/2026.
+
+**O que falta decidir.** Declarar `esbuild` em `devDependencies` resolve, e é
+uma linha. Não foi feito porque `package.json` estava fora do escopo daquela
+fatia. Enquanto não for, o teste depende de o vite continuar içando `esbuild`
+para o topo de `node_modules` — o dia em que isso mudar, o arquivo quebra sem
+aviso, e o sintoma (um teste sumindo) não aponta para a causa.
+
+A branch congelada `feature/orbi-golden-rebuild` tinha o mesmo acoplamento.
+
+---
+
+## 3. Repetir a fala do Órbi
+
+**Observado.** Não existe nenhuma forma de ouvir de novo a última coisa que o
+Órbi falou. **Silenciar existe** e funciona bem: `SensorySettings` tem o
+interruptor VOZ DO ÓRBI, `audio/voz.js` consulta a preferência no momento da
+fala, e a escolha é persistida no save (v8). **Repetir, não.**
+
+Quem perdeu uma instrução hoje só tem o `pedir_ajuda` das aventuras — que fala a
+`dica`, texto diferente do original, e só existe dentro de uma aventura.
+
+**Onde.** `src/components/SensorySettings.jsx`, `src/audio/voz.js`,
+`src/preferences.js`. Ausência confirmada por busca em todo o `src/`.
+
+**Quando.** Auditoria de 22/09/2026.
+
+**O que falta decidir — antes de qualquer código.** É design, não implementação:
+
+- **Onde fica o botão.** O gatilho ⚙️ de conforto some quando um painel domina o
+  HUD (`painelEmUso` em `SensorySettings.jsx:61`). Se o botão de repetir seguir a
+  mesma regra, não dá para repetir uma pergunta — que é justamente quando mais se
+  precisa.
+- **Se aparece dentro dos painéis**, e em quais.
+- **O que ele repete**: a última fala de qualquer dona, ou só a da atividade em
+  foco? O coordenador tem dono de voz único; repetir a fala de uma atividade já
+  encerrada contradiz isso.
+
+A branch congelada tem uma referência de implementação em
+`src/components/VoiceControls.jsx` e `src/audio/voice-state.js`: botão ↻ fixo no
+HUD, desabilitado quando mudo ou sem texto. **Lá o mudo não persiste** — o daqui
+persiste, e é melhor. Serve de referência de UI, não de arquitetura.
+
+---
+
+## 4. Resumo da Horta nas repetições
+
+**Observado.** A Horta é repetível desde `a943c6c`. O adesivo só é entregue na
+primeira conclusão — `registrarRecompensa` ignora repetido, então o save fica
+correto. Mas o **painel de resumo continua exibindo** "ADESIVO: BROTO DA
+ESCOLA" em toda conclusão, inclusive na segunda e na terceira.
+
+**Onde.** `src/school/horta-aventura.js:123` — o campo `recompensas` do passo
+`resumo` é texto de exibição, não escrita no save.
+
+**Quando.** Fatia da Horta repetível, 22/09/2026.
+
+**O que falta decidir.** Foi decisão explícita à época: *"a fala de comemoração e
+o resumo acontecem normalmente"*. A pergunta em aberto é se anunciar um adesivo
+que não foi ganho confunde ou frustra. Três saídas possíveis, nenhuma escolhida:
+
+1. deixar como está (o resumo celebra a brincadeira, não o prêmio);
+2. omitir a linha do adesivo quando ele já estava no save;
+3. trocar por outra frase na repetição ("você plantou de novo!").
+
+Depende de ver o Heitor repetindo a Horta. Sem essa observação é chute.
+
+---
+
+## 5. Balão da carona durante missão ativa
+
+**Observado.** O convite do cachorro (`🐶 PARQUE?`, balão no mundo 3D sobre o cão
+na calçada) aparece ao mesmo tempo em que a missão principal pede outro destino
+("VET?", "ÁGUA?").
+
+Vale a distinção, porque muda o enquadramento: **não são dois donos de foco**. A
+pílula do HUD obedece ao coordenador e mostra um pedido só. O balão é objeto do
+mundo e existe **antes** do embarque, quando a carona ainda não pediu foco
+nenhum. A regra "uma instrução por vez" está sendo cumprida na interface; o que
+se vê em duplicidade é um convite no mundo ao lado de uma instrução na tela.
+
+**Onde.** `src/components/Carona.jsx:133` (o balão), `src/components/HUD.jsx`
+(pílula e banner), `src/activity/activity-machine.js` (`carona` prioridade 30,
+`em_missao` prioridade 10).
+
+**Quando.** Teste no notebook, 22/09/2026.
+
+**O que falta decidir.** Decisão de produto, **pendente de observação com a
+criança** — não de análise. Alternativa já mapeada: mostrar o balão só quando o
+carro passa perto do cão, em vez de permanentemente. Nada foi alterado na regra
+de quando a carona aparece.
+
+*(A sobreposição visual entre o balão e o `CHEGAMOS!` era problema diferente e
+foi corrigida em `25b4458`.)*
+
+---
+
+## 6. Desempenho no notebook (os 33 a 55 FPS eram do modo de desenvolvimento)
+
+**Observado.** O medidor de FPS do modo de desenvolvimento marcou entre 33 e 55
+quadros por segundo no notebook. **Ligar o Modo Tranquilo não melhorou o
+número** — o que é a informação útil: o Modo Tranquilo desliga animações,
+partículas e detalhes decorativos, então o gargalo provavelmente **não está na
+decoração**.
+
+**Onde.** Medidor em `src/GameExperience.jsx:118`, dev-only
+(`import.meta.env.DEV`, confirmado ausente do build de produção).
+
+**Quando.** Teste no notebook, 23/09/2026.
+
+**O que falta verificar — antes de otimizar qualquer coisa.** Nenhuma
+otimização deve ser feita sem medição no **aparelho alvo**. O notebook não é o
+alvo; o celular do Heitor é. Existe precedente registrado de uma caçada a FPS
+que não se reproduziu e consumiu tempo à toa.
+
+O que falta: medir no celular, e só então procurar gargalo — com número, não com
+palpite. Enquanto isso, não mexer em céu, física, DPR, antialias nem grid.
+
+**Atualização — 27/09/2026, primeira observação no aparelho alvo.** Build de
+produção num celular Android, pela rede Wi-Fi local, jogado pelo Heitor e pelo
+Higor (registro completo em `docs/TESTES_COM_CRIANCAS.md`). Rodou liso na maior
+parte do tempo e **travou em cerca de 10% do tempo**.
+
+Isso confirma que o problema existe no alvo, mas **ainda não é a medição que
+este item pede**: o medidor de FPS é só de desenvolvimento e não está no build
+de produção, então os 10% são observação durante o jogo, não número de
+ferramenta. Não foi registrado em que momentos as travadas aconteciam (curva,
+chegada, painel aberto, muitos objetos na tela) nem se o Modo Tranquilo estava
+ligado. A regra acima continua valendo; o próximo passo está no item 11.
+
+**Correção — 27/09/2026, medição no build de produção.** Os 33 a 55 FPS medidos
+em 23/09 vieram do **modo de desenvolvimento** (`npm run dev`, com o Stats) e
+**não valem como referência**. O mesmo vale para a conclusão tirada deles sobre
+o Modo Tranquilo e a decoração.
+
+Com o medidor da fatia A3.1a (`?medir=1`), no build de produção
+(`npm run preview`, Chrome), **o notebook ficou liso**: mediana de 16,9 ms e
+**nenhum quadro acima de 50 ms**. Foram cerca de 1 minuto de direção livre,
+fora da rota padrão. O resumo completo está em `docs/TESTES_COM_CRIANCAS.md`,
+seção "Medições de desempenho".
+
+**A investigação de travadas passa a ser só no celular**, pela medição A3.2
+(marcada para 29/09/2026). No notebook não há o que investigar.
+
+---
+
+## 7. Texto da Área dos Pais sobre monetização
+
+**Observado.** A Área dos Pais afirma: *"Sem anúncios, sem compras, sem
+cadastro"*. **Hoje é verdade** — não há anúncio, cobrança nem cadastro em lugar
+nenhum do código.
+
+**Onde.** `src/components/AreaPais.jsx:186`.
+
+**Quando.** Auditoria de 23/09/2026.
+
+**O que falta decidir.** Nada, enquanto a frase for verdadeira. Fica registrado
+como **gatilho**: no dia em que existir qualquer recurso pago, esta linha vira
+falsa e precisa mudar **junto com** o recurso, não depois. É promessa feita a
+pai e mãe, na tela dedicada a eles.
+
+O `README.md` já foi ajustado para "O acesso principal é gratuito" — os dois
+textos precisam continuar coerentes entre si.
+
+---
+
+## 8. Alertas do `npm audit`
+
+**Observado.** Sete alertas. **Um** de produção e **seis** de desenvolvimento.
+
+- **`fflate` (moderate, produção).** Chega por `three-stdlib`, que vem do
+  `@react-three/drei` e do `@react-three/rapier`. O aviso é sobre `unzipSync`
+  entrar em laço infinito com ZIP64 malformado. **O caminho não é alcançável
+  pelo jogo:** não se carrega ZIP, GLTF, FBX nem arquivo comprimido; não existe
+  asset desse tipo no repositório; e no bundle de produção não aparece nenhuma
+  função de descompressão (`addPanel`, `unzipSync`, `inflate` — todas em zero).
+  A única ocorrência de "fflate" no build é comentário de licença do Troika.
+- **Os seis restantes** — `browserslist`, `postcss`, `nanoid`, `esbuild` (via
+  `vite`), `baseline-browser-mapping` — são de build e **não chegam ao
+  navegador**. `npm audit --omit=dev` lista só o `fflate`.
+
+**Quando.** Auditoria de 22/09/2026.
+
+**O que falta decidir.** **Não rodar `npm audit fix` nem `npm audit fix --force`
+sem análise.** O `--force` sobe para `vite@8`, que é mudança breaking. Revisitar
+quando houver motivo real — atualização do drei, por exemplo — e não por causa
+do número vermelho.
+
+---
+
+## 9. Handoffs históricos com instruções obsoletas
+
+**Observado.** Os três handoffs em `docs/` são registro histórico e **não devem
+ser editados**. Alguns trechos, porém, leem como instrução ativa e podem
+desviar uma sessão nova.
+
+**Onde e o quê:**
+
+| Arquivo | Linha | Trecho | Por que confunde |
+|---|---|---|---|
+| `handoff-cidade-turbo-3d.md` | 5 | *"§9 (Prompt da Fatia 1) primeiro"* | manda ir a um prompt obsoleto |
+| " | 62 | *"A Fatia 1 inteira existe só para acertar isso"* | presente do passado |
+| " | 166, 197 | *"Next.js (App Router) **ou** React + Vite — escolher o de setup mais rápido"* | apresenta como escolha aberta; foi decidida (Vite) |
+| " | 189 | *"## 9. Prompt da Fatia 1 (**cole isto no Claude Code AGORA**)"* | imperativo e datado |
+| " | 194 | *"Hoje construímos SÓ A FATIA 1"* | idem |
+| " | 223 | *"Não construa nada além da Fatia 1"* | idem |
+| " | §8 | tabela listando fatias **0 a 6** como trabalho futuro | todas construídas |
+| `handoff-cidade-turbo-3d-ADENDO-curriculo.md` | 31 | *"Hoje há **3 prédios soltos**"* | hoje são **11** |
+| " | 83, 87 | *"Fatia 13"*, *"desde a Fatia 6"* | numeração de um roadmap que já não corre |
+
+`handoff-orbi-ADENDO-narrativa.md` não tem nada operacional desatualizado — é
+tom e narrativa, continua válido.
+
+**Quando.** Auditoria de 22/09/2026.
+
+**O que falta.** Nada a corrigir: são registro. A mitigação já existe — o
+`docs/START-HERE.md` foi reescrito e declara que vence sobre eles, separando o
+que neles ainda vale (princípios, guard-rails, tom) do que não vale (instrução
+operacional). Esta entrada existe para que a lista dos trechos fique localizável
+sem precisar reler os três arquivos.
+
+---
+
+## 10. Tela inicial em retrato
+
+**Status.** Resolvido pela A4.1 (commit `c8aca64`, caminho 1).
+
+**Observado.** Com o celular em pé, a arte da abertura fica numa faixa estreita
+no meio da tela, com muito espaço vazio em cima e embaixo.
+
+**Onde.** `src/components/StartScreen.jsx` — a composição é um canvas fixo de
+1280×800 escalado por `Math.min(largura / 1280, altura / 800)`. Em retrato, o
+limite é a largura; o canvas encolhe até caber de lado a lado e sobra altura. A
+sobra aparece como moldura na cor `--orbi-twilight-deep` (`.orbi-start` em
+`src/styles.css`). Exemplo de conta: numa tela de 360 px de largura, a escala
+fica em 0,28 e a arte ocupa cerca de 225 px de altura.
+
+A trava de orientação (`OrientationGuard`) **não cobre a abertura**: ela só é
+montada dentro de `src/GameExperience.jsx`. Em retrato, a criança vê a abertura
+encolhida; o pedido para virar o celular só aparece depois do JOGAR.
+
+**Quando.** Teste no celular, 27/09/2026.
+
+**O que falta decidir.** Há dois caminhos, e nenhum foi escolhido:
+
+1. levar o aviso de virar o celular também para a abertura, para que a
+   experiência inteira seja em paisagem;
+2. fazer uma composição de abertura própria para retrato.
+
+O primeiro é mais barato e coerente com o jogo, que já é só paisagem. O segundo
+mexe numa tela que foi feita fiel a um mock aprovado.
+
+---
+
+## 11. Desempenho no celular: travadas em ~10% do tempo
+
+**Observado.** No teste de 27/09/2026, o build de produção num celular Android
+rodou liso na maior parte do tempo e **travou em cerca de 10% do tempo**. É a
+primeira observação no aparelho alvo; o histórico do notebook está no item 6.
+
+**Onde.** Ainda não se sabe — esse é o ponto. O medidor de FPS existente
+(`src/GameExperience.jsx:118`) só roda no modo de desenvolvimento e não estava
+presente no teste.
+
+**Quando.** Teste no celular, 27/09/2026 (`docs/TESTES_COM_CRIANCAS.md`).
+
+**O que falta — antes de otimizar.** Medir no aparelho, com número:
+
+- em que momentos trava (andando reto, em curva, na chegada a um lugar, com
+  painel aberto, perto de muitos objetos);
+- se a travada é queda contínua de FPS ou pico isolado (coleta de lixo,
+  carregamento, compilação de shader na primeira aparição de algo);
+- se o Modo Tranquilo muda alguma coisa no celular, como não mudou no notebook.
+
+Só depois disso escolher onde mexer. As proibições do item 6 continuam valendo
+até lá.
+
+As causas prováveis levantadas na leitura do código e o protocolo de medição
+repetível estão na iniciativa **A3** de `docs/PLANO_MESTRE.md`.
+
+---
+
+## 12. Lote fixo de ±10 no teste da planta da escola
+
+**Observado.** O teste "volumes cabem no lote e mantêm aproximação e moedas
+livres" usa um lote fixo de ±10 em volta da ESCOLA, digitado à mão. Esse número
+vem da regra antiga `max(w,l)+4` (16 + 4 = 20, logo ±10). A calçada real da
+ESCOLA é por eixo: ±10,2 em x e **±8,2 em z**. O teste aceita volumes até 1,8
+além da calçada real na profundidade.
+
+**Onde.** `tests/school-layout.test.js:17-42` (a caixa está na linha 29).
+
+**Quando.** Levantado na fatia A1.1, 27/09/2026.
+
+**O que falta.** Sem efeito hoje: `src/school/school-layout.js` não está ligado
+ao jogo nesta base. Corrigir quando a escola com ateliê (B2) entrar no jogo,
+fazendo o teste consumir a geometria compartilhada (`CALCADA_POR_LADO` em
+`src/city/geometria.js`) em vez do 10 fixo.
+
+---
+
+## 13. Pares de calçadas com folga entre 5,6 e 5,7
+
+**Observado.** Com a regra de folga mínima 4 entre calçadas
+(`tests/folgas-cidade.test.js`), três pares passam, mas com pouca sobra:
+
+| Par | Distância entre calçadas |
+|---|---|
+| PORTO ↔ POSTO | 5,60 |
+| HOSPITAL ↔ ESCOLA | 5,63 |
+| ZOO ↔ gramado do PARQUE | 5,72 (limite inferior: o gramado é medido pelo retângulo da elipse) |
+
+**Onde.** Posições em `src/city/bairros.js` e `src/city/posto.js`; gramado em
+`src/city/geometria.js`.
+
+**Quando.** Tabela de distâncias da fatia A1.1, 27/09/2026.
+
+**O que falta.** Nada até o lançamento: é **insumo** para espalhar a cidade
+depois de 04/10 (opção maior da iniciativa A1 em `docs/PLANO_MESTRE.md`). São os
+primeiros pares a conferir se a folga mínima subir.
+
+---
+
+## 14. Ruas passam por baixo das calçadas, por desenho
+
+**Observado.** As ruas (`CAMINHOS`) ligam os prédios pelo centro: o caminho 4
+nasce no centro do POSTO e termina no centro do HOSPITAL, e o caminho 3 termina
+no centro da GARAGEM. Por isso o leito de alguma rua passa por baixo da calçada
+de **10 dos 13 lotes**. Só PADARIA, FAROL e VET ficam fora do leito. A calçada é
+desenhada acima da rua e a cobre.
+
+**Onde.** `src/components/RoadNetwork.jsx:13-24`.
+
+**Quando.** Análise da fatia A1.2b, 27/09/2026.
+
+**O que falta.** Nada a corrigir: é o desenho da cidade. Fica registrado que
+**"nenhum lote sobre rua" não é uma regra válida** para o teste de folgas — 10
+lotes falhariam hoje.
+
+**Atualização (V1.3, 02/10/2026).** O trecho final do caminho 2 foi corrigido
+nos dois estilos e deixou de passar sob o MERCADO: agora termina entre os lotes
+do MERCADO e da PADARIA, com o eixo reto em z ≈ 31,6
+(`tests/rua-mercado.test.js`). Os traçados ficaram em `src/city/ruas.js`. Os
+demais lotes continuam como registrado acima.
+
+---
+
+## 15. Proposta de teste (d): todo sensor de chegada alcançado por uma rua
+
+**Observado.** Dá para medir, com os dados, se o leito de alguma rua entra no
+sensor de chegada de cada lugar. Hoje isso **não vale** para PADARIA, FAROL e
+VET. Depois da A1.2b, o sensor do VET fica a cerca de 8,6 do leito mais
+próximo: a criança precisa sair da rua para chegar. O chão inteiro é dirigível,
+então continua possível.
+
+**Onde.** Ruas em `src/components/RoadNetwork.jsx:13-24`; sensores derivados de
+`src/city/bairros.js` e `src/city/geometria.js`.
+
+**Quando.** Análise da fatia A1.2b, 27/09/2026.
+
+**O que falta.** Proposta futura, não implementada: um item (d) em
+`tests/folgas-cidade.test.js` com a regra "todo sensor de chegada é alcançado
+pelo leito de alguma rua" (PADARIA, FAROL e VET entrariam como TODO). Exige
+**promover `CAMINHOS` a dado puro em `src/city/`**, como a A1.2a fez com a
+geometria dos lugares, e amostrar a mesma curva do jogo no teste.
+
+---
+
+## 16. `RoadNetwork.jsx` repete a posição do POSTO
+
+**Observado.** O caminho 4 começa em `[-34, 24]`, que é a posição do POSTO
+digitada à mão, em vez de ler `POSTO_POS` de `src/city/posto.js`. Mover o POSTO
+deixaria a rua para trás sem aviso.
+
+**Onde.** `src/components/RoadNetwork.jsx:20`.
+
+**Quando.** Análise da fatia A1.2b, 27/09/2026.
+
+**O que falta.** Fazer o ponto ler `POSTO_POS` — de preferência junto com a
+promoção de `CAMINHOS` a dado puro (item 15).
+
+---
+
+## 17. Alternativa R4 para ZOO↔VET, se o VET ficar difícil de alcançar
+
+**Observado.** A A1.2b separou ZOO e VET movendo o VET para `[24, 56]`, o que o
+afastou das ruas (item 15). A alternativa medida na análise foi mover o **ZOO**
+para `[14, 84]`: também resolve o par com folga 5,6, mas põe a árvore
+`[14, 90]` sobre a parede do prédio e se afasta do fim do caminho 2
+(`[20, 78]`).
+
+**Onde.** `src/city/bairros.js` (ZOO e VET), árvore em
+`src/components/Cenario.jsx:46`, fim do caminho 2 em
+`src/components/RoadNetwork.jsx:16`.
+
+**Quando.** Análise da fatia A1.2b, 27/09/2026.
+
+**O que falta.** Decidir **só se** o teste com as crianças mostrar que o VET
+ficou difícil de alcançar. Nesse caso: VET volta para `[22, 62]`, ZOO vai para
+`[14, 84]`, a árvore `[14, 90]` sai de cima da parede e o fim do caminho 2
+acompanha o ZOO.
+
+---
+
+## 18. O teste (b) mede sobreposição geométrica, não o limiar do carro
+
+**Observado.** O carro (3,5 × 1,8) pode disparar dois sensores ao mesmo tempo
+se eles estiverem a menos de 1,8 um do outro. Depois da A1.2b, só a zona de
+embarque da carona × sensor de chegada da PIZZA (0,50) fica abaixo disso. No
+teste manual de 28/09/2026, chegar à PIZZA pelo sul com a missão PIZZA ativa
+**não** embarcou o cão.
+
+**Onde.** `tests/folgas-cidade.test.js`; `src/city/carona.js:16`.
+
+**Quando.** Teste manual da A1.2b, 28/09/2026.
+
+**O que falta.** Proposta futura: o teste (b) exigir distância ≥ largura do
+carro entre sensores de atividades diferentes.
+
+---
+
+## 19. Aviso de virar o celular pode não se explicar para quem não lê
+
+**Observado.** O aviso de orientação é um 🔄 parado com dois textos, sem voz e
+sem animação. Para uma criança que ainda não lê, pode não ficar claro o que
+fazer.
+
+**Onde.** `src/components/OrientationGuard.jsx`.
+
+**Quando.** Fatia A4.1, 28/09/2026.
+
+**O que falta.** Observar no teste com as crianças se elas entendem o aviso
+sozinhas.
+
+---
+
+## 20. A intro não mostra o aviso de retrato
+
+**Observado.** A intro (`IntroChegada`, com o campo do nome) não mostra o aviso
+de virar o celular. Decisão consciente: digitar costuma ser mais fácil com o
+celular em pé.
+
+**Onde.** `src/components/IntroChegada.jsx`.
+
+**Quando.** Fatia A4.1, 28/09/2026.
+
+**O que falta.** Reavaliar se o teste com as crianças mostrar problema.
+
+---
+
+## 21. Aviso de retrato cobre o botão da Área dos Pais na abertura
+
+**Observado.** Em celular em retrato, na abertura, o aviso de orientação cobre
+o botão "Área dos pais". O adulto precisa virar o celular para abri-la. Com a
+Área dos Pais já aberta, o aviso não aparece por cima dela.
+
+**Onde.** `src/components/StartScreen.jsx`; `src/components/OrientationGuard.jsx`.
+
+**Quando.** Fatia A4.1, 28/09/2026.
+
+**O que falta.** Decidir se isso incomoda os pais; hoje não há outro caminho
+para a Área dos Pais em retrato.
+
+---
+
+## 22. Marcos dos prédios somem no Modo Tranquilo
+
+**Observado.** `Marco` (`Building.jsx:132`) só é desenhado com
+`visual.detalhes`, que o Modo Tranquilo desliga; a pizza da PIZZA, a cruz do
+HOSPITAL e do VET, o relógio da ESCOLA, a chave da GARAGEM e a árvore do
+PARQUE somem no Tranquilo, contrariando a ficha A2 ("identidade é informação,
+não enfeite").
+
+**Onde.** `src/components/Building.jsx:132`; `src/visual/world-style.js:46`.
+
+**Quando.** Fatia A2.1, 01/10/2026.
+
+**O que falta.** Migrar para `AderecosLugar` quando cada lugar receber sua
+identidade (ESCOLA na A2.4).
+
+---
+
+## 23. Medidas do Building repetidas em `identidade.js`
+
+**Observado.** `src/city/identidade.js` repete as medidas da janela e do
+telhado do `Building.jsx`. Se elas mudarem no Building, os pães da PADARIA
+saem do lugar sem nenhum teste avisar.
+
+**Onde.** `src/city/identidade.js` (bloco "ESPELHO do Building.jsx");
+`src/components/Building.jsx` (`Janelas` e `Telhado` em pirâmide).
+
+**Quando.** Fatia A2.1, 01/10/2026.
+
+**O que falta.** Resolver quando o Building exportar essas medidas como dado.
+
+---
+
+## 24. Aventura e roteiro dividem a atividade `em_missao`
+
+**Observado.** Aventura e roteiro dividem a atividade `em_missao`. Por ordem
+de efeitos (`AdventureController` antes do `MissionController` em
+`GameExperience.jsx`), o `useRegistrarAtividade('em_missao', false)` do
+`MissionController` libera com valor velho a `em_missao` pedida pela aventura.
+
+**Onde.** `src/GameExperience.jsx` (ordem de montagem);
+`src/components/MissionController.jsx`; `src/activity/useActivity.js`
+(`useRegistrarAtividade`).
+
+**Quando.** Fatia F1, 02/10/2026.
+
+**O que falta.** A F1 contorna (etapas com objetivo pedem o foco de novo antes
+de falar); a causa de origem fica: separar as atividades da aventura e do
+roteiro, ou tornar o registro imune a valor velho.
+
+---
+
+## 25. PADARIA de costas para a rua nova
+
+**Observado.** Na câmera 2,5D, prédio ao sul de uma rua mostra os fundos para
+ela quando a frente está virada para a câmera. Depois da V1.3, a PADARIA fica
+de costas para o trecho final do caminho 2.
+
+**Onde.** `src/city/ruas.js` (caminho 2); `src/city/bairros.js` (PADARIA).
+
+**Quando.** Fatia V1.3, 02/10/2026.
+
+**O que falta.** Aceito; revisar na expansão do estilo real.
+
+---
+
+## 26. Oclusão do carro pela PADARIA no trecho final do caminho 2
+
+**Observado.** Oclusão do carro pela PADARIA no trecho final do caminho 2 (V1.3,
+nos dois estilos): até 80% (atual) e 93% (real) oculto rente à beira do lado da
+PADARIA, x 47–58; o sensor de chegada da PADARIA fica nessa faixa.
+
+**Onde.** `src/city/ruas.js`; PADARIA em `src/city/bairros.js`.
+
+**Quando.** Fatia V1.3, 02/10/2026. Conta: raios de 75 pontos do carro × 406
+posições, obstáculos em caixas envolventes (tende a superestimar).
+
+**O que falta.** Resolvido pela silhueta do carro (S1).
+
+---
+
+## 27. Medidor sem marca de save e de moeda
+
+**Observado.** A sonda da M1b marca fala, voz, chegada, missão, pergunta,
+resumo, garagem e posto. Não marca a gravação do save nem a coleta de moeda:
+um pico causado por um desses sai no resumo com "nenhum" evento.
+
+**Onde.** `src/perf/sonda.js`; store (`persist`) e coleta de moedas.
+
+**Quando.** Fatia M1b, inventário de 09/11/2026.
+
+**O que falta.** Acrescentar as duas marcas, com teste antes.
+
+---
+
+## 28. Teste "sem animação" da silhueta é fraco
+
+**Observado.** O teste compara dois materiais criados com a mesma cor e confere
+que não há `onBeforeRender` próprio. Não prova que nada muda por quadro nem
+que o Modo Tranquilo não altera a silhueta; isso está garantido só por leitura
+de `Car.jsx`. O teste de orçamento confere um número fixo de chamadas.
+
+**Onde.** `tests/silhueta.test.js`; `src/visual/silhueta.js`.
+
+**Quando.** Fatia S1, inventário de 09/11/2026.
+
+**O que falta.** Um teste que falhe se a silhueta ganhar animação ou depender
+do perfil visual.
+
+---
+
+## 29. Criação do `PerformanceObserver` sem teste
+
+**Observado.** O observador de `longtask` só é criado com `?medir=1`, mas isso
+está em código de módulo de `MedidorDesempenho.jsx` e foi confirmado só por
+leitura. Um registro de marcas vazio é criado na carga mesmo sem medição.
+
+**Onde.** `src/components/MedidorDesempenho.jsx`.
+
+**Quando.** Fatia M1b, inventário de 09/11/2026.
+
+**O que falta.** Extrair a instalação para uma função testável e cobrir o caso
+sem `?medir=1`.
+
+---
+
+## 30. +0,49 kB do pacote inicial sem origem investigada
+
+**Observado.** O pacote inicial passou de 198,02 kB (depois da A2.1) para
+198,51 kB no commit `4d08653`. Nenhuma fatia desse intervalo registrou a
+variação no orçamento.
+
+**Onde.** `docs/PLANO_MESTRE.md` §2.4; commits entre a A2.1 e `4d08653`.
+
+**Quando.** Inventário de 09/11/2026.
+
+**O que falta.** Medir o build commit a commit e registrar a origem.
+
+---
+
+## 31. Horta, repartir e faixas etárias não alcançáveis
+
+**Observado.** A horta da escola (com o passo `distribuir`, que ensina a
+repartir) e a escolha de faixa etária existem no código, mas nenhum componente
+chama `iniciarHortaEscola`. Nada disso aparece para quem joga.
+
+**Onde.** `src/adventure/runtime.js` (`iniciarHortaEscola`);
+`src/school/horta-aventura.js`, `src/school/horta.js`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Decidir se a horta entra no jogo ou sai das promessas (ver o
+item 32).
+
+---
+
+## 32. README da branch promete o que o jogo não mostra e cita a Netlify
+
+**Observado.** O README da branch diz que a criança aprende a "repartir" e a
+"cuidar de uma horta" e fala em "faixas etárias que aparecem no jogo" (item
+31). Também diz que a publicação é feita pelo Netlify.
+
+**Onde.** `README.md`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Corrigir antes de qualquer merge na `main` (o README que o
+GitHub mostra é o da `main`).
+
+---
+
+## 33. Rollback de v8 para a main apaga preferências, worldFlags e recompensas
+
+**Observado.** A `main` (SAVE_VERSION 6) hidrata um save v8 sem descartar, mas
+na primeira carga regrava como v6 e o `partialize` dela deixa de fora
+`preferencias`, `worldFlags` e `recompensas`. `descobertas.objetos` sobrevive.
+Confirmado pelo código do zustand 5.0.14 e por simulação com o código da
+`main`.
+
+**Onde.** `origin/main:src/store/useGame.js` (`partialize`).
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Tratar a promoção como caminho de ida, ou dar à `main` um
+`partialize` que preserve as chaves desconhecidas antes de qualquer rollback.
+
+---
+
+## 34. README diz "terceira tentativa"; a pergunta de chegada revela depois de 2 erros
+
+**Observado.** O README afirma que "na terceira tentativa a resposta aparece".
+A pergunta de chegada revela a resposta depois de 2 erros
+(`MAX_TENTATIVAS = 2`); a aventura, depois de 3 (`TENTATIVAS_ATE_REVELAR`).
+
+**Onde.** `README.md`; `src/components/ChegadaVivaPanel.jsx`;
+`src/adventure/adventure-engine.js`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Alinhar o texto ao comportamento (ou o contrário).
+
+---
+
+## 35. orbi-3ge.pages.dev continua servindo a main
+
+**Observado.** O Cloudflare Pages (`orbi-3ge.pages.dev`) é publicado pelo
+`.github/workflows/deploy.yml` da `main`, que dispara em push na `main` e
+também à mão (`workflow_dispatch`). Promover a branch na Vercel deixa dois
+endereços públicos com versões diferentes. A branch apagou esse workflow
+(`136ee34`): um merge na `main` encerra o deploy do Cloudflare.
+
+**Onde.** `origin/main:.github/workflows/deploy.yml`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Decidir o destino do endereço do Cloudflare (redirecionar,
+atualizar ou desligar).
+
+---
+
+## 36. Versão do pacote: branch em 0.1.0, main em 2.0.0
+
+**Observado.** O `package.json` da branch está em `0.1.0`; o da `main`, em
+`2.0.0` (commit `a2bedd6`, tag `v2.0.0`).
+
+**Onde.** `package.json`.
+
+**Quando.** Verificação de promoção de `39f2822`, 18/11/2026.
+
+**O que falta.** Acertar a versão no próximo corte de release.
+
+---
+
+## 37. Resumo da Horta repetida promete adesivo que não entrega
+
+**Observado.** A Horta é repetível e a recompensa só sai na primeira conclusão
+(`registrarRecompensa` e `registrarDescoberta` ignoram repetidos). Mas o painel
+de resumo é o mesmo em toda conclusão e continua mostrando "ADESIVO: BROTO DA
+ESCOLA" nas repetições, sem entregar adesivo novo.
+
+**Onde.** `src/school/horta-aventura.js` (etapa `fecho`, `recompensas`);
+`src/adventure/adventure-engine.js` (etapa `resumo`).
+
+**Quando.** Fatia H1, 18/11/2026.
+
+**O que falta.** Corrigir na H3: nas repetições, o resumo não promete adesivo
+(ou diz que o broto já está no Caderninho).
+
+**Resolvido na H3 (19/11/2026).** Com o broto já nas recompensas, o resumo
+fica sem adesivo e a fala é "Você cuidou da horta de novo! A professora Lia
+agradeceu." (`criarHortaEscola(band, { repetida })`).
+
+---
+
+## 38. Flores do parque escalam em torno da origem do mundo
+
+**Observado.** `FloresParque` escala o grupo inteiro (`scale.setScalar`), e o
+grupo está na origem do mundo, não no parque. Antes de florescer, as 8 flores
+ficam a 28% das suas coordenadas: pequenas, perto de (−3,9; 20,2), longe do
+canteiro do parque (centro em −13,75; 72,1). Ao florescer, elas crescem e
+"voam" até o parque ao mesmo tempo. Achado pela leitura do código; não
+conferido no jogo.
+
+**Onde.** `src/components/FloresParque.jsx` (`<group ref={grupo}>` e o
+`useFrame` que aplica `setScalar`).
+
+**Quando.** Fatia H2, 18/11/2026. A H2 não repetiu o padrão: os brotos da
+ESCOLA crescem só em altura, a partir da terra.
+
+**O que falta.** Conferir no jogo (código A da H1 mostra o estado antes de
+florescer) e decidir a correção: escalar cada flor em torno da própria base,
+ou esconder as flores antes de florescer.
+
+**Resolvido na H3 (19/11/2026).** Cada flor escala em torno da própria base
+(`FloresParque.jsx`); antes de florescer ficam como botões pequenos no
+canteiro do parque. Elas crescem quando o resumo da aventura fecha.
+
+---
+
+## 39. Dieta do pacote inicial
+
+**Observado.** Com o R1 e o R2, o pacote inicial chegou a 199,62 kB, a 0,38 kB
+do antigo teto de 200 kB. O teto subiu para 205 kB (decisão do Anderson,
+19/11/2026), mas o pacote continua carregando partes que a criança não usa ao
+abrir o jogo.
+
+**Onde.** Pacote inicial `index-*.js`: Área dos Pais (`AreaPais.jsx`) e o
+importar/exportar do save (`src/save.js`).
+
+**Quando.** Fatia R2, 19/11/2026.
+
+**O que falta.** Avaliar carregar sob demanda a Área dos Pais e o
+importar/exportar do save. Fazer quando o teto de 205 kB apertar.
+
+---
+
+## 40. A dica da pergunta do parque entrega a resposta no primeiro toque
+
+**Observado.** Na pergunta "Do que as plantas precisam para viver?", o botão
+"💡 OUVIR UMA DICA" fala a `dica` da etapa, que é a própria resposta ("É a
+água! Ela cai da nuvem e ajuda a planta a crescer."). Pode ser tocado antes de
+qualquer tentativa e não conta tentativa: a regra de revelar no 3º erro fica
+sem efeito para quem toca no 💡.
+
+**Onde.** `src/adventure/parque-com-sede.js` (etapa `saber`);
+`src/adventure/adventure-engine.js` (`pedir_ajuda` e a revelação usam o mesmo
+campo `dica`).
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+Além disso, as cartas dessa pergunta têm ordem fixa, com a certa sempre
+primeira (ÁGUA, AREIA, PAPEL).
+
+**O que falta.** Corrigir exige separar no motor a dica (pista) da revelação
+(resposta). A ordem das cartas também é decisão da matriz pedagógica.
+
+---
+
+## 41. Perguntas de chegada revelam no 2º erro e não têm dica
+
+**Observado.** As perguntas de chegada (ZOO, MERCADO, PADARIA, ESTÁDIO) revelam
+a resposta no 2º erro (`MAX_TENTATIVAS = 2`) e não têm botão de dica: depois
+do 1º erro só repetem o pedido. As perguntas de aventura revelam no 3º erro.
+Mesmo assunto da dívida 34.
+
+As três cartas são embaralhadas a cada pergunta (`embaralhar`, Fisher-Yates),
+inclusive as de número da PADARIA: a ordem não é crescente.
+
+**Onde.** `src/components/ChegadaVivaPanel.jsx` (`MAX_TENTATIVAS`);
+`src/missions/chegadas-vivas.js` (`fraseTenteDeNovo`, `fraseRevela`,
+`embaralhar`).
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decisão pela matriz pedagógica.
+
+---
+
+## 42. Aventuras não gravam habilidades, e a telemetria não vai para o save
+
+**Observado.** As aventuras (parque e horta) não chamam `registrarHabilidade`:
+pergunta, coleta e repartir não entram em `habilidades`. A telemetria do
+runtime (tentativas, ajuda pedida, convite recusado) fica só na memória, nos
+últimos 100 eventos, e se perde ao recarregar.
+
+**Onde.** `src/adventure/runtime.js` (`registrarEvento`, `aplicarEfeitos`).
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decidir pela matriz pedagógica o que as aventuras registram.
+Gravar algo novo no save exige seguir a política de save (seção 2.5).
+
+---
+
+## 43. A habilidade `adicao` não é alimentada por nada
+
+**Observado.** `habilidades.adicao` existe no estado inicial e no save, mas
+nenhum código chama `registrarHabilidade('adicao', …)`. O valor fica sempre
+zerado (ou como veio de um save antigo).
+
+**Onde.** `src/store/useGame.js` (`habilidades`).
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decidir pela matriz pedagógica: alimentar ou retirar.
+Retirar a chave exige seguir a política de save.
+
+---
+
+## 44. A pergunta de chegada do PARQUE não pode ser alcançada
+
+**Observado.** Existe o gerador de pergunta do PARQUE ("Quantas árvores tem no
+canteiro?"), mas a pergunta de chegada só abre em missão `gps` do roteiro, e o
+PARQUE não está no roteiro. Nenhuma criança vê essa pergunta hoje.
+
+**Onde.** `src/missions/chegadas-vivas.js` (`sortearPerguntaArvores`);
+`src/missions/roteiro.js` (`ROTEIRO`); `src/components/MissionController.jsx`.
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decidir pela matriz pedagógica: pôr o PARQUE no roteiro ou
+retirar o gerador.
+
+---
+
+## 45. `src/school/activities.js` sem uso no jogo
+
+**Observado.** `activities.js` traz 12 atividades e 30 variações (faixas de 3
+a 10 anos; Matemática, Português, História e Artes; tipos `choice`, `order` e
+`studio`). Só os testes importam o módulo; os componentes que o exibiam
+ficaram na branch congelada.
+
+**Onde.** `src/school/activities.js`; `tests/school-activities.test.js`.
+
+**Quando.** Inventário pedagógico, 18/11/2026.
+
+**O que falta.** Decidir pela matriz pedagógica o que entra no jogo e o que
+sai do código.
+
+---
+
+## 46. Hipótese da travada ao responder pergunta: espera pela GPU no primeiro desenho de texturas novas
+
+**Observado (no piloto da esquina, não na pergunta).** Medido no navegador
+em 20/11/2026 (Chrome sem interface, desenho por software, sem compilação
+paralela de shaders), envolvendo as chamadas do WebGL com cronômetro e
+anotando o quadro de cada uma: no primeiro desenho da esquina, a página
+parou 1.056 ms numa única chamada,
+`getExtension('EXT_texture_filter_anisotropic')`, feita pelo three ao
+configurar a textura dos letreiros (`setTextureParameters`) no primeiro
+envio dela. A chamada em si é barata; o custo é a página esperar a GPU
+terminar o que estava na fila, inclusive os programas recém-enfileirados.
+No quadro da aparição houve 16 verificações de programa no primeiro uso; a
+espera de 1.056 ms veio no quadro seguinte. Compilar
+antes (`gl.compile` um quadro antes) não evitou o pico: o custo cai no
+primeiro DESENHO. O conserto do piloto (montar escondido, `compileAsync` e
+um desenho de 1×1 pixel antes de mostrar) levou o quadro da aparição de
+300 ms para 16,6 a 16,8 ms (mediana 16,7) — detalhes em
+`docs/PLANO_MESTRE.md` §10, "Estilo realista — piloto da esquina".
+
+**Hipótese (não verificada no fluxo da pergunta).** A travada ao responder
+pergunta pode ser o mesmo mecanismo: algo desenhado pela primeira vez logo
+depois da resposta, cujo primeiro uso força a espera pela GPU. No 3D do
+jogo não há textura carregada de arquivo nem criada à mão; as texturas são
+as dos textos 3D (o atlas de letras do troika, que é enviado de novo quando
+entram letras ainda não usadas). Candidatos, a conferir: o marcador e os
+textos da próxima missão, letras novas em letreiros e recompensas que
+aparecem no mundo. O painel da pergunta é DOM e não entra nessa conta.
+
+**Onde.** Ainda não se sabe. A instrumentação do piloto mediu
+`getExtension`, `getProgramParameter`, `getProgramInfoLog`, `texImage2D` e
+`texSubImage2D` por quadro, com um marcador no primeiro quadro em que a
+coisa nova aparece.
+
+**Quando.** Piloto da esquina, 20/11/2026.
+
+**O que falta.** Na sessão de diagnóstico (`?medir=1`), medir a janela da
+resposta com essa mesma instrumentação e aplicar o critério de causa
+identificada de `docs/PLANO_MESTRE.md` §10. Se a hipótese se confirmar, o
+conserto é o do piloto: desenhar uma vez, invisível, antes de a criança
+precisar ver. No celular, com compilação paralela, o tamanho do pico pode
+ser outro; só a medição no aparelho diz.

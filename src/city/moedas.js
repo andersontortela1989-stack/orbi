@@ -19,8 +19,9 @@
  * DISTRIBUIÇÃO: fileiras de 3 no asfalto-base (o "negativo" entre os chãos
  * dos bairros) e nas aproximações das entradas — recompensa o trajeto
  * natural, não exige desvio. Coordenadas afinadas contra os chãos de
- * bairros.js, os lotes (calçada = max(w,l)+4 do Building) e a zona do
- * POSTO; mexeu em chão/prédio/posto, conferir aqui.
+ * bairros.js, os lotes (calçada de cada prédio, POR EIXO: w e l acrescidos
+ * de CALCADA_EXTRA, em city/geometria.js) e a zona do POSTO; mexeu em
+ * chão/prédio/posto, conferir aqui e rodar tests/folgas-cidade.test.js.
  */
 
 // Raio de coleta no plano XZ (unidades de mundo). GENEROSO de propósito:
@@ -75,11 +76,14 @@ export const MOEDAS = [
   ...fileira([-37.5, 6], [0, 1]),
   ...fileira([-37.5, 42], [0, 1]),
 
-  // aproximação da entrada do MERCADO (leva à faixa de travessia em x≈35.5)
+  // aproximação da entrada do MERCADO (ao lado da rua que sobe para o
+  // MERCADO; a travessia foi para x≈48,5 na V1.3 — tests/rua-mercado.test.js)
   ...fileira([28.5, 28], [1, 0]),
 
-  // aproximação da entrada do PARQUE (leva à faixa em z≈53; x=12 passa ao
-  // largo do lote da ESCOLA, que termina em x=10)
+  // aproximação da entrada do PARQUE (leva à faixa em z≈53). O centro das
+  // moedas, em x=12, fica fora da calçada da ESCOLA, que termina em
+  // pos[0] + w/2 + CALCADA_POR_LADO (city/geometria.js); o raio de coleta
+  // alcança a calçada, que não tem colisor. tests/folgas-cidade.test.js confere.
   ...fileira([12, 48], [0, 1]),
 
   // anel externo sul — pra quem explora além do centro

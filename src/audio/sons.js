@@ -6,6 +6,9 @@
  *   - neutro  → tom único curto e BAIXO de volume (feedback de erro sem punir).
  */
 
+import { useGame } from '../store/useGame.js';
+import { marcar, sondaLigada } from '../perf/sonda.js';
+
 let ctx = null;
 
 function getCtx() {
@@ -14,13 +17,23 @@ function getCtx() {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return null;
     ctx = new AC();
+    marcar('som:contexto'); // M1c: só registra com ?medir=1
   }
   // Browsers suspendem o AudioContext até a primeira interação
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
 }
 
+const sonsLigados = () => useGame.getState().preferencias?.sons !== false;
+
+// M1c: marca o som pelo nome fixo — só quando ele vai tocar de fato (sons
+// ligados) e só com ?medir=1.
+function marcarSom(nome) {
+  if (sondaLigada() && sonsLigados()) marcar(nome);
+}
+
 function tom({ freq = 800, dur = 0.15, type = 'sine', gain = 0.18, delay = 0 }) {
+  if (!sonsLigados()) return;
   const a = getCtx();
   if (!a) return;
   const t0 = a.currentTime + delay;
@@ -39,12 +52,14 @@ function tom({ freq = 800, dur = 0.15, type = 'sine', gain = 0.18, delay = 0 }) 
 
 /** "Ting-tong" rápido de moeda — sobe uma quinta. */
 export function somMoeda() {
+  marcarSom('som:moeda');
   tom({ freq: 880,  dur: 0.10, type: 'triangle', gain: 0.18 });
   tom({ freq: 1320, dur: 0.15, type: 'triangle', gain: 0.18, delay: 0.08 });
 }
 
 /** Acorde maior ascendente (C-E-G) — pequena vitória. */
 export function somSucesso() {
+  marcarSom('som:sucesso');
   [523.25, 659.25, 783.99].forEach((f, i) => {
     tom({ freq: f, dur: 0.20, type: 'triangle', gain: 0.18, delay: i * 0.09 });
   });
@@ -52,17 +67,20 @@ export function somSucesso() {
 
 /** Tom único curto e baixo — feedback de erro SEM ser punitivo. */
 export function somNeutro() {
+  marcarSom('som:neutro');
   tom({ freq: 440, dur: 0.08, type: 'sine', gain: 0.10 });
 }
 
 /** Tique curto e suave — marca cada litro contado ao abastecer (Fatia 5). */
 export function somTique() {
+  marcarSom('som:tique');
   tom({ freq: 660, dur: 0.07, type: 'sine', gain: 0.12 });
 }
 
 /** Buzina simpática — "bip-bip" de duas notas curtas e SUAVES (triangle, sem
  *  grave alto nem susto; régua sensorial). ~300ms total. */
 export function somBuzina() {
+  marcarSom('som:buzina');
   tom({ freq: 520, dur: 0.13, type: 'triangle', gain: 0.15 });
   tom({ freq: 415, dur: 0.15, type: 'triangle', gain: 0.15, delay: 0.15 });
 }

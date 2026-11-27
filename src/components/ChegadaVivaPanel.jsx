@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../store/useGame.js';
 import { somSucesso } from '../audio/sons.js';
-import { falar } from '../audio/voz.js';
+import { falarDaAtividade } from '../activity/index.js';
+import { useRegistrarAtividade } from '../activity/useActivity.js';
+import {
+  encerrarChegadaVivaAposFala,
+  finalizarChegadaViva,
+} from '../missions/visita-livre.js';
 import { Bandeira } from './Bandeira.jsx';
+import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
+import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 
 // Tempo entre resolver (acerto ou revelação) e fechar o painel — a frase
 // final começa e a carta certa acende antes de o fluxo seguir.
 const FECHAR_MS = 2200;
+const LIMITE_FECHAR_MS = 9000;
 // Toques errados até o Órbi revelar a resposta — ninguém fica preso.
 const MAX_TENTATIVAS = 2;
 
@@ -14,11 +22,11 @@ const MAX_TENTATIVAS = 2;
  * CHEGADA VIVA — a pergunta do Órbi na chegada.
  *
  * Abre quando a store tem `chegadaViva` (setada pelo MissionController após a
- * celebração da chegada no lugar). O painel é GENÉRICO: todo o conteúdo —
- * título, cartas, dica, frases de voz, habilidade registrada e a fileira
- * opcional de itens pra contar — vem pronto da pergunta (chegadas-vivas.js).
- * ZOO = sons de animais; MERCADO = cores de frutas; PADARIA = contagem de
- * pães (cartas de número, sem emoji).
+ * celebração da chegada no lugar, ou por visita livre no Shopping). O painel é
+ * GENÉRICO: todo o conteúdo — título, cartas, dica, frases de voz, habilidade
+ * registrada e a fileira opcional de itens pra contar — vem pronto da pergunta
+ * (chegadas-vivas.js). ZOO = sons de animais; MERCADO = cores de frutas;
+ * PADARIA = contagem de pães (cartas de número, sem emoji).
  *
  * Feedback ASSIMÉTRICO ESTRITO (guard-rail TEA):
  *  - acerto  → festa contida: somSucesso + voz + carta acesa em Sol;
@@ -27,8 +35,8 @@ const MAX_TENTATIVAS = 2;
  *    acerto — evidência honesta — mas NADA disso aparece pra criança.)
  *  - 2 erros → o Órbi revela com alegria e ensina de qualquer jeito.
  *
- * Sem timer; dirigir continua livre (overlay embaixo, padrão RefuelPanel —
- * não é modal). A voz da pergunta entra SEM interrupt: ela espera na fila a
+ * Sem timer; o coordenador congela direção e mundo enquanto a carta está
+ * aberta. A voz da pergunta entra SEM interrupt: ela espera na fila a
  * celebração da chegada terminar inteira (uma coisa por vez).
  *
  * Efeitos de conclusão em handlers de clique, guardados por `resolvido`
@@ -37,23 +45,30 @@ const MAX_TENTATIVAS = 2;
 export function ChegadaVivaPanel() {
   const pergunta = useGame((s) => s.chegadaViva);
   const registrarHabilidade = useGame((s) => s.registrarHabilidade);
+  useRegistrarAtividade('pergunta', !!pergunta);
+  useMarcarTroca(!!pergunta, 'pergunta'); // M1b: só registra com ?medir=1
 
   const [tentativas, setTentativas] = useState(0);
   const [acertou, setAcertou] = useState(false);
   const [revelada, setRevelada] = useState(false);
   const resolvido = useRef(false);
-  const fecharTO = useRef(null);
+  const esperaFechar = useRef(null);
 
   // Ao abrir: zera o estado local e narra a pergunta (na fila da voz).
   useEffect(() => {
     if (pergunta) {
+      esperaFechar.current?.cancelar();
+      esperaFechar.current = null;
       setTentativas(0);
       setAcertou(false);
       setRevelada(false);
       resolvido.current = false;
-      falar(pergunta.frasePergunta);
+      falarDaAtividade('pergunta', pergunta.frasePergunta);
     }
-    return () => clearTimeout(fecharTO.current);
+    return () => {
+      esperaFechar.current?.cancelar();
+      esperaFechar.current = null;
+    };
   }, [pergunta]);
 
   if (!pergunta) return null;
@@ -65,14 +80,21 @@ export function ChegadaVivaPanel() {
     if (d) useGame.getState().registrarDescoberta(d.categoria, d.id);
   };
 
-  // Fecha o painel e segue o fluxo normal — só o painel sorteia a próxima
-  // missão quando há chegada viva (o MissionController delega pra cá).
-  const finalizar = () => {
-    clearTimeout(fecharTO.current);
-    fecharTO.current = setTimeout(() => {
-      useGame.getState().fecharChegadaViva();
-      useGame.getState().proximaMissao();
-    }, FECHAR_MS);
+  // Fecha o painel e segue o fluxo: em missão do roteiro pede a próxima
+  // parada; em visita livre devolve a direção mantendo a parada atual intacta.
+  const finalizar = (textoFinal) => {
+    const perguntaAtual = pergunta;
+    esperaFechar.current?.cancelar();
+    esperaFechar.current = encerrarChegadaVivaAposFala({
+      texto: textoFinal,
+      falar: (texto, opts) => falarDaAtividade('pergunta', texto, opts),
+      aoFechar: () => {
+        const { fecharChegadaViva, proximaMissao } = useGame.getState();
+        finalizarChegadaViva(perguntaAtual, { fecharChegadaViva, proximaMissao });
+      },
+      minimoMs: FECHAR_MS,
+      limiteMs: LIMITE_FECHAR_MS,
+    });
   };
 
   const responder = (valor) => {
@@ -84,8 +106,7 @@ export function ChegadaVivaPanel() {
       registrarHabilidade(pergunta.habilidade, true);
       registrarDescoberta();
       somSucesso();
-      falar(pergunta.fraseAcerto, { interrupt: true });
-      finalizar();
+      finalizar(pergunta.fraseAcerto);
       return;
     }
 
@@ -101,35 +122,58 @@ export function ChegadaVivaPanel() {
       // descoberto: o Órbi ensinou de qualquer jeito — o adesivo entra no
       // Caderninho sem rastro de falha.
       registrarDescoberta();
-      falar(pergunta.fraseRevela, { interrupt: true });
-      finalizar();
+      finalizar(pergunta.fraseRevela);
     } else {
-      falar(pergunta.fraseTenteDeNovo, { interrupt: true });
+      falarDaAtividade('pergunta', pergunta.fraseTenteDeNovo, { interrupt: true });
     }
   };
 
   return (
     <div className="viva-overlay">
       <div className="viva-painel" role="dialog" aria-label="pergunta do Órbi">
-        <div className="viva-titulo">
-          {pergunta.tituloAntes}
-          {pergunta.tituloDestaque && (
-            <>
-              {' '}
-              <span className="viva-som">{pergunta.tituloDestaque}</span>
-            </>
-          )}
-          {pergunta.tituloDepois}
+        {/* C1: 🔊 ao lado do título, longe das cartas de resposta. */}
+        <div className="repetir-linha">
+          <div className="viva-titulo">
+            {pergunta.tituloAntes}
+            {pergunta.tituloDestaque && (
+              <>
+                {' '}
+                <span
+                  className={
+                    'viva-som' + (pergunta.destaqueNeutro ? ' viva-som--neutro' : '')
+                  }
+                >
+                  {pergunta.tituloDestaque}
+                </span>
+              </>
+            )}
+            {pergunta.tituloDepois}
+          </div>
+          <BotaoRepetirFala />
         </div>
 
-        {/* Fileira de itens pra CONTAR (PADARIA): pães grandes e separados,
-            dá pra contar com o dedo na tela. aria-hidden: a quantidade é a
-            resposta — o conteúdo acessível é a pergunta falada. */}
+        {/* Fileira de itens pra CONTAR (PADARIA) ou dois agrupamentos
+            separados (ESCOLA: 2 de um lado, 3 do outro). aria-hidden: a
+            quantidade é a resposta — o conteúdo acessível é a pergunta falada. */}
         {pergunta.mostra && (
-          <div className="viva-mostra" aria-hidden="true">
-            {Array.from({ length: pergunta.mostra.quantidade }).map((_, i) => (
-              <span key={i}>{pergunta.mostra.emoji}</span>
-            ))}
+          <div
+            className={
+              'viva-mostra' +
+              (pergunta.mostra.grupos ? ' viva-mostra--grupos' : '')
+            }
+            aria-hidden="true"
+          >
+            {pergunta.mostra.grupos
+              ? pergunta.mostra.grupos.map((qtd, gIdx) => (
+                  <div className="viva-mostra-grupo" key={gIdx}>
+                    {Array.from({ length: qtd }).map((_, i) => (
+                      <span key={i}>{pergunta.mostra.emoji}</span>
+                    ))}
+                  </div>
+                ))
+              : Array.from({ length: pergunta.mostra.quantidade }).map((_, i) => (
+                  <span key={i}>{pergunta.mostra.emoji}</span>
+                ))}
           </div>
         )}
 
@@ -144,6 +188,7 @@ export function ChegadaVivaPanel() {
                 key={o.valor}
                 type="button"
                 tabIndex={-1}
+                aria-label={o.ariaLabel || undefined}
                 className={'viva-carta' + (certa ? ' viva-carta--certa' : '')}
                 onClick={(e) => {
                   responder(o.valor);
@@ -158,11 +203,13 @@ export function ChegadaVivaPanel() {
                     {o.emoji}
                   </span>
                 )}
-                <span
-                  className={o.emoji || o.bandeira ? 'viva-nome' : 'viva-numero'}
-                >
-                  {o.rotulo}
-                </span>
+                {o.rotulo && (
+                  <span
+                    className={o.emoji || o.bandeira ? 'viva-nome' : 'viva-numero'}
+                  >
+                    {o.rotulo}
+                  </span>
+                )}
               </button>
             );
           })}

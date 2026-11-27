@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
@@ -6,6 +6,21 @@ import { useKeyboard } from '../hooks/useKeyboard.js';
 import { PALETA3D } from '../brand/paleta3d.js';
 import { useGame } from '../store/useGame.js';
 import { tintaDoCarro } from '../city/garagem.js';
+import { coordenadorAtividade } from '../activity/index.js';
+import { pontoDeMedicao } from '../perf/medidor.js';
+import { geometriaDe } from '../visual/geometria-mesclada.js';
+import {
+  ORDEM_CARRO,
+  ORDEM_SILHUETA,
+  criarMateriaisSilhueta,
+  malhasDaSilhueta,
+} from '../visual/silhueta.js';
+
+// Ponto de medição fixo (V1): só com `?medir=1&ponto=...`; senão, null e o
+// carro nasce onde sempre nasceu. Lido uma vez, na carga.
+const PONTO = typeof location !== 'undefined' ? pontoDeMedicao(location.search) : null;
+const POSICAO_INICIAL = PONTO?.posicao ?? [0, 1, 0];
+const RUMO_INICIAL = PONTO?.rumo ?? 0;
 
 // =====================================================================
 //  PARÂMETROS DE GAME FEEL  —  AJUSTE AQUI, SENTINDO.
@@ -31,7 +46,7 @@ const _q = new THREE.Quaternion();
 const _yAxis = new THREE.Vector3(0, 1, 0);
 
 export function Car({ rigidBodyRef }) {
-  const heading = useRef(0); // ângulo Y em radianos
+  const heading = useRef(RUMO_INICIAL); // ângulo Y em radianos
   const input = useKeyboard();
   const localRef = useRef(null);
   const ref = rigidBodyRef ?? localRef;
@@ -41,10 +56,36 @@ export function Car({ rigidBodyRef }) {
   // RigidBody é o mesmo elemento React (não remonta) e a física acima
   // não muda. corPreview (experimentando na garagem) vence corCarro.
   const corCorpo = useGame((s) => tintaDoCarro(s.corPreview ?? s.corCarro));
+  const temRegador = useGame((s) => s.recompensas.includes('regador-no-teto'));
+
+  // S1 — silhueta atrás de obstáculos (visual/silhueta.js): geometria fixa,
+  // material refeito só quando a pintura muda (inclusive a prévia da garagem).
+  const geoSilhueta = useMemo(() => {
+    const m = malhasDaSilhueta({ largura: CAR_W, altura: CAR_H, comprimento: CAR_L });
+    return { preenchimento: geometriaDe(m.preenchimento), contorno: geometriaDe(m.contorno) };
+  }, []);
+  const matSilhueta = useMemo(() => criarMateriaisSilhueta(corCorpo), [corCorpo]);
+  useEffect(() => () => {
+    geoSilhueta.preenchimento.dispose();
+    geoSilhueta.contorno.dispose();
+  }, [geoSilhueta]);
+  useEffect(() => () => {
+    matSilhueta.preenchimento.dispose();
+    matSilhueta.contorno.dispose();
+  }, [matSilhueta]);
 
   useFrame((_, deltaRaw) => {
     const rb = ref.current;
     if (!rb) return;
+
+    // Painel bloqueante congela o corpo imediatamente, inclusive a inércia
+    // de uma tecla que estava pressionada antes da abertura.
+    if (!coordenadorAtividade.estado().mundo) {
+      const v = rb.linvel();
+      rb.setLinvel({ x: 0, y: v.y, z: 0 }, true);
+      rb.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      return;
+    }
 
     // Clamp do dt para sobreviver a freezes / tab pausada
     const dt = Math.min(deltaRaw, 1 / 30);
@@ -106,13 +147,23 @@ export function Car({ rigidBodyRef }) {
       type="dynamic"
       colliders={false}
       enabledRotations={[false, true, false]}
-      position={[0, 1, 0]}
+      position={POSICAO_INICIAL}
       linearDamping={0}
       angularDamping={0}
       mass={1}
     >
       {/* Um único collider para o carro inteiro — wheels são visual */}
       <CuboidCollider args={[CAR_W / 2, CAR_H / 2, CAR_L / 2]} friction={0.4} />
+
+      {/* S1 — silhueta: desenhada DEPOIS do mundo e ANTES do carro, com
+          profundidade invertida — só aparece onde algo está na frente. */}
+      <group renderOrder={ORDEM_SILHUETA}>
+        <mesh geometry={geoSilhueta.contorno} material={matSilhueta.contorno} />
+        <mesh geometry={geoSilhueta.preenchimento} material={matSilhueta.preenchimento} renderOrder={1} />
+      </group>
+
+      {/* O carro de verdade por último: cobre a silhueta onde aparece. */}
+      <group renderOrder={ORDEM_CARRO}>
 
       {/* Chassi — cor escolhida na garagem (coral de fábrica = o coral
           OFICIAL da Fatia B). Cabine/rodas seguem navy FIXO: identidade +
@@ -127,6 +178,25 @@ export function Car({ rigidBodyRef }) {
         <boxGeometry args={[CAR_W * 0.85, CAR_H * 0.55, CAR_L * 0.45]} />
         <meshStandardMaterial color={PALETA3D.carro.cabine} roughness={0.4} />
       </mesh>
+
+      {/* Recompensa permanente da aventura do parque — visual apenas, sem
+          collider e sem alterar o centro de massa ou o feel aprovado. */}
+      {temRegador && (
+        <group position={[0, CAR_H * 1.18, -0.25]} scale={0.55}>
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.42, 0.42, 1.1, 14]} />
+            <meshLambertMaterial color={PALETA3D.predios.VET} />
+          </mesh>
+          <mesh position={[0.8, 0.12, 0]} rotation={[0, 0, -Math.PI / 2]}>
+            <coneGeometry args={[0.22, 0.8, 12]} />
+            <meshLambertMaterial color={PALETA3D.predios.VET} />
+          </mesh>
+          <mesh position={[-0.15, 0.55, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.42, 0.09, 8, 14, Math.PI]} />
+            <meshBasicMaterial color={PALETA3D.contorno} />
+          </mesh>
+        </group>
+      )}
 
       {/* "Faróis" — referência visual da frente do carro */}
       <mesh position={[0, 0, CAR_L / 2 - 0.05]}>
@@ -150,6 +220,7 @@ export function Car({ rigidBodyRef }) {
           <meshStandardMaterial color={PALETA3D.carro.roda} roughness={0.8} />
         </mesh>
       ))}
+      </group>
     </RigidBody>
   );
 }

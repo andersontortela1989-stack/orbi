@@ -1,0 +1,166 @@
+import { useEffect } from 'react';
+import {
+  enviarEventoAventura,
+  iniciarParqueComSede,
+} from '../adventure/runtime.js';
+import { useAdventure } from '../adventure/useAdventure.js';
+import { useActivity } from '../activity/useActivity.js';
+import { BotaoRepetirFala } from './BotaoRepetirFala.jsx';
+import { useMarcarTroca } from '../perf/useMarcarTroca.js';
+
+function AdventurePanel() {
+  const aventura = useAdventure();
+  const atividade = useActivity();
+  const painel = aventura.painel;
+  // M1b: marcas para o medidor (só registram com ?medir=1).
+  useMarcarTroca(aventura.ativa && painel?.tipo === 'pergunta', 'pergunta');
+  useMarcarTroca(aventura.ativa && painel?.tipo === 'resumo', 'resumo');
+  if (!aventura.ativa || !painel) return null;
+
+  const focoEsperado =
+    painel.tipo === 'pergunta'
+      ? 'pergunta'
+      : painel.tipo === 'resumo'
+        ? 'resumo'
+        : 'historia';
+  if (atividade.foco !== focoEsperado) return null;
+
+  if (painel.tipo === 'mensagem') {
+    return (
+      <div className="adv-overlay adv-overlay--mensagem">
+        <div className="adv-painel adv-painel--mensagem" role="dialog" aria-modal="true">
+          <div className="adv-corpo adv-corpo--mensagem">
+            <div className="adv-selo">NOVA AVENTURA</div>
+            <div className="adv-titulo">{aventura.titulo}</div>
+            <p className="adv-texto">{painel.texto}</p>
+          </div>
+          <div className="adv-acoes">
+            <button
+              type="button"
+              className="adv-continuar"
+              onClick={(e) => {
+                enviarEventoAventura({ tipo: 'toque' });
+                e.currentTarget.blur();
+              }}
+            >
+              {painel.botao}
+            </button>
+            {/* H1: convite que pode ser recusado — sem perder nada. */}
+            {painel.botaoSecundario && (
+              <button
+                type="button"
+                className="adv-ajuda-painel"
+                onClick={(e) => {
+                  enviarEventoAventura({ tipo: 'recusar' });
+                  e.currentTarget.blur();
+                }}
+              >
+                {painel.botaoSecundario}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (painel.tipo === 'pergunta') {
+    const resolvida = !!painel.respostaRevelada;
+    return (
+      <div className="adv-overlay">
+        <div className="adv-painel" role="dialog" aria-modal="true" aria-label="Pergunta da aventura">
+          {/* C1: 🔊 ao lado do título, longe das opções de resposta. */}
+          <div className="repetir-linha">
+            <div className="adv-titulo">{painel.texto}</div>
+            <BotaoRepetirFala />
+          </div>
+          <div className="adv-opcoes">
+            {painel.opcoes.map((opcao) => (
+              <button
+                type="button"
+                className={
+                  'adv-opcao' +
+                  (painel.respostaRevelada === opcao.id ? ' adv-opcao--certa' : '')
+                }
+                key={opcao.id}
+                disabled={resolvida}
+                onClick={(e) => {
+                  enviarEventoAventura({ tipo: 'respondeu', opcao: opcao.id });
+                  e.currentTarget.blur();
+                }}
+              >
+                <span className="adv-emoji" aria-hidden="true">{opcao.emoji}</span>
+                <span>{opcao.rotulo}</span>
+              </button>
+            ))}
+          </div>
+          {!resolvida && (
+            <button
+              type="button"
+              className="adv-ajuda-painel"
+              onClick={(e) => {
+                enviarEventoAventura({ tipo: 'pedir_ajuda' });
+                e.currentTarget.blur();
+              }}
+            >
+              💡 OUVIR UMA DICA
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="adv-overlay adv-overlay--resumo">
+      <div className="adv-painel adv-painel--resumo" role="dialog" aria-modal="true">
+        <div className="adv-cabecalho">
+          <div className="adv-selo">AVENTURA CONCLUÍDA</div>
+          <div className="adv-titulo">{painel.titulo}</div>
+        </div>
+        <div className="adv-corpo adv-corpo--resumo">
+          <ul className="adv-aprendizados">
+            {painel.aprendizados.map((item) => <li key={item}>{item}</li>)}
+          </ul>
+          {painel.recompensas.length > 0 && (
+            <div className="adv-recompensas">
+              {painel.recompensas.map((item) => <span key={item}>{item}</span>)}
+            </div>
+          )}
+        </div>
+        <div className="adv-acoes">
+          <button
+            type="button"
+            className="adv-continuar"
+            onClick={(e) => {
+              enviarEventoAventura({ tipo: 'toque' });
+              e.currentTarget.blur();
+            }}
+          >
+            CONTINUAR EXPLORANDO
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AdventureController() {
+  const aventura = useAdventure();
+  const atividade = useActivity();
+
+  useEffect(() => {
+    iniciarParqueComSede();
+  }, [atividade.foco]);
+
+  useEffect(() => {
+    if (!aventura.ativa) return undefined;
+    const id = setInterval(
+      () => enviarEventoAventura({ tipo: 'tick', segundos: 1 }),
+      1000
+    );
+    return () => clearInterval(id);
+  }, [aventura.ativa]);
+
+  return <AdventurePanel />;
+}

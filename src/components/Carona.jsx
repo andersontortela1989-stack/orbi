@@ -1,12 +1,26 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Cachorro } from './Bichos.jsx';
 import { ZoneSensor } from './ZoneSensor.jsx';
 import { useCarona } from '../store/useCarona.js';
 import { useGame } from '../store/useGame.js';
-import { falar } from '../audio/voz.js';
+import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
+import { useActivity, useRegistrarAtividade } from '../activity/useActivity.js';
 import { somSucesso } from '../audio/sons.js';
+import { ZINDEX_BALAO_MUNDO } from '../visual/world-style.js';
+import {
+  SELETORES_CONTROLES_HUD,
+  calcularDesvioBalao,
+} from '../ui/balao-carona.js';
+import {
+  CARONA_ESPERA_POS as ESPERA_POS,
+  CARONA_EMBARQUE_SIZE as EMBARQUE_SIZE,
+  CARONA_EMBARQUE_PADDING as EMBARQUE_PADDING,
+  CARONA_ENTREGA_POS as PARQUE_POS,
+  CARONA_ENTREGA_SIZE as PARQUE_SIZE,
+} from '../city/carona.js';
 
 /**
  * CARONA (piloto: 1 passageiro) — o cachorrinho pede pra ir ao PARQUE.
@@ -31,51 +45,123 @@ import { somSucesso } from '../audio/sons.js';
  * Montado dentro do <Game> (recebe o carRef como targetRef, padrão Moedas).
  */
 
-// Calçada do CENTRO, longe de lotes/moedas/zonas de serviço (cão DEDICADO —
-// não é o CACHORRO da missão de busca, que segue intocado perto da garagem).
-const ESPERA_POS = [-9, 5];
+// Onde o cão espera, a zona de embarque e a zona de entrega (lida do PARQUE
+// em bairros.js) moram em city/carona.js. Aqui ficam só as medidas visuais.
 const ESPERA_HEADING = 0.5;
 const ESCALA_CAO = 1.6; // régua visual dos Bichos ("metade de um carro")
-
-// Zona de embarque: caixinha em volta do cão + padding generoso (chegar perto).
-const EMBARQUE_SIZE = [2, 2, 2];
-const EMBARQUE_PADDING = 3;
-
-// Zona de entrega = o prédio do PARQUE (bairros.js: pos/size do PARQUE).
-const PARQUE_POS = [-14, 72];
-const PARQUE_SIZE = [12, 5, 12];
+const BALAO_ALTURA_Y = 3.2;
 
 const RECOMPENSA = 3; // +moedas na entrega (decisão do gate)
 
 export function Carona({ targetRef }) {
   const aBordo = useCarona((s) => s.aBordo);
+  const atividade = useActivity();
+  useRegistrarAtividade('carona', aBordo);
   const passageiroRef = useRef(null);
+  const balaoRef = useRef(null);
+  const ancoraBalaoRef = useRef(new Vector3(ESPERA_POS[0], BALAO_ALTURA_Y, ESPERA_POS[1]));
+  const ultimoTransformRef = useRef('');
+  const entregandoRef = useRef(false);
+  const entregaTO = useRef(null);
+
+  useEffect(
+    () => () => clearTimeout(entregaTO.current),
+    []
+  );
 
   // Passageiro segue o carro — só LÊ a posição (como Moedas/BlobShadow), fora
   // da cadeia load-bearing Car→FuelController. Zero física, zero colisão.
-  useFrame(() => {
-    if (!aBordo) return;
-    const rb = targetRef.current;
-    const grp = passageiroRef.current;
-    if (!rb || !grp) return;
-    const t = rb.translation();
-    grp.position.set(t.x, 1.1, t.z);
+  // Quando o cão está esperando, também ajusta o desvio visual do balão para
+  // não passar por trás da engrenagem, do sol nem dos demais controles do HUD.
+  useFrame(({ camera, gl }) => {
+    if (aBordo) {
+      const rb = targetRef.current;
+      const grp = passageiroRef.current;
+      if (!rb || !grp) return;
+      const t = rb.translation();
+      grp.position.set(t.x, 1.1, t.z);
+      return;
+    }
+
+    const el = balaoRef.current;
+    if (!el || typeof document === 'undefined' || typeof window === 'undefined') return;
+
+    const width = el.offsetWidth;
+    const height = el.offsetHeight;
+    if (!width || !height) return;
+
+    const canvasRect = gl.domElement.getBoundingClientRect();
+    const projetado = ancoraBalaoRef.current
+      .set(ESPERA_POS[0], BALAO_ALTURA_Y, ESPERA_POS[1])
+      .project(camera);
+
+    const x = canvasRect.left + (projetado.x * 0.5 + 0.5) * canvasRect.width;
+    const y = canvasRect.top + (-projetado.y * 0.5 + 0.5) * canvasRect.height;
+
+    const obstaculos = [];
+    for (const ctrl of document.querySelectorAll(SELETORES_CONTROLES_HUD)) {
+      const r = ctrl.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        obstaculos.push({
+          left: r.left,
+          top: r.top,
+          right: r.right,
+          bottom: r.bottom,
+        });
+      }
+    }
+
+    const { dx, dy, desviado } = calcularDesvioBalao(
+      { x, y, width, height },
+      obstaculos,
+      { width: window.innerWidth, height: window.innerHeight }
+    );
+
+    const proximoTransform = desviado
+      ? `translate3d(${Math.round(dx)}px, ${Math.round(dy)}px, 0)`
+      : '';
+    if (proximoTransform !== ultimoTransformRef.current) {
+      ultimoTransformRef.current = proximoTransform;
+      el.style.transform = proximoTransform;
+    }
   });
 
   const embarcar = () => {
     if (useCarona.getState().aBordo) return;
+    // O sensor é evento imperativo: toma o foco antes da fala, sem depender
+    // do useEffect do próximo render. Foco negado = carona espera, sem agir.
+    if (!coordenadorAtividade.pedirFoco('carona')) return;
     useCarona.getState().embarcar();
-    falar('o cachorrinho quer ir ao parque! vamos levar?', { interrupt: true });
+    falarDaAtividade('carona', 'o cachorrinho quer ir ao parque! vamos levar?', {
+      interrupt: true,
+    });
   };
 
   const entregar = () => {
-    if (!useCarona.getState().aBordo) return;
-    useCarona.getState().desembarcar();
+    if (!useCarona.getState().aBordo || entregandoRef.current) return;
+    entregandoRef.current = true;
     somSucesso();
     useGame.getState().ganharMoeda(RECOMPENSA);
-    falar('obrigado por me levar! você é um ótimo motorista!', {
-      interrupt: true,
-    });
+    // Mantém a carona no foco até a frase terminar; liberar antes cortaria a
+    // própria comemoração, pois toda troca de foco agora cala a voz anterior.
+    const concluir = () => {
+      if (!entregandoRef.current) return;
+      clearTimeout(entregaTO.current);
+      entregaTO.current = null;
+      entregandoRef.current = false;
+      useCarona.getState().desembarcar();
+    };
+    const falou = falarDaAtividade(
+      'carona',
+      'obrigado por me levar! você é um ótimo motorista!',
+      {
+        interrupt: true,
+        onEnd: concluir,
+      }
+    );
+    // Alguns navegadores não disparam `end` ao cancelar a síntese. O fallback
+    // garante que pausa/pergunta simultânea nunca deixe o passageiro travado.
+    entregaTO.current = setTimeout(concluir, falou ? 6000 : 900);
   };
 
   return (
@@ -94,9 +180,23 @@ export function Carona({ targetRef }) {
           {/* Balão estático sobre o cão — HTML (emoji não renderiza no SDF
               do drei Text). pointer-events:none no CSS: nunca rouba um toque
               dos controles. */}
-          <Html position={[ESPERA_POS[0], 3.2, ESPERA_POS[1]]} center>
-            <div className="carona-balao">🐶 PARQUE?</div>
-          </Html>
+          {/* O wrapper do drei Html usa z-index projetado e pode atravessar
+              overlays React. DUAS defesas, que se somam:
+
+              1. Painel aberto = balão desmontado, garantindo uma única camada
+                 de atenção em configurações, quizzes e álbum.
+              2. `zIndexRange` com teto abaixo do piso do HUD — o padrão do
+                 drei são milhões e cobria até o "CHEGAMOS!", que é banner e
+                 não painel, e por isso escapava da defesa 1. */}
+          {atividade.hud !== 'painel' && (
+            <Html
+              position={[ESPERA_POS[0], BALAO_ALTURA_Y, ESPERA_POS[1]]}
+              center
+              zIndexRange={ZINDEX_BALAO_MUNDO}
+            >
+              <div ref={balaoRef} className="carona-balao">🐶 PARQUE?</div>
+            </Html>
+          )}
 
           {/* Zona de embarque: entrar perto do cão = pega a carona. */}
           <ZoneSensor

@@ -15,9 +15,33 @@ import { ANIMAIS, ANIMAL_POR_SLUG } from './missoes-ciencias.js';
 import { FRUTAS, QUANTIDADES } from './chegadas-vivas.js';
 import { PAISES, PAIS_POR_SLUG } from './paises.js';
 import { TODOS_PREDIOS } from '../city/bairros.js';
+import { porExtenso } from './por-extenso.js';
 
 const FRUTA_POR_SLUG = Object.fromEntries(FRUTAS.map((f) => [f.slug, f]));
 const PREDIO_POR_SLUG = Object.fromEntries(TODOS_PREDIOS.map((p) => [p.slug, p]));
+const OBJETOS = {
+  agua: {
+    emoji: '💧',
+    rotulo: 'ÁGUA',
+    fato: 'A água ajuda as plantas a crescer!',
+  },
+  'flor-do-parque': {
+    emoji: '🌼',
+    rotulo: 'FLOR DO PARQUE',
+    fato: 'Esta flor cresceu quando você levou água ao parque!',
+  },
+  // Horta da escola (H1)
+  semente: {
+    emoji: '🌰',
+    rotulo: 'SEMENTE',
+    fato: 'Da semente nasce uma planta nova!',
+  },
+  'broto-da-escola': {
+    emoji: '🌱',
+    rotulo: 'BROTO DA ESCOLA',
+    fato: 'Este broto nasceu na horta que você plantou na escola!',
+  },
+};
 
 /**
  * Seções do caderninho, na ordem de exibição. LUGARES primeiro: preenche a
@@ -31,6 +55,7 @@ export const CATEGORIAS_CADERNINHO = [
   { id: 'frutas',    titulo: 'FRUTAS',   possiveis: FRUTAS.map((f) => f.slug) },
   { id: 'contagens', titulo: 'NÚMEROS',  possiveis: QUANTIDADES.map(String) },
   { id: 'paises',    titulo: 'PAÍSES',   possiveis: PAISES.map((p) => p.slug) },
+  { id: 'objetos',   titulo: 'OBJETOS',  possiveis: Object.keys(OBJETOS) },
 ];
 
 /**
@@ -49,7 +74,16 @@ export function conteudoDescoberta(categoria, id) {
     return f ? { emoji: f.emoji, rotulo: f.slug, fato: `é ${f.cor}!` } : null;
   }
   if (categoria === 'contagens') {
-    return { emoji: '🍞', rotulo: id, fato: `${id} pãezinhos!` };
+    // H3: o número vem da PADARIA, dos baldes do parque ou das sementes da
+    // Horta, e o save não guarda a origem — o adesivo mostra só o número
+    // (grande, sem emoji). O fato serve para qualquer origem.
+    if (!/^\d+$/.test(String(id))) return null;
+    const nome = porExtenso(Number(id));
+    return {
+      numero: String(id),
+      rotulo: nome.toUpperCase(),
+      fato: `O Órbi conheceu o número ${nome} com você!`,
+    };
   }
   if (categoria === 'lugares') {
     const p = PREDIO_POR_SLUG[id];
@@ -65,6 +99,9 @@ export function conteudoDescoberta(categoria, id) {
       ? { bandeira: p.slug, rotulo: p.slug, fato: p.fatoVoz }
       : null;
   }
+  if (categoria === 'objetos') {
+    return OBJETOS[id] ?? null;
+  }
   return null;
 }
 
@@ -73,7 +110,7 @@ export function conteudoDescoberta(categoria, id) {
  * MESMO conteudoDescoberta acima, zero banco novo: mexeu no banco, a fala
  * acompanha. Composição explícita por categoria (a FORMA do `fato` decide):
  *   animais/frutas  — fato é FRAGMENTO ("faz miau!") → rótulo + fato;
- *   contagens       — fato já contém o rótulo ("3 pãezinhos!") → direto;
+ *   contagens       — fato já contém o número por extenso → direto;
  *   lugares         — fato é frase completa do Órbi → direto.
  *
  * REGRA DA VOZ EM MINÚSCULAS: o rótulo é rebaixado na fala ("gato! faz

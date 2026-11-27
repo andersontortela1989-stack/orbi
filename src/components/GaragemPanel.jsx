@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame.js';
 import { somSucesso } from '../audio/sons.js';
-import { falar } from '../audio/voz.js';
+import { falarDaAtividade } from '../activity/index.js';
+import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { CORES_CARRO, COR_POR_ID } from '../city/garagem.js';
+import { useMarcarTroca } from '../perf/useMarcarTroca.js';
 
 /**
  * Painel da garagem (frente "Garagem") — escolher a cor do carro.
@@ -32,6 +34,8 @@ export function GaragemPanel() {
   const corCarro = useGame((s) => s.corCarro);
   const coresCompradas = useGame((s) => s.coresCompradas);
   const corPreview = useGame((s) => s.corPreview);
+  useRegistrarAtividade('garagem', aberto);
+  useMarcarTroca(aberto, 'garagem-abre', 'garagem-fecha'); // M1b: só com ?medir=1
 
   // Guard de "sem repetição" (ajuste da frente): re-clicar a MESMA swatch
   // já em preview não re-fala — uma fala por clique novo.
@@ -42,9 +46,11 @@ export function GaragemPanel() {
   useEffect(() => {
     if (aberto) {
       ultimaFala.current = null;
-      falar('Uau, uma garagem! Aqui pinta o carro! Qual cor você quer?', {
-        interrupt: true,
-      });
+      falarDaAtividade(
+        'garagem',
+        'Uau, uma garagem! Aqui pinta o carro! Qual cor você quer?',
+        { interrupt: true }
+      );
     }
   }, [aberto]);
 
@@ -64,7 +70,9 @@ export function GaragemPanel() {
       s.comprarCor(cor.id);
       s.setCorPreview(null);
       ultimaFala.current = null;
-      if (trocou) falar(`Carro ${cor.nome}!`, { interrupt: true });
+      if (trocou) {
+        falarDaAtividade('garagem', `Carro ${cor.nome}!`, { interrupt: true });
+      }
       return;
     }
 
@@ -75,14 +83,17 @@ export function GaragemPanel() {
     ultimaFala.current = cor.id;
 
     if (s.moedas >= cor.preco) {
-      falar(`Carro ${cor.nome}! Gostou? São ${cor.preco} moedinhas!`, {
-        interrupt: true,
-      });
+      falarDaAtividade(
+        'garagem',
+        `Carro ${cor.nome}! Gostou? São ${cor.preco} moedinhas!`,
+        { interrupt: true }
+      );
     } else {
       // Micro-pedagogia: subtração contextualizada, tom curioso, zero
       // negação — "ainda não dá" vira plano ("vamos buscar?").
       const faltam = cor.preco - s.moedas;
-      falar(
+      falarDaAtividade(
+        'garagem',
         `Essa custa ${cor.preco}! Faltam ${faltam} moedinhas... vamos buscar?`,
         { interrupt: true }
       );
@@ -97,7 +108,9 @@ export function GaragemPanel() {
       s.setCorPreview(null);
       ultimaFala.current = null;
       somSucesso();
-      falar(`Uau! Carro ${cor.nome}! Ficou lindo!`, { interrupt: true });
+      falarDaAtividade('garagem', `Uau! Carro ${cor.nome}! Ficou lindo!`, {
+        interrupt: true,
+      });
     }
     // false (insuficiente) não acontece por aqui: o botão PINTAR só
     // renderiza quando dá — e se desse, seria no-op silencioso mesmo.
@@ -109,7 +122,35 @@ export function GaragemPanel() {
   return (
     <div className="garagem-overlay">
       <div className="garagem-painel" role="dialog" aria-label="garagem">
-        <div className="garagem-titulo">🎨 PINTAR O CARRO</div>
+        {/* SAÍDA EXPLÍCITA. Sair dirigindo continua funcionando e continua
+            sendo a régua do coordenador (`garagem` mantém `dirigir: true` de
+            propósito, pra não criar softlock no touch). O botão não muda
+            nada disso — só torna VISÍVEL uma saída que já existia: quem
+            ainda não lê não descobre sozinho que "é só dirigir pra fora".
+
+            Fica sempre no topo, à direita, em TODOS os estados do painel
+            (sem compra, cor já comprada, logo após comprar). O botão de
+            pintar vive embaixo, então os dois nunca trocam de lugar.
+
+            tabIndex=-1 + blur() como nas swatches: aqui o ESPAÇO segue vivo
+            (é o freio de mão) e não pode reativar o botão focado. */}
+        <div className="garagem-topo">
+          <div className="garagem-titulo">🎨 PINTAR O CARRO</div>
+          <button
+            type="button"
+            className="garagem-sair"
+            tabIndex={-1}
+            aria-label="Voltar à cidade e fechar a garagem"
+            onClick={(e) => {
+              // Zera `garagemPerto` e `corPreview` num set só (useGame).
+              // A compra já feita não é tocada: cor vestida e moedas ficam.
+              useGame.getState().setGaragemPerto(false);
+              e.currentTarget.blur();
+            }}
+          >
+            VOLTAR À CIDADE
+          </button>
+        </div>
 
         <div className="garagem-cores">
           {CORES_CARRO.map((cor) => {

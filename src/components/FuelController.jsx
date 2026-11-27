@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGame } from '../store/useGame.js';
 import { useKeyboard } from '../hooks/useKeyboard.js';
-import { falar } from '../audio/voz.js';
+import { coordenadorAtividade, falarNoFoco } from '../activity/index.js';
 import {
   CONSUMO_POR_METRO,
   V_LIMP,
@@ -40,6 +40,7 @@ export function FuelController({ targetRef }) {
   useFrame((_, deltaRaw) => {
     const rb = targetRef.current;
     if (!rb) return;
+    if (!coordenadorAtividade.estado().mundo) return;
 
     const dt = Math.min(deltaRaw, 1 / 30);
     const v = rb.linvel();
@@ -69,7 +70,7 @@ export function FuelController({ targetRef }) {
       } else if (!avisouBaixo.current) {
         avisouBaixo.current = true;
         // tom do Órbi (adendo de narrativa): ele pede ajuda, não dá ordem
-        falar('Ih, a gasolina está baixa! Me leva no posto?');
+        falarNoFoco('Ih, a gasolina está baixa! Me leva no posto?');
       }
     } else {
       // --- TANQUE VAZIO: desacelera suave até parar, com modo reserva ---
@@ -98,7 +99,7 @@ export function FuelController({ targetRef }) {
       if (!avisouVazio.current) {
         avisouVazio.current = true;
         avisouBaixo.current = true; // não repetir o aviso de "baixo" logo em seguida
-        falar('Ih, acabou! Me leva no posto?', { interrupt: true });
+        falarNoFoco('Ih, acabou! Me leva no posto?', { interrupt: true });
       }
     }
   });

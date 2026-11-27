@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useGame } from '../store/useGame.js';
-import { falar, pararFala } from '../audio/voz.js';
+import { coordenadorAtividade, falarDaAtividade } from '../activity/index.js';
+import { useRegistrarAtividade } from '../activity/useActivity.js';
 import { postoAtivo } from '../economia.js';
 import {
   CATEGORIAS_CADERNINHO,
@@ -23,7 +24,7 @@ import { Bandeira } from './Bandeira.jsx';
  *  aconteceu no quiz; o caderninho é revisita por iniciativa da criança.
  *  Suprimido enquanto qualquer outro painel está aberto (quiz, posto).
  *
- *  OVERLAY — página única, 4 seções empilhadas (LUGARES primeiro: enche a
+ *  OVERLAY — página única, seções empilhadas (LUGARES primeiro: enche a
  *  cada chegada, garante conteúdo no topo). Descobertos = adesivos
  *  vibrantes na ordem da descoberta; o resto = slots-mistério "?" em
  *  tracejado calmo e NEUTRO (curiosidade do Órbi, não déficit da criança;
@@ -36,7 +37,7 @@ import { Bandeira } from './Bandeira.jsx';
  *  fala = conteúdo, não transação — repetição é conforto (TEA); o
  *  interrupt resolve a rajada real (cancela, nunca sobrepõe). Mistério
  *  fala UMA linha curiosa fixa, sem contar nem apontar o que falta.
- *  Fechar corta a fala (pararFala no fechar()).
+ *  Fechar libera o foco e corta a fala imediatamente.
  *
  *  Com o caderninho aberto o input de direção não move o carro (ver
  *  useKeyboard) — previsibilidade > física viva sob overlay.
@@ -45,6 +46,7 @@ export function Caderninho() {
   const aberto = useGame((s) => s.caderninhoAberto);
   const descobertas = useGame((s) => s.descobertas);
   const nome = useGame((s) => s.nome);
+  useRegistrarAtividade('caderninho', aberto);
 
   // Botão suprimido enquanto outro painel está aberto (uma coisa por vez):
   // quiz, posto e garagem.
@@ -58,7 +60,8 @@ export function Caderninho() {
     if (!aberto) return;
     const d = useGame.getState().descobertas;
     const temAlgo = Object.values(d ?? {}).some((lista) => lista.length > 0);
-    falar(
+    falarDaAtividade(
+      'caderninho',
       temAlgo
         ? 'Olha tudo que eu descobri com você!'
         : 'Ainda não anotei nada... me mostra teu mundo?',
@@ -77,7 +80,7 @@ export function Caderninho() {
   }, [aberto]);
 
   const fechar = () => {
-    pararFala(); // fechou = a fala do caderninho também encerra
+    coordenadorAtividade.liberar('caderninho');
     useGame.getState().fecharCaderninho();
   };
 
@@ -103,7 +106,7 @@ export function Caderninho() {
 
   return (
     <div className="cad-overlay">
-      <div className="cad-painel" role="dialog" aria-label="Caderninho do Órbi">
+      <div className="cad-painel" role="dialog" aria-modal="true" aria-label="Caderninho do Órbi">
         <div className="cad-topo">
           <div className="cad-titulo">
             O QUE O ÓRBI DESCOBRIU COM {nome || 'VOCÊ'}
@@ -143,13 +146,20 @@ export function Caderninho() {
                       tabIndex={-1}
                       onClick={(e) => {
                         const fala = falaDescoberta(cat.id, id);
-                        if (fala) falar(fala, { interrupt: true });
+                        if (fala) {
+                          falarDaAtividade('caderninho', fala, { interrupt: true });
+                        }
                         e.currentTarget.blur();
                       }}
                     >
                       {c.bandeira ? (
                         /* adesivo de PAÍS (Frente 6): SVG da bandeira */
                         <Bandeira slug={c.bandeira} className="cad-bandeira" />
+                      ) : c.numero ? (
+                        /* H3: adesivo de NÚMERO — o número grande, sem emoji */
+                        <span className="cad-numero" aria-hidden="true">
+                          {c.numero}
+                        </span>
                       ) : c.emoji ? (
                         <span className="cad-emoji" aria-hidden="true">
                           {c.emoji}
@@ -178,9 +188,11 @@ export function Caderninho() {
                     tabIndex={-1}
                     aria-label="ainda não descoberto"
                     onClick={(e) => {
-                      falar('Hmm, esse eu ainda não descobri... me mostra?', {
-                        interrupt: true,
-                      });
+                      falarDaAtividade(
+                        'caderninho',
+                        'Hmm, esse eu ainda não descobri... me mostra?',
+                        { interrupt: true }
+                      );
                       e.currentTarget.blur();
                     }}
                   >

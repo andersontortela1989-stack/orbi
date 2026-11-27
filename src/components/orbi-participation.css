@@ -1,0 +1,19 @@
+.orbi-moment{display:flex;align-items:center;gap:12px;border:2px solid #c2deec;border-radius:18px;background:#f0fafe;padding:8px 12px;margin:16px 0;min-width:0}
+.orbi-moment .orbi-char{width:74px;flex:0 0 74px;transform-origin:50% 90%;animation:orbi-notice .7s ease-out 1}
+.orbi-moment svg{width:100%;display:block}
+.orbi-moment p,.school-room .orbi-moment p{font-size:16px;line-height:1.4;margin:0}
+.orbi-gesture--apontando .orbi-head{transform-origin:110px 92px;animation:orbi-look .8s ease-in-out 1}
+.orbi-gesture--admirando{animation-name:orbi-admire!important}
+@keyframes orbi-notice{0%{transform:rotate(0)}45%{transform:rotate(-5deg)}100%{transform:rotate(0)}}
+@keyframes orbi-look{0%,100%{transform:rotate(0)}50%{transform:rotate(7deg)}}
+@keyframes orbi-admire{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.orbi-voice-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.orbi-voice-controls button{display:flex;align-items:center;justify-content:center;gap:5px;min-width:44px;min-height:44px;border:2px solid #1c2746;border-radius:14px;background:#fff;color:#1c2746;padding:7px 10px;font:700 14px var(--font-body),sans-serif;cursor:pointer;touch-action:manipulation}
+.orbi-voice-controls button:disabled{opacity:.5;cursor:default}
+.orbi-voice-controls button:focus-visible{outline:3px solid #276abd;outline-offset:2px}
+.school-header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.orbi-city-voice{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));top:calc(88px + env(safe-area-inset-top,0px));z-index:20}
+body:has(.cad-overlay,.garagem-overlay) .orbi-city-voice{display:none}
+@media(max-height:500px){.orbi-moment{gap:8px;padding:6px 8px;margin:10px 0}.orbi-moment .orbi-char{width:52px;flex-basis:52px}.school-room .orbi-moment p{font-size:14px}.school-header-actions{gap:6px}.school-header .orbi-voice-controls button{padding:6px}.school-header .orbi-voice-controls button>span+span{display:none}.orbi-city-voice{top:84px}}
+@media(max-width:500px){.school-header .orbi-voice-controls button>span+span{display:none}.school-header-actions{gap:5px}.orbi-moment .orbi-char{width:58px;flex-basis:58px}}
+@media(prefers-reduced-motion:reduce){.orbi-moment .orbi-char,.orbi-moment .orbi-head{animation:none!important;transform:none!important}}

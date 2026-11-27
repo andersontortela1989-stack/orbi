@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { somBuzina } from '../audio/sons.js';
+import { coordenadorAtividade } from '../activity/index.js';
 
 /**
  * BUZINA — tecla B (desktop) e botão BUZINA do TouchControls (mobile, que
@@ -19,6 +20,7 @@ export function Buzina() {
     let ultima = 0;
     const onKey = (e) => {
       if (e.code !== 'KeyB' || e.repeat) return;
+      if (!coordenadorAtividade.estado().mundo) return;
       const agora = performance.now();
       if (agora - ultima < THROTTLE_MS) return;
       ultima = agora;

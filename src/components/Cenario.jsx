@@ -36,8 +36,8 @@ import { Arvores } from './Arvores.jsx';
  */
 
 // ---------------------------------------------------------------- árvores
-// Bordas norte/oeste do chão do PARQUE (x -29..29, z 54..94), longe dos
-// lotes de PARQUE/ZOO/VET e da entrada sul (faixa de travessia).
+// Bordas norte/oeste do bairro PARQUE (x -29..29, z 54..94), contornando
+// a praça aberta, ZOO/VET e a entrada sul (faixa de travessia).
 // Frente 5: a árvore que ficava em [-20,58] foi RELOCADA pra [-27,66] —
 // ela colava no CANTEIRO contável (city/canteiro.js) e a criança contaria
 // 5 em vez de 4; folga ≥8 entre o canteiro e qualquer decorativa.
@@ -60,8 +60,10 @@ const PASSOS = [-2.6, -1.3, 0, 1.3, 2.6];
 const FAIXAS = [
   // entrada do PORTO (vão x -40..-35; dirige-se em -x)
   ...PASSOS.map((off) => ({ pos: [-37.5 + off, 29], escala: [0.8, 4.5] })),
-  // entrada do MERCADO (costura x≈35.5; dirige-se em +x)
-  ...PASSOS.map((off) => ({ pos: [35.5 + off, 28], escala: [0.8, 4.5] })),
+  // travessia entre MERCADO e PADARIA, SOBRE a rua (V1.3: o fim do caminho 2
+  // passa entre os dois lotes, reto em z≈31,6; dirige-se em +x). Antes ficava
+  // na costura x≈35,5, onde a rua nova passou a correr.
+  ...PASSOS.map((off) => ({ pos: [48.5 + off, 31.6], escala: [0.8, 6] })),
   // entrada do PARQUE (borda z≈54 entre os lotes; dirige-se em +z)
   ...PASSOS.map((off) => ({ pos: [4, 53 + off], escala: [6, 0.8] })),
 ];

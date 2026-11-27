@@ -1,5 +1,54 @@
+import { Fragment, useMemo } from 'react';
+import * as THREE from 'three';
+import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { Building } from './Building.jsx';
+import { OpenPark } from './OpenPark.jsx';
+import { OpenSitio } from './OpenSitio.jsx';
+import { AderecosLugar } from './AderecosLugar.jsx';
 import { BAIRROS } from '../city/bairros.js';
+import { ADERECOS } from '../city/identidade.js';
+import { SLUGS_ESQUINA, estiloReal } from '../visual/estilo.js';
+import { TINTAS } from '../brand/paleta3d.js';
+
+function geometriaRetanguloArredondado(largura, profundidade, raio) {
+  const x = -largura / 2;
+  const y = -profundidade / 2;
+  const r = Math.min(raio, largura / 2, profundidade / 2);
+  const forma = new THREE.Shape();
+  forma.moveTo(x + r, y);
+  forma.lineTo(x + largura - r, y);
+  forma.quadraticCurveTo(x + largura, y, x + largura, y + r);
+  forma.lineTo(x + largura, y + profundidade - r);
+  forma.quadraticCurveTo(x + largura, y + profundidade, x + largura - r, y + profundidade);
+  forma.lineTo(x + r, y + profundidade);
+  forma.quadraticCurveTo(x, y + profundidade, x, y + profundidade - r);
+  forma.lineTo(x, y + r);
+  forma.quadraticCurveTo(x, y, x + r, y);
+  return new THREE.ShapeGeometry(forma, 4);
+}
+
+function IlhaBairro({ bairro }) {
+  const [largura, profundidade] = bairro.chao.tamanho;
+  const base = useMemo(
+    () => geometriaRetanguloArredondado(largura + 0.9, profundidade + 0.9, 2.2),
+    [largura, profundidade]
+  );
+  const miolo = useMemo(
+    () => geometriaRetanguloArredondado(largura, profundidade, 1.8),
+    [largura, profundidade]
+  );
+  const [x, z] = bairro.chao.centro;
+  return (
+    <>
+      <mesh geometry={base} position={[x, 0.012, z]} rotation={[-Math.PI / 2, 0, 0]}>
+        <meshStandardMaterial color={TINTAS.violetDeep} roughness={0.9} />
+      </mesh>
+      <mesh geometry={miolo} position={[x, 0.018, z]} rotation={[-Math.PI / 2, 0, 0]}>
+        <meshStandardMaterial color={bairro.corChao} roughness={0.9} metalness={0} />
+      </mesh>
+    </>
+  );
+}
 
 /**
  * Cidade em BAIRROS temáticos contíguos (Fatia 7).
@@ -22,25 +71,37 @@ export function City() {
     <>
       {BAIRROS.map((bairro) => (
         <group key={bairro.slug}>
-          {/* Chão do bairro — visual apenas (sem colisão; o Ground base já é o
-              piso físico). Levemente acima da base (y=0) e ABAIXO da grade
-              (y=0.01), pra grade continuar visível por cima da cor. */}
-          <mesh
-            position={[bairro.chao.centro[0], 0.005, bairro.chao.centro[1]]}
-            rotation={[-Math.PI / 2, 0, 0]}
-          >
-            <planeGeometry args={[bairro.chao.tamanho[0], bairro.chao.tamanho[1]]} />
-            <meshStandardMaterial color={bairro.corChao} roughness={0.96} metalness={0} />
-          </mesh>
+          {/* Ilha urbana arredondada: substitui os recortes retangulares de
+              protótipo sem mudar o Ground físico. A base violeta funciona
+              como meio-fio e a camada colorida identifica cada bairro. */}
+          <IlhaBairro bairro={bairro} />
 
           {bairro.predios.map((p) => (
-            <Building
-              key={p.slug}
-              floorPos={p.pos}
-              size={p.size}
-              color={p.cor}
-              label={p.slug}
-            />
+            p.slug === 'PARQUE' ? (
+              <OpenPark key={p.slug} floorPos={p.pos} />
+            ) : p.slug === 'SÍTIO' ? (
+              <OpenSitio key={p.slug} floorPos={p.pos} />
+            ) : estiloReal && SLUGS_ESQUINA.includes(p.slug) ? (
+              // Piloto da esquina (`?estilo=real`): o desenho chega sob
+              // demanda (EsquinaReal, montado pelo Game); aqui fica só o
+              // colisor do lote, idêntico ao do Building.
+              <RigidBody key={p.slug} type="fixed" colliders={false} position={[p.pos[0], p.size[1] / 2, p.pos[1]]}>
+                <CuboidCollider args={[p.size[0] / 2, p.size[1] / 2, p.size[2] / 2]} />
+              </RigidBody>
+            ) : (
+              <Fragment key={p.slug}>
+                <Building
+                  floorPos={p.pos}
+                  size={p.size}
+                  color={p.cor}
+                  label={p.slug}
+                />
+                {/* Identidade do lugar (A2): pães da PADARIA etc. */}
+                {ADERECOS[p.slug] && (
+                  <AderecosLugar slug={p.slug} floorPos={p.pos} size={p.size} />
+                )}
+              </Fragment>
+            )
           ))}
         </group>
       ))}

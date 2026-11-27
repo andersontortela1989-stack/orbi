@@ -7,6 +7,7 @@ import {
   paraBase64,
   deBase64,
 } from '../save.js';
+import { FAIXAS_ETARIAS, lerFaixaEtaria, salvarFaixaEtaria } from '../faixa-etaria.js';
 
 // Copia com fallback pra browsers sem Clipboard API (textarea + execCommand).
 async function copiarTexto(texto) {
@@ -78,9 +79,23 @@ export function AreaPais({ onFechar }) {
   // TRAZER dá lugar ao resumo + CONFIRMAR/CANCELAR. Nada foi escrito ainda.
   const [pendente, setPendente] = useState(null);
   const timeoutCopia = useRef(null);
+  const [faixa, setFaixa] = useState(() => lerFaixaEtaria());
+  const [faixaSalva, setFaixaSalva] = useState(false);
+  const timeoutFaixa = useRef(null);
+
+  const escolherFaixa = (id) => {
+    const salva = salvarFaixaEtaria(id);
+    setFaixa(salva);
+    setFaixaSalva(true);
+    clearTimeout(timeoutFaixa.current);
+    timeoutFaixa.current = setTimeout(() => setFaixaSalva(false), 2000);
+  };
 
   // Limpa o timer do "copiado!" se o painel fechar no meio.
-  useEffect(() => () => clearTimeout(timeoutCopia.current), []);
+  useEffect(() => () => {
+    clearTimeout(timeoutCopia.current);
+    clearTimeout(timeoutFaixa.current);
+  }, []);
 
   const exportar = async () => {
     const cru = localStorage.getItem(CHAVE_SAVE);
@@ -194,6 +209,45 @@ export function AreaPais({ onFechar }) {
             O Órbi é um jogo educativo. Ele não trata, não cura e não substitui
             terapias, diagnóstico ou acompanhamento profissional.
           </p>
+        </section>
+
+        <section className="pais-secao">
+          <h3 className="pais-secao-titulo">Faixa de apoio</h3>
+          <p className="pais-texto">
+            Escolher a faixa ajusta o apoio e o desafio da Horta. Nenhum lugar
+            é bloqueado, o Modo Tranquilo continua independente e o progresso
+            não se perde.
+          </p>
+          <div className="pais-faixas" role="radiogroup" aria-label="Faixa de apoio">
+            {FAIXAS_ETARIAS.map((item) => {
+              const ativa = faixa === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={ativa}
+                  tabIndex={-1}
+                  className={'pais-faixa-card' + (ativa ? ' pais-faixa-card--ativa' : '')}
+                  onClick={(e) => {
+                    escolherFaixa(item.id);
+                    e.currentTarget.blur();
+                  }}
+                >
+                  <span className="pais-faixa-topo">
+                    <span className="pais-faixa-rotulo">{item.rotulo}</span>
+                    <span className="pais-faixa-sub">{item.subtitulo}</span>
+                  </span>
+                  <span className="pais-faixa-desc">{item.descricao}</span>
+                </button>
+              );
+            })}
+          </div>
+          {faixaSalva && (
+            <p className="pais-faixa-salvo" role="status" aria-live="polite">
+              faixa salva neste aparelho.
+            </p>
+          )}
         </section>
 
         <section className="pais-secao">

@@ -14,6 +14,7 @@ import {
   CHAVE_BACKUP_IMPORT,
   CHAVE_BACKUP_CORROMPIDO,
   storageSeguro,
+  migrarEstadoPersistido,
   validarSaveImportado,
   resumoDoSave,
   backupDoSaveAtual,
@@ -100,6 +101,70 @@ test('versão futura é recusada; até SAVE_VERSION é aceita', () => {
   assert.equal(validarSaveImportado({ state: {}, version: SAVE_VERSION + 1 }), false);
   assert.equal(validarSaveImportado({ state: {}, version: SAVE_VERSION }), true);
   assert.equal(validarSaveImportado({ state: {}, version: 1 }), true);
+});
+
+test('migração v8 injeta aventura e preferências sem perder progresso antigo', () => {
+  const defaults = {
+    habilidades: { contagem: { acertos: 0, tentativas: 0 } },
+    descobertas: { lugares: [], objetos: [] },
+    worldFlags: {},
+    recompensas: [],
+    preferencias: {
+      modoTranquilo: false,
+      voz: true,
+      sons: true,
+      animacoes: true,
+      detalhesVisuais: true,
+    },
+  };
+  const migrado = migrarEstadoPersistido(
+    {
+      moedas: 9,
+      habilidades: { contagem: { acertos: 2, tentativas: 3 } },
+      descobertas: { lugares: ['PARQUE'] },
+    },
+    defaults
+  );
+  assert.equal(migrado.moedas, 9);
+  assert.deepEqual(migrado.descobertas.objetos, []);
+  assert.deepEqual(migrado.worldFlags, {});
+  assert.deepEqual(migrado.recompensas, []);
+  assert.deepEqual(migrado.preferencias, defaults.preferencias);
+  assert.equal(migrado.habilidades.contagem.acertos, 2);
+});
+
+test('migração preserva booleanos sensoriais e corrige valores inválidos', () => {
+  const defaults = {
+    habilidades: {},
+    descobertas: {},
+    worldFlags: {},
+    recompensas: [],
+    preferencias: {
+      modoTranquilo: false,
+      voz: true,
+      sons: true,
+      animacoes: true,
+      detalhesVisuais: true,
+    },
+  };
+  const migrado = migrarEstadoPersistido(
+    {
+      preferencias: {
+        modoTranquilo: true,
+        voz: false,
+        sons: 'sim',
+        animacoes: false,
+      },
+    },
+    defaults
+  );
+  assert.deepEqual(migrado.preferencias, {
+    modoTranquilo: true,
+    voz: false,
+    sons: true,
+    animacoes: false,
+    detalhesVisuais: true,
+  });
 });
 
 test('import inválido: sem state, version não-numérica, 0, null, não-objeto', () => {

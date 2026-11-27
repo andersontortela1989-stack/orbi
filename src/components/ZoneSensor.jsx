@@ -1,4 +1,6 @@
 import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import { coordenadorAtividade } from '../activity/index.js';
+import { PADDING_ZONA } from '../city/geometria.js';
 
 /**
  * Sensor de ZONA genérico — dispara ao ENTRAR e ao SAIR. Nasceu como
@@ -15,7 +17,7 @@ import { RigidBody, CuboidCollider } from '@react-three/rapier';
  * Filtra por corpo DINÂMICO — na cena atual, só o carro é dinâmico
  * (ignora chão e prédios fixos dentro do volume).
  */
-export function ZoneSensor({ floorPos, size, padding = 4, onEnter, onExit }) {
+export function ZoneSensor({ floorPos, size, padding = PADDING_ZONA, onEnter, onExit }) {
   const [x, z] = floorPos;
   const [w, h, l] = size;
 
@@ -25,10 +27,20 @@ export function ZoneSensor({ floorPos, size, padding = 4, onEnter, onExit }) {
         args={[w / 2 + padding, h, l / 2 + padding]}
         sensor
         onIntersectionEnter={(payload) => {
-          if (payload.other.rigidBody?.isDynamic?.()) onEnter?.();
+          if (
+            coordenadorAtividade.estado().mundo &&
+            payload.other.rigidBody?.isDynamic?.()
+          ) {
+            onEnter?.();
+          }
         }}
         onIntersectionExit={(payload) => {
-          if (payload.other.rigidBody?.isDynamic?.()) onExit?.();
+          if (
+            coordenadorAtividade.estado().mundo &&
+            payload.other.rigidBody?.isDynamic?.()
+          ) {
+            onExit?.();
+          }
         }}
       />
     </RigidBody>

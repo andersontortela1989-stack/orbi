@@ -1,0 +1,792 @@
+{
+  "direto": {
+    "iniciar": [
+      {
+        "tipo": "foco",
+        "acao": "pedir",
+        "atividade": "em_missao"
+      },
+      {
+        "tipo": "telemetria",
+        "evento": "aventura_iniciada",
+        "dados": {
+          "aventura": "parque-com-sede"
+        }
+      },
+      {
+        "tipo": "telemetria",
+        "evento": "etapa_iniciada",
+        "dados": {
+          "aventura": "parque-com-sede",
+          "etapa": "chamado"
+        }
+      },
+      {
+        "tipo": "foco",
+        "acao": "pedir",
+        "atividade": "historia"
+      },
+      {
+        "tipo": "mensagem",
+        "texto": "O guarda do parque chamou a gente. As flores estão com sede!",
+        "botao": "VAMOS AJUDAR!"
+      },
+      {
+        "tipo": "falar",
+        "texto": "O guarda do parque chamou a gente. As flores estão com sede!"
+      }
+    ],
+    "passos": [
+      {
+        "evento": {
+          "tipo": "toque"
+        },
+        "efeitos": [
+          {
+            "tipo": "fechar_painel"
+          },
+          {
+            "tipo": "foco",
+            "acao": "liberar",
+            "atividade": "historia"
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "saber"
+            }
+          },
+          {
+            "tipo": "foco",
+            "acao": "pedir",
+            "atividade": "pergunta"
+          },
+          {
+            "tipo": "abrir_pergunta",
+            "texto": "Do que as plantas precisam para viver?",
+            "opcoes": [
+              {
+                "id": "agua",
+                "rotulo": "ÁGUA",
+                "emoji": "💧",
+                "correta": true
+              },
+              {
+                "id": "areia",
+                "rotulo": "AREIA",
+                "emoji": "🏖️"
+              },
+              {
+                "id": "papel",
+                "rotulo": "PAPEL",
+                "emoji": "📄"
+              }
+            ]
+          },
+          {
+            "tipo": "falar",
+            "texto": "Do que as plantas precisam para viver?"
+          }
+        ],
+        "etapa": "saber"
+      },
+      {
+        "evento": {
+          "tipo": "respondeu",
+          "opcao": "agua"
+        },
+        "efeitos": [
+          {
+            "tipo": "telemetria",
+            "evento": "acerto",
+            "dados": {
+              "etapa": "saber",
+              "tentativas": 0
+            }
+          },
+          {
+            "tipo": "fechar_painel"
+          },
+          {
+            "tipo": "foco",
+            "acao": "liberar",
+            "atividade": "pergunta"
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "ir-ao-porto"
+            }
+          },
+          {
+            "tipo": "foco",
+            "acao": "pedir",
+            "atividade": "em_missao"
+          },
+          {
+            "tipo": "objetivo",
+            "texto": "Vamos ao porto buscar água para as flores.",
+            "alvo": "PORTO"
+          },
+          {
+            "tipo": "falar",
+            "texto": "Vamos ao porto buscar água para as flores."
+          }
+        ],
+        "etapa": "ir-ao-porto"
+      },
+      {
+        "evento": {
+          "tipo": "tick",
+          "segundos": 30
+        },
+        "efeitos": [],
+        "etapa": "ir-ao-porto"
+      },
+      {
+        "evento": {
+          "tipo": "tick",
+          "segundos": 20
+        },
+        "efeitos": [
+          {
+            "tipo": "destacar",
+            "lugar": "PORTO",
+            "ligado": true
+          }
+        ],
+        "etapa": "ir-ao-porto"
+      },
+      {
+        "evento": {
+          "tipo": "pedir_ajuda"
+        },
+        "efeitos": [
+          {
+            "tipo": "telemetria",
+            "evento": "ajuda_pedida",
+            "dados": {
+              "etapa": "ir-ao-porto"
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "O porto fica perto do mar, onde os barcos param."
+          },
+          {
+            "tipo": "destacar",
+            "lugar": "PORTO",
+            "ligado": true
+          }
+        ],
+        "etapa": "ir-ao-porto"
+      },
+      {
+        "evento": {
+          "tipo": "chegou",
+          "lugar": "PARQUE"
+        },
+        "efeitos": [],
+        "etapa": "ir-ao-porto"
+      },
+      {
+        "evento": {
+          "tipo": "chegou",
+          "lugar": "PORTO"
+        },
+        "efeitos": [
+          {
+            "tipo": "destacar",
+            "lugar": "PORTO",
+            "ligado": false
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "contar-baldes"
+            }
+          },
+          {
+            "tipo": "foco",
+            "acao": "pedir",
+            "atividade": "em_missao"
+          },
+          {
+            "tipo": "objetivo",
+            "texto": "Pegue quatro baldes de água.",
+            "contador": {
+              "atual": 0,
+              "total": 4
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "Pegue quatro baldes de água."
+          }
+        ],
+        "etapa": "contar-baldes"
+      },
+      {
+        "evento": {
+          "tipo": "coletou",
+          "item": "balde_agua",
+          "quantidade": 1
+        },
+        "efeitos": [
+          {
+            "tipo": "objetivo",
+            "texto": "Pegue quatro baldes de água.",
+            "contador": {
+              "atual": 1,
+              "total": 4
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "um"
+          }
+        ],
+        "etapa": "contar-baldes"
+      },
+      {
+        "evento": {
+          "tipo": "coletou",
+          "item": "semente",
+          "quantidade": 1
+        },
+        "efeitos": [],
+        "etapa": "contar-baldes"
+      },
+      {
+        "evento": {
+          "tipo": "coletou",
+          "item": "balde_agua",
+          "quantidade": 1
+        },
+        "efeitos": [
+          {
+            "tipo": "objetivo",
+            "texto": "Pegue quatro baldes de água.",
+            "contador": {
+              "atual": 2,
+              "total": 4
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "dois"
+          }
+        ],
+        "etapa": "contar-baldes"
+      },
+      {
+        "evento": {
+          "tipo": "coletou",
+          "item": "balde_agua",
+          "quantidade": 1
+        },
+        "efeitos": [
+          {
+            "tipo": "objetivo",
+            "texto": "Pegue quatro baldes de água.",
+            "contador": {
+              "atual": 3,
+              "total": 4
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "três"
+          }
+        ],
+        "etapa": "contar-baldes"
+      },
+      {
+        "evento": {
+          "tipo": "coletou",
+          "item": "balde_agua",
+          "quantidade": 1
+        },
+        "efeitos": [
+          {
+            "tipo": "objetivo",
+            "texto": "Pegue quatro baldes de água.",
+            "contador": {
+              "atual": 4,
+              "total": 4
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "quatro"
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "voltar-ao-parque"
+            }
+          },
+          {
+            "tipo": "foco",
+            "acao": "pedir",
+            "atividade": "em_missao"
+          },
+          {
+            "tipo": "objetivo",
+            "texto": "Agora leve a água até o parque.",
+            "alvo": "PARQUE"
+          },
+          {
+            "tipo": "falar",
+            "texto": "Agora leve a água até o parque."
+          }
+        ],
+        "etapa": "voltar-ao-parque"
+      },
+      {
+        "evento": {
+          "tipo": "chegou",
+          "lugar": "PARQUE"
+        },
+        "efeitos": [
+          {
+            "tipo": "destacar",
+            "lugar": "PARQUE",
+            "ligado": false
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "flores-crescem"
+            }
+          },
+          {
+            "tipo": "mundo",
+            "flag": "parque_florido"
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "premio"
+            }
+          },
+          {
+            "tipo": "recompensa",
+            "item": "flor-do-parque"
+          },
+          {
+            "tipo": "recompensa",
+            "item": "regador-no-teto"
+          },
+          {
+            "tipo": "descoberta",
+            "item": {
+              "categoria": "objetos",
+              "id": "agua"
+            }
+          },
+          {
+            "tipo": "descoberta",
+            "item": {
+              "categoria": "objetos",
+              "id": "flor-do-parque"
+            }
+          },
+          {
+            "tipo": "descoberta",
+            "item": {
+              "categoria": "lugares",
+              "id": "PORTO"
+            }
+          },
+          {
+            "tipo": "descoberta",
+            "item": {
+              "categoria": "lugares",
+              "id": "PARQUE"
+            }
+          },
+          {
+            "tipo": "descoberta",
+            "item": {
+              "categoria": "contagens",
+              "id": "4"
+            }
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "fecho"
+            }
+          },
+          {
+            "tipo": "foco",
+            "acao": "pedir",
+            "atividade": "resumo"
+          },
+          {
+            "tipo": "resumo",
+            "titulo": "O PARQUE ESTÁ COM SEDE",
+            "aprendizados": [
+              "O Órbi aprendeu que as plantas bebem água.",
+              "Você buscou quatro baldes de água.",
+              "Você foi ao porto e voltou ao parque."
+            ],
+            "recompensas": [
+              "ADESIVO: FLOR DO PARQUE",
+              "ACESSÓRIO: REGADOR"
+            ]
+          },
+          {
+            "tipo": "falar",
+            "texto": "Você cuidou do parque! Vamos ver as flores crescendo?"
+          }
+        ],
+        "etapa": "fecho"
+      },
+      {
+        "evento": {
+          "tipo": "toque"
+        },
+        "efeitos": [
+          {
+            "tipo": "fechar_painel"
+          },
+          {
+            "tipo": "foco",
+            "acao": "liberar",
+            "atividade": "resumo"
+          },
+          {
+            "tipo": "foco",
+            "acao": "liberar",
+            "atividade": "em_missao"
+          },
+          {
+            "tipo": "fim",
+            "aventura": "parque-com-sede",
+            "tentativas": 0,
+            "ajudas": 1,
+            "segundos": 50
+          }
+        ],
+        "etapa": null
+      }
+    ],
+    "final": {
+      "aventura": "parque-com-sede",
+      "indice": 8,
+      "tentativasEtapa": 0,
+      "tentativasTotal": 0,
+      "ajudas": 1,
+      "coletado": 0,
+      "distribuido": [],
+      "esperandoDestaque": 0,
+      "aguardandoContinuacao": false,
+      "concluida": true,
+      "segundos": 50,
+      "v": 1
+    }
+  },
+  "tresErros": {
+    "iniciar": [
+      {
+        "tipo": "foco",
+        "acao": "pedir",
+        "atividade": "em_missao"
+      },
+      {
+        "tipo": "telemetria",
+        "evento": "aventura_iniciada",
+        "dados": {
+          "aventura": "parque-com-sede"
+        }
+      },
+      {
+        "tipo": "telemetria",
+        "evento": "etapa_iniciada",
+        "dados": {
+          "aventura": "parque-com-sede",
+          "etapa": "chamado"
+        }
+      },
+      {
+        "tipo": "foco",
+        "acao": "pedir",
+        "atividade": "historia"
+      },
+      {
+        "tipo": "mensagem",
+        "texto": "O guarda do parque chamou a gente. As flores estão com sede!",
+        "botao": "VAMOS AJUDAR!"
+      },
+      {
+        "tipo": "falar",
+        "texto": "O guarda do parque chamou a gente. As flores estão com sede!"
+      }
+    ],
+    "passos": [
+      {
+        "evento": {
+          "tipo": "toque"
+        },
+        "efeitos": [
+          {
+            "tipo": "fechar_painel"
+          },
+          {
+            "tipo": "foco",
+            "acao": "liberar",
+            "atividade": "historia"
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "saber"
+            }
+          },
+          {
+            "tipo": "foco",
+            "acao": "pedir",
+            "atividade": "pergunta"
+          },
+          {
+            "tipo": "abrir_pergunta",
+            "texto": "Do que as plantas precisam para viver?",
+            "opcoes": [
+              {
+                "id": "agua",
+                "rotulo": "ÁGUA",
+                "emoji": "💧",
+                "correta": true
+              },
+              {
+                "id": "areia",
+                "rotulo": "AREIA",
+                "emoji": "🏖️"
+              },
+              {
+                "id": "papel",
+                "rotulo": "PAPEL",
+                "emoji": "📄"
+              }
+            ]
+          },
+          {
+            "tipo": "falar",
+            "texto": "Do que as plantas precisam para viver?"
+          }
+        ],
+        "etapa": "saber"
+      },
+      {
+        "evento": {
+          "tipo": "respondeu",
+          "opcao": "areia"
+        },
+        "efeitos": [
+          {
+            "tipo": "telemetria",
+            "evento": "tentativa",
+            "dados": {
+              "etapa": "saber",
+              "n": 1
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "Quase! Vamos observar de novo?"
+          }
+        ],
+        "etapa": "saber"
+      },
+      {
+        "evento": {
+          "tipo": "respondeu",
+          "opcao": "papel"
+        },
+        "efeitos": [
+          {
+            "tipo": "telemetria",
+            "evento": "tentativa",
+            "dados": {
+              "etapa": "saber",
+              "n": 2
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "Quase! Vamos observar de novo?"
+          }
+        ],
+        "etapa": "saber"
+      },
+      {
+        "evento": {
+          "tipo": "pedir_ajuda"
+        },
+        "efeitos": [
+          {
+            "tipo": "telemetria",
+            "evento": "ajuda_pedida",
+            "dados": {
+              "etapa": "saber"
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "É a água! Ela cai da nuvem e ajuda a planta a crescer."
+          }
+        ],
+        "etapa": "saber"
+      },
+      {
+        "evento": {
+          "tipo": "respondeu",
+          "opcao": "areia"
+        },
+        "efeitos": [
+          {
+            "tipo": "telemetria",
+            "evento": "tentativa",
+            "dados": {
+              "etapa": "saber",
+              "n": 3
+            }
+          },
+          {
+            "tipo": "revelar_resposta",
+            "opcao": "agua"
+          },
+          {
+            "tipo": "falar",
+            "texto": "É a água! Ela cai da nuvem e ajuda a planta a crescer."
+          },
+          {
+            "tipo": "agendar",
+            "depoisMs": 4200,
+            "evento": {
+              "tipo": "continuar"
+            }
+          }
+        ],
+        "etapa": "saber"
+      },
+      {
+        "evento": {
+          "tipo": "respondeu",
+          "opcao": "agua"
+        },
+        "efeitos": [],
+        "etapa": "saber"
+      },
+      {
+        "evento": {
+          "tipo": "continuar"
+        },
+        "efeitos": [
+          {
+            "tipo": "fechar_painel"
+          },
+          {
+            "tipo": "foco",
+            "acao": "liberar",
+            "atividade": "pergunta"
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "ir-ao-porto"
+            }
+          },
+          {
+            "tipo": "foco",
+            "acao": "pedir",
+            "atividade": "em_missao"
+          },
+          {
+            "tipo": "objetivo",
+            "texto": "Vamos ao porto buscar água para as flores.",
+            "alvo": "PORTO"
+          },
+          {
+            "tipo": "falar",
+            "texto": "Vamos ao porto buscar água para as flores."
+          }
+        ],
+        "etapa": "ir-ao-porto"
+      },
+      {
+        "evento": {
+          "tipo": "chegou",
+          "lugar": "PORTO"
+        },
+        "efeitos": [
+          {
+            "tipo": "destacar",
+            "lugar": "PORTO",
+            "ligado": false
+          },
+          {
+            "tipo": "telemetria",
+            "evento": "etapa_iniciada",
+            "dados": {
+              "aventura": "parque-com-sede",
+              "etapa": "contar-baldes"
+            }
+          },
+          {
+            "tipo": "foco",
+            "acao": "pedir",
+            "atividade": "em_missao"
+          },
+          {
+            "tipo": "objetivo",
+            "texto": "Pegue quatro baldes de água.",
+            "contador": {
+              "atual": 0,
+              "total": 4
+            }
+          },
+          {
+            "tipo": "falar",
+            "texto": "Pegue quatro baldes de água."
+          }
+        ],
+        "etapa": "contar-baldes"
+      }
+    ],
+    "final": {
+      "aventura": "parque-com-sede",
+      "indice": 3,
+      "tentativasEtapa": 0,
+      "tentativasTotal": 3,
+      "ajudas": 1,
+      "coletado": 0,
+      "distribuido": [],
+      "esperandoDestaque": 0,
+      "aguardandoContinuacao": false,
+      "concluida": false,
+      "segundos": 0,
+      "v": 1
+    }
+  }
+}

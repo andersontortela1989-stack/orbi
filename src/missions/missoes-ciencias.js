@@ -71,11 +71,11 @@ export const ANIMAL_POR_SLUG = Object.fromEntries(
 
 /**
  * Sorteia o slug de um animal, evitando repetir o último (variedade
- * percebida — mesma regra do sorteio de destinos do GPS).
+ * percebida). `random` é injetável para os testes do roteiro.
  */
-export function sortearAnimal(ultimoSlug) {
+export function sortearAnimal(ultimoSlug, random = Math.random) {
   const candidatos = ANIMAIS.filter((a) => a.slug !== ultimoSlug);
   const sorteado =
-    candidatos[Math.floor(Math.random() * candidatos.length)] ?? ANIMAIS[0];
+    candidatos[Math.floor(random() * candidatos.length)] ?? ANIMAIS[0];
   return sorteado.slug;
 }

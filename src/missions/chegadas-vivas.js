@@ -32,6 +32,7 @@
 import { ANIMAIS } from './missoes-ciencias.js';
 import { CANTEIRO } from '../city/canteiro.js';
 import { PAISES } from './paises.js';
+import { FEMININO, porExtenso } from './por-extenso.js';
 
 /** Lugar tem chegada viva? (MissionController decide abrir o painel.) */
 export function temChegadaViva(slug) {
@@ -144,6 +145,7 @@ function sortearPerguntaCorFruta(lugar) {
     tituloAntes: 'QUAL FRUTA É',
     tituloDestaque: cor.toUpperCase(),
     tituloDepois: '?',
+    destaqueNeutro: true,
     mostra: null,
     opcoes,
     dica: 'MOSTRA PRO ÓRBI!',
@@ -187,10 +189,12 @@ function sortearPerguntaPaes(lugar) {
     dica: 'MOSTRA PRO ÓRBI!',
     descoberta: { categoria: 'contagens', id: String(n) },
     frasePergunta: 'Quantos pães tem aqui?',
-    fraseAcerto: `Isso! São ${n} pães! Você conta muito bem!`,
+    // número por extenso: a voz recebe "três", não "3" (20/11/2026)
+    fraseAcerto: `Isso! São ${porExtenso(n)} pães!`,
     // não vaza a resposta: a dica é contar de novo, não a cor/som do alvo
     fraseTenteDeNovo: 'Hmm, vamos contar de novo?',
-    fraseRevela: `São ${n} pães! ${n} pãezinhos!`,
+    // a resposta uma vez só, sem repetir o número em "pãezinhos"
+    fraseRevela: `São ${porExtenso(n)} pães.`,
   };
 }
 
@@ -223,10 +227,12 @@ function sortearPerguntaArvores(lugar) {
     dica: 'CONTE AS ÁRVORES DO CANTEIRO!',
     descoberta: { categoria: 'contagens', id: String(n) },
     frasePergunta: 'Quantas árvores tem no canteiro do parque? Vamos contar?',
-    fraseAcerto: `Isso! São ${n} árvores! Você conta muito bem!`,
+    // número por extenso (árvore é feminino: "duas", se um dia forem duas);
+    // no formato da PADARIA: sem elogio e sem repetir o número
+    fraseAcerto: `Isso! São ${porExtenso(n, FEMININO)} árvores!`,
     // não vaza a resposta: a dica é contar de novo
     fraseTenteDeNovo: 'Hmm, vamos contar de novo?',
-    fraseRevela: `São ${n} árvores! ${n} arvorezinhas!`,
+    fraseRevela: `São ${porExtenso(n, FEMININO)} árvores.`,
   };
 }
 
@@ -280,7 +286,8 @@ function sortearPerguntaBandeira(lugar) {
     valor: p.slug,
     emoji: null,
     bandeira: p.slug, // carta renderiza <Bandeira> (SVG) no lugar do emoji
-    rotulo: p.slug,   // ler o nome do país é parte da pedagogia (cf. ZOO)
+    rotulo: null,     // nome já está no enunciado/áudio; evita repetição visual
+    ariaLabel: p.slug, // preserva o nome do país para acessibilidade
   }));
 
   return {
@@ -301,6 +308,198 @@ function sortearPerguntaBandeira(lugar) {
   };
 }
 
+// ============================ ESCOLA ===================================
+// Pergunta de referência das maçãs (2 + 3 = 5): dois agrupamentos separados
+// (2 de um lado, 3 do outro), cartas 4, 5 e 6, pista e revelação por extenso
+// (sem algarismos nas falas). Ativa apenas esta pergunta na ESCOLA.
+
+function sortearPerguntaEscola(lugar) {
+  const opcoes = embaralhar([4, 5, 6]).map((v) => ({
+    valor: String(v),
+    emoji: null, // sem emoji → número grande (padrão PADARIA/PARQUE)
+    rotulo: String(v),
+  }));
+
+  return {
+    lugar,
+    habilidade: 'contagem',
+    resposta: '5',
+    tituloAntes: 'HAVIA 2 MAÇÃS E CHEGARAM MAIS 3. QUANTAS FICARAM?',
+    tituloDestaque: '',
+    tituloDepois: '',
+    mostra: { emoji: '🍎', grupos: [2, 3] },
+    opcoes,
+    dica: 'CONTE AS DUAS E CONTINUE CONTANDO AS QUE CHEGARAM.',
+    descoberta: { categoria: 'contagens', id: '5' },
+    frasePergunta: 'Havia duas maçãs. Chegaram mais três. Quantas ficaram?',
+    fraseAcerto: 'Isso! Duas e mais três são cinco maçãs!',
+    fraseTenteDeNovo: 'Conte as duas e continue contando as que chegaram.',
+    fraseRevela: 'Duas e mais três são cinco maçãs.',
+  };
+}
+
+// ============================ SHOPPING =================================
+// Associação funcional no cotidiano (leitura global + rotina): 4 estações
+// bem distintas do shopping, sem excesso visual nem algarismos nas falas.
+
+export const ESTACOES_SHOPPING = Object.freeze([
+  Object.freeze({
+    slug: 'LIVRARIA',
+    emoji: '📚',
+    itemFala: 'um livro',
+    itemTitulo: 'UM LIVRO',
+    fraseAcerto: 'Isso! Na livraria tem livros para ler!',
+    fraseRevela: 'É na livraria! Na livraria tem livros para ler!',
+  }),
+  Object.freeze({
+    slug: 'CAFETERIA',
+    emoji: '🧃',
+    itemFala: 'um suco',
+    itemTitulo: 'UM SUCO',
+    fraseAcerto: 'Isso! Na cafeteria a gente pede suco e lanche!',
+    fraseRevela: 'É na cafeteria! Na cafeteria a gente pede suco e lanche!',
+  }),
+  Object.freeze({
+    slug: 'ROUPAS',
+    emoji: '👕',
+    itemFala: 'uma camiseta',
+    itemTitulo: 'UMA CAMISETA',
+    fraseAcerto: 'Isso! Na loja de roupas a gente escolhe camisetas!',
+    fraseRevela: 'É na loja de roupas! Lá a gente escolhe camisetas!',
+  }),
+  Object.freeze({
+    slug: 'BRINQUEDOS',
+    emoji: '🧸',
+    itemFala: 'um ursinho',
+    itemTitulo: 'UM URSINHO',
+    fraseAcerto: 'Isso! Na loja de brinquedos tem ursinhos e jogos!',
+    fraseRevela: 'É na loja de brinquedos! Lá tem ursinhos e jogos!',
+  }),
+]);
+
+let ultimaEstacaoShopping = null;
+
+/** Pergunta do Shopping: associa um item do dia a dia à sua estação. */
+function sortearPerguntaShopping(lugar) {
+  const certa =
+    sortearItem(ESTACOES_SHOPPING.filter((e) => e.slug !== ultimaEstacaoShopping)) ??
+    ESTACOES_SHOPPING[0];
+  ultimaEstacaoShopping = certa.slug;
+
+  const distratoras = embaralhar(
+    ESTACOES_SHOPPING.filter((e) => e.slug !== certa.slug)
+  ).slice(0, 2);
+
+  const opcoes = embaralhar([certa, ...distratoras]).map((e) => ({
+    valor: e.slug,
+    emoji: e.emoji,
+    rotulo: e.slug,
+  }));
+
+  return {
+    lugar,
+    habilidade: 'leituraGlobal',
+    resposta: certa.slug,
+    tituloAntes: 'ONDE TEM',
+    tituloDestaque: certa.itemTitulo,
+    tituloDepois: '?',
+    destaqueNeutro: true,
+    mostra: null,
+    opcoes,
+    dica: 'MOSTRA PRO ÓRBI!',
+    descoberta: { categoria: 'lugares', id: 'SHOPPING' },
+    frasePergunta: `Onde a gente encontra ${certa.itemFala} no shopping?`,
+    fraseAcerto: certa.fraseAcerto,
+    fraseTenteDeNovo: `Hmm, vamos pensar de novo? Onde fica ${certa.itemFala}?`,
+    fraseRevela: certa.fraseRevela,
+  };
+}
+
+// ============================= SÍTIO ===================================
+// Associação rural (ciências da vida): 4 elementos claros do campo —
+// incluindo o cavalo do pasto e o peixe do rio visíveis em OpenSitio.
+
+export const ELEMENTOS_SITIO = Object.freeze([
+  Object.freeze({
+    slug: 'CAVALO',
+    emoji: '🐴',
+    tituloAntes: 'QUEM VIVE',
+    tituloDestaque: 'NO PASTO',
+    frasePergunta: 'Quem vive no pasto do sítio?',
+    fraseAcerto: 'Isso! O cavalo vive no pasto do sítio!',
+    fraseTenteDeNovo: 'Hmm, vamos pensar de novo? Quem vive no pasto?',
+    fraseRevela: 'É o cavalo! O cavalo vive no pasto do sítio!',
+  }),
+  Object.freeze({
+    slug: 'PEIXE',
+    emoji: '🐟',
+    tituloAntes: 'QUEM NADA',
+    tituloDestaque: 'NO RIO',
+    frasePergunta: 'Quem nada no rio do sítio?',
+    fraseAcerto: 'Isso! O peixe nada na água do rio!',
+    fraseTenteDeNovo: 'Hmm, vamos pensar de novo? Quem nada no rio?',
+    fraseRevela: 'É o peixe! O peixe nada na água do rio!',
+  }),
+  Object.freeze({
+    slug: 'ABELHA',
+    emoji: '🐝',
+    tituloAntes: 'QUEM FAZ',
+    tituloDestaque: 'MEL',
+    frasePergunta: 'Quem faz mel nas flores do sítio?',
+    fraseAcerto: 'Isso! A abelha faz mel pertinho das flores!',
+    fraseTenteDeNovo: 'Hmm, vamos pensar de novo? Quem faz mel?',
+    fraseRevela: 'É a abelha! A abelha faz mel pertinho das flores!',
+  }),
+  Object.freeze({
+    slug: 'GALINHA',
+    emoji: '🐔',
+    tituloAntes: 'QUEM BOTA',
+    tituloDestaque: 'OVO',
+    frasePergunta: 'Quem bota ovo no sítio?',
+    fraseAcerto: 'Isso! A galinha bota ovo no sítio!',
+    fraseTenteDeNovo: 'Hmm, vamos pensar de novo? Quem bota ovo?',
+    fraseRevela: 'É a galinha! A galinha bota ovo no sítio!',
+  }),
+]);
+
+let ultimoElementoSitio = null;
+
+/** Pergunta do Sítio: associa cada animal ao seu lugar ou papel no campo. */
+function sortearPerguntaSitio(lugar) {
+  const certo =
+    sortearItem(ELEMENTOS_SITIO.filter((e) => e.slug !== ultimoElementoSitio)) ??
+    ELEMENTOS_SITIO[0];
+  ultimoElementoSitio = certo.slug;
+
+  const distratoras = embaralhar(
+    ELEMENTOS_SITIO.filter((e) => e.slug !== certo.slug)
+  ).slice(0, 2);
+
+  const opcoes = embaralhar([certo, ...distratoras]).map((e) => ({
+    valor: e.slug,
+    emoji: e.emoji,
+    rotulo: e.slug,
+  }));
+
+  return {
+    lugar,
+    habilidade: 'cienciasVida',
+    resposta: certo.slug,
+    tituloAntes: certo.tituloAntes,
+    tituloDestaque: certo.tituloDestaque,
+    tituloDepois: '?',
+    destaqueNeutro: true,
+    mostra: null,
+    opcoes,
+    dica: 'MOSTRA PRO ÓRBI!',
+    descoberta: { categoria: 'lugares', id: 'SÍTIO' },
+    frasePergunta: certo.frasePergunta,
+    fraseAcerto: certo.fraseAcerto,
+    fraseTenteDeNovo: certo.fraseTenteDeNovo,
+    fraseRevela: certo.fraseRevela,
+  };
+}
+
 // slug do prédio → gerador de pergunta.
 const GERADORES = {
   ZOO: sortearPerguntaAnimal,
@@ -308,6 +507,9 @@ const GERADORES = {
   PADARIA: sortearPerguntaPaes,
   PARQUE: sortearPerguntaArvores,
   'ESTÁDIO': sortearPerguntaBandeira,
+  ESCOLA: sortearPerguntaEscola,
+  SHOPPING: sortearPerguntaShopping,
+  'SÍTIO': sortearPerguntaSitio,
 };
 
 // Invariante de montabilidade do quiz de bandeiras (mesmo espírito do contrato

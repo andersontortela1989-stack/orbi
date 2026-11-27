@@ -23,8 +23,8 @@
  *   - SEM COLISÃO (precedente das árvores): atravessar = passa direto.
  *   - Poucos e calmos: 5 no mundo inteiro, dosagem das árvores.
  *
- * POSIÇÕES: âncoras semânticas derivadas de bairros.js (lote/calçada de
- * cada prédio = max(w,l)+4, ver Building), conferidas contra fileiras de
+ * POSIÇÕES: âncoras semânticas derivadas de bairros.js (calçada de cada
+ * prédio POR EIXO, CALCADA_EXTRA em city/geometria.js), conferidas contra fileiras de
  * moedas (city/moedas.js), zonas de serviço (POSTO x -44..-24/z 14..34;
  * GARAGEM x 24..44/z -26..-6) e árvores/postes do Cenario. `heading` em
  * radianos, todos distintos (nenhum par paralelo — variedade calma).

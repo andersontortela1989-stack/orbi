@@ -1,11 +1,19 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { SAVE_VERSION, CHAVE_SAVE, storageSeguro } from '../save.js';
-import { DESTINOS_GPS } from '../missions/destinos.js';
-import { sortearAnimal } from '../missions/missoes-ciencias.js';
+import {
+  SAVE_VERSION,
+  CHAVE_SAVE,
+  migrarEstadoPersistido,
+  storageSeguro,
+} from '../save.js';
 import { sortearChegadaViva } from '../missions/missoes.js';
-import { sortearBicho } from '../missions/busca.js';
+import { inicioDoRoteiro, avancoDoRoteiro } from '../missions/roteiro.js';
 import { COR_POR_ID } from '../city/garagem.js';
+import {
+  PREFERENCIAS_PADRAO,
+  PRESET_TRANQUILO,
+  personalizarPreferencia,
+} from '../preferences.js';
 
 /**
  * Estado global da Cidade Turbo 3D — shape espelhando a §6 do handoff.
@@ -23,6 +31,9 @@ const ESTADO_INICIAL = {
   // narrativa "A Chegada" (adendo de narrativa)
   nome: '',           // nome da criança (capturado na intro; primeiro ato de letramento)
   introVista: false,  // a intro já foi vista/pulada? (não auto-toca de novo)
+
+  // Conforto sensorial — durável e independente do progresso pedagógico.
+  preferencias: { ...PREFERENCIAS_PADRAO },
 
   // veículo
   veiculo: 'carro',
@@ -55,6 +66,13 @@ const ESTADO_INICIAL = {
   // Caderninho do Órbi aberto? (transiente — NÃO persistido)
   caderninhoAberto: false,
 
+  // Roteiro "Um dia do Órbi" (missions/roteiro.js) — posição da parada atual
+  // e bicho levado ao VET na volta anterior. Transientes como postoPerto:
+  // NÃO persistidos. `null` = o roteiro ainda não começou nesta sessão; o
+  // primeiro proximaMissao retoma a partir da `missao` salva.
+  roteiroPosicao: null,
+  roteiroUltimoAnimal: null,
+
   // Descobertas item-a-item — a matéria-prima do Caderninho do Órbi (e a
   // futura interface infantil do relatório BNCC da Fatia 13, que lerá
   // `habilidades`; dois consumidores, zero acoplamento). Diferente de
@@ -69,7 +87,13 @@ const ESTADO_INICIAL = {
     frutas:    [],
     contagens: [],
     paises:    [], // Frente 6 (ESTÁDIO) — quiz de bandeiras
+    objetos:   [], // Aventura 01 — água e futuros objetos do mundo
   },
+
+  // Consequências duráveis das aventuras. Flags são semânticas (não detalhes
+  // de render): o cenário decide como representar `parque_florido`.
+  worldFlags: {},
+  recompensas: [],
 
   // missão (uma por vez)
   missao: { tipo: 'nenhuma', destino: null, concluida: false },
@@ -101,6 +125,24 @@ export const useGame = create(
 
       // Marca a intro como vista (após concluir OU pular) — não auto-toca de novo.
       marcarIntroVista: () => set({ introVista: true }),
+
+      // === Conforto sensorial ===
+      // Modo Tranquilo é um preset de um toque; desligá-lo restaura o perfil
+      // padrão. Alterar uma opção individual cria um perfil personalizado.
+      setModoTranquilo: (ativo) =>
+        set({
+          preferencias: {
+            ...(ativo ? PRESET_TRANQUILO : PREFERENCIAS_PADRAO),
+          },
+        }),
+
+      setPreferencia: (chave, valor) =>
+        set((s) => ({
+          preferencias: personalizarPreferencia(s.preferencias, chave, valor),
+        })),
+
+      restaurarPreferencias: () =>
+        set({ preferencias: { ...PREFERENCIAS_PADRAO } }),
 
       abastecer: (litros) =>
         set((s) => ({
@@ -156,9 +198,15 @@ export const useGame = create(
       // === Chegada viva ===
       // Abre a mini-interação do lugar (se ele tiver uma): a pergunta sai
       // PRONTA do registry (animal + opções embaralhadas + frases de voz).
-      abrirChegadaViva: (lugar) => {
+      abrirChegadaViva: (lugar, opcoes) => {
         const pergunta = sortearChegadaViva(lugar);
-        if (pergunta) set({ chegadaViva: pergunta });
+        if (!pergunta) return false;
+        set({
+          chegadaViva: opcoes?.visitaLivre
+            ? { ...pergunta, visitaLivre: true }
+            : pergunta,
+        });
+        return true;
       },
       fecharChegadaViva: () => set({ chegadaViva: null }),
 
@@ -175,6 +223,20 @@ export const useGame = create(
           return {
             descobertas: { ...s.descobertas, [categoria]: [...lista, id] },
           };
+        }),
+
+      ativarWorldFlag: (flag) =>
+        set((s) => {
+          const chave = String(flag ?? '').trim();
+          if (!chave || s.worldFlags?.[chave]) return {};
+          return { worldFlags: { ...s.worldFlags, [chave]: true } };
+        }),
+
+      registrarRecompensa: (item) =>
+        set((s) => {
+          const id = String(item ?? '').trim();
+          if (!id || s.recompensas.includes(id)) return {};
+          return { recompensas: [...s.recompensas, id] };
         }),
 
       // === Moedas na rua (frente extra "Moedas") ===
@@ -215,78 +277,27 @@ export const useGame = create(
           };
         }),
 
-      // === Missão de GPS (Fatia 4) ===
-      // Sorteia um novo destino entre DESTINOS_GPS, evitando o destino atual
-      // pra não repetir consecutivamente. Marca concluida=false.
-      iniciarMissaoGPS: () =>
-        set((s) => {
-          const atual = s.missao?.destino;
-          const candidatos = DESTINOS_GPS.filter((d) => d !== atual);
-          const novo =
-            candidatos[Math.floor(Math.random() * candidatos.length)] ??
-            DESTINOS_GPS[0];
-          return { missao: { tipo: 'gps', destino: novo, concluida: false } };
-        }),
-
-      // === Missão de Ciências (Fatia 8) ===
-      // "Leve o animal ao VET": sorteia um bichinho (evitando o último) e
-      // aponta pro VET. As frases vêm do banco de animais (via o registry
-      // frasesDaMissao), não daqui.
-      iniciarMissaoCiencias: () =>
-        set((s) => {
-          const ultimo = s.missao?.tipo === 'ciencias' ? s.missao.animal : null;
-          return {
-            missao: {
-              tipo: 'ciencias',
-              destino: 'VET',
-              animal: sortearAnimal(ultimo),
-              concluida: false,
-            },
-          };
-        }),
-
-      // === Missão de Busca (Frente 5) ===
-      // "Eu vi um bicho perto da água! Me mostra onde?" — destino é o
-      // SLUG DO BICHO (city/bichos.js): assim o controlador/registry/HUD
-      // tratam a busca pelo mesmo fluxo keyed em `destino`.
-      iniciarMissaoBusca: () =>
-        set((s) => {
-          const ultimo = s.missao?.tipo === 'busca' ? s.missao.destino : null;
-          return {
-            missao: {
-              tipo: 'busca',
-              destino: sortearBicho(ultimo),
-              concluida: false,
-            },
-          };
-        }),
-
-      // Sorteio unificado da PRÓXIMA missão — pesos GPS 2 / Ciências 1 /
-      // Busca 1 (50/25/25), com a regra "nunca duas TEMÁTICAS seguidas":
-      // a temática que acabou de rodar (ciências ou busca) sai do sorteio;
-      // GPS pode repetir, como sempre. A razão original de Ciências segue
-      // valendo: depois dela o destino seria o mesmo VET onde o carro já
-      // está parado (o sensor só dispara ao ENTRAR na zona).
+      // === Roteiro "Um dia do Órbi" (fatia R1) ===
+      // A próxima missão vem da ordem fixa de missions/roteiro.js (antes era
+      // sorteada). Com a posição ainda nula (início da sessão), aplica a
+      // regra de INÍCIO: retoma a missão salva se ela for de uma parada e não
+      // estiver concluída; se concluída, segue para a parada seguinte; senão,
+      // começa na parada 1. Com a posição definida, avança uma parada.
+      // Os três chamadores (MissionController e ChegadaVivaPanel) seguem
+      // usando este mesmo ponto; a decisão mora nas funções puras.
       proximaMissao: () => {
-        const anterior = get().missao?.tipo;
-        const pesos = [
-          ['gps', 2],
-          ['ciencias', anterior === 'ciencias' ? 0 : 1],
-          ['busca', anterior === 'busca' ? 0 : 1],
-        ];
-        const total = pesos.reduce((soma, [, p]) => soma + p, 0);
-        let r = Math.random() * total;
-        let tipo = 'gps';
-        for (const [t, p] of pesos) {
-          r -= p;
-          if (r < 0) {
-            tipo = t;
-            break;
-          }
-        }
-        if (tipo === 'ciencias') get().iniciarMissaoCiencias();
-        else if (tipo === 'busca') get().iniciarMissaoBusca();
-        else get().iniciarMissaoGPS();
+        const s = get();
+        const opcoes = { animalAnterior: s.roteiroUltimoAnimal };
+        const passo =
+          s.roteiroPosicao === null
+            ? inicioDoRoteiro(s.missao, opcoes)
+            : avancoDoRoteiro(s.roteiroPosicao, opcoes);
+        set({
+          missao: passo.missao,
+          roteiroPosicao: passo.posicao,
+          roteiroUltimoAnimal:
+            passo.missao.tipo === 'ciencias' ? passo.missao.animal : s.roteiroUltimoAnimal,
+        });
       },
 
       // Disparado pelo sensor de chegada de qualquer prédio. Se o slug bate
@@ -333,7 +344,11 @@ export const useGame = create(
         return true;
       },
 
-      resetar: () => set(ESTADO_INICIAL),
+      resetar: () =>
+        set({
+          ...ESTADO_INICIAL,
+          preferencias: { ...PREFERENCIAS_PADRAO },
+        }),
     }),
     {
       name: CHAVE_SAVE,
@@ -360,23 +375,22 @@ export const useGame = create(
       // v6 (ESTÁDIO, Frente 6): + habilidades.geografia e
       // descobertas.paises — chaves ANINHADAS, o caso que o bump existe
       // pra cobrir; o migrate genérico injeta as duas.
+      // v7 (Aventura 01): + descobertas.objetos, worldFlags e recompensas.
+      // Só o resultado durável entra aqui; painel/etapa da aventura seguem
+      // transientes até a implementação explícita do snapshot completo.
+      // v8 (conforto sensorial): + preferencias. O normalizador injeta as
+      // opções novas e recusa tipos estranhos vindos de importações manuais.
       // O NÚMERO mora em save.js (SAVE_VERSION): persist e teto do import
       // andam juntos por construção. O bump continua sendo feito lá.
       version: SAVE_VERSION,
-      migrate: (persisted) => {
-        if (!persisted) return persisted;
-        return {
-          ...persisted,
-          habilidades: {
-            ...ESTADO_INICIAL.habilidades,
-            ...(persisted.habilidades ?? {}),
-          },
-          descobertas: {
-            ...ESTADO_INICIAL.descobertas,
-            ...(persisted.descobertas ?? {}),
-          },
-        };
-      },
+      migrate: (persisted) => migrarEstadoPersistido(persisted, ESTADO_INICIAL),
+      // Normaliza também saves que declaram v7 mas vieram parciais por import.
+      // O `migrate` do Zustand só roda quando a versão muda; `merge` garante os
+      // defaults aninhados em toda hidratação, sem apagar funções da store.
+      merge: (persisted, atual) => ({
+        ...atual,
+        ...migrarEstadoPersistido(persisted, ESTADO_INICIAL),
+      }),
       // persist serializa só state (funções são ignoradas automaticamente).
       // partialize: só o progresso DURÁVEL é gravado — postoPerto,
       // chegadaViva, caderninhoAberto, garagemPerto e corPreview são
@@ -393,6 +407,9 @@ export const useGame = create(
         missao: s.missao,
         habilidades: s.habilidades,
         descobertas: s.descobertas,
+        worldFlags: s.worldFlags,
+        recompensas: s.recompensas,
+        preferencias: s.preferencias,
       }),
     }
   )

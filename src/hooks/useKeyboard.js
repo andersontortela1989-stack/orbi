@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useGame } from '../store/useGame.js';
+import { coordenadorAtividade } from '../activity/index.js';
 
 // Hook de teclado: expõe um ref com o estado atual das teclas (não causa re-render).
 // Apenas setas + Space — mantém simples e alinhado ao público-alvo.
@@ -22,12 +22,10 @@ export function useKeyboard() {
     };
 
     const setKey = (code, pressed, e) => {
-      // Caderninho aberto: input de direção NÃO move o carro
-      // (previsibilidade > física viva sob overlay). Zera — inclusive
-      // tecla que já estava pressionada — e não faz preventDefault (o
-      // overlay fica livre pro navegador). Ao fechar, o controle volta
-      // exatamente como estava: neutro até a próxima tecla.
-      if (useGame.getState().caderninhoAberto) {
+      // Uma única regra vale para teclado e toque: quem decide se o carro
+      // responde é o coordenador. Pergunta/caderninho/pausa bloqueiam;
+      // posto e garagem preservam a saída dirigindo (sem softlock).
+      if (!coordenadorAtividade.podeDirigir()) {
         zerar();
         return;
       }
@@ -46,10 +44,10 @@ export function useKeyboard() {
     // Em blur (alt-tab), zera tudo pra não ficar tecla "presa"
     const onBlur = zerar;
 
-    // Abriu o caderninho com tecla segurada → solta na hora (não espera
-    // o próximo keydown do auto-repeat).
-    const unsub = useGame.subscribe((s, p) => {
-      if (s.caderninhoAberto && !p.caderninhoAberto) zerar();
+    // Qualquer atividade que retire a direção solta imediatamente as teclas
+    // já pressionadas — não espera keyup/auto-repeat.
+    const unsub = coordenadorAtividade.assinar((s) => {
+      if (!s.dirigir) zerar();
     });
 
     window.addEventListener('keydown', onDown);

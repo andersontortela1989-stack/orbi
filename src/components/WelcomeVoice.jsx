@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { falar, nomeParaVoz } from '../audio/voz.js';
+import { nomeParaVoz } from '../audio/voz.js';
+import { falarNoFoco } from '../activity/index.js';
 import { useGame } from '../store/useGame.js';
 
 /**
@@ -16,7 +17,9 @@ export function WelcomeVoice() {
       if (spoken) return;
       spoken = true;
       const nome = useGame.getState().nome; // lido na hora: pega o recém-digitado
-      falar(nome ? `Oi, ${nomeParaVoz(nome)}! Bem-vindo ao Órbi!` : 'Bem-vindo ao Órbi');
+      falarNoFoco(
+        nome ? `Oi, ${nomeParaVoz(nome)}! Bem-vindo ao Órbi!` : 'Bem-vindo ao Órbi'
+      );
     };
     window.addEventListener('keydown', trigger, { once: true });
     window.addEventListener('pointerdown', trigger, { once: true });

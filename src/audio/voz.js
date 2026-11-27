@@ -13,6 +13,9 @@
  *   do jogo sai com a mesma cara. Override pontual via opts segue possível.
  */
 
+import { useGame } from '../store/useGame.js';
+import { marcar } from '../perf/sonda.js';
+
 /**
  * O "timbre" do Órbi — CLAREZA > caricatura (criança TEA precisa de fala
  * inteligível antes de engraçada). Ajustar AQUI e em nenhum outro lugar.
@@ -133,6 +136,13 @@ function bestVoice() {
  *   (quem depende do onEnd pra avançar usa o retorno pra cair num timeout).
  */
 export function falar(texto, opts = {}) {
+  // Preferência é consultada no momento da fala: mudar o ajuste tem efeito
+  // imediato sem recarregar a cidade. O retorno false preserva os fallbacks
+  // já usados por quem avança por timeout quando não há narração.
+  if (useGame.getState().preferencias?.voz === false) {
+    if (opts.interrupt) pararFala();
+    return false;
+  }
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false;
   ensureInit();
 
@@ -151,6 +161,7 @@ export function falar(texto, opts = {}) {
   }
   const v = bestVoice();
   if (v) u.voice = v;
+  marcar('voz-speak'); // M1b: só registra com ?medir=1
   window.speechSynthesis.speak(u);
   return true;
 }

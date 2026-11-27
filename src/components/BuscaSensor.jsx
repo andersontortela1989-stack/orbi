@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useGame } from '../store/useGame.js';
 import { BICHO_POR_SLUG } from '../city/bichos.js';
+import { coordenadorAtividade } from '../activity/index.js';
 
 /**
  * Sensor da missão de BUSCA (Frente 5) — detecção por PROXIMIDADE, zero
@@ -21,6 +22,8 @@ export function BuscaSensor({ targetRef }) {
   const processarBusca = useGame((s) => s.processarBusca);
 
   useFrame(() => {
+    if (!coordenadorAtividade.temFoco('em_missao')) return;
+    if (!coordenadorAtividade.estado().mundo) return;
     const rb = targetRef.current;
     if (!rb) return;
     const m = useGame.getState().missao;

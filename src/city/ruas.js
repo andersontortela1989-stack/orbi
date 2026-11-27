@@ -1,0 +1,43 @@
+/**
+ * Traçado das ruas curvas — dado puro (fatia V1, estilo real), para que o
+ * teste "nenhuma peça sobre a rua" leia o MESMO traçado que o RoadNetwork
+ * desenha. Antes viviam dentro do RoadNetwork.jsx, fora do alcance do
+ * node:test.
+ *
+ * Cada caminho é uma curva Catmull-Rom por estes pontos [x, z], com
+ * TENSAO_RUA; a faixa de asfalto tem LARGURA_RUA e a borda escura, por fora,
+ * LARGURA_RUA_BORDA.
+ */
+export const CAMINHOS = Object.freeze([
+  // eixo central: estádio → centro → parque
+  [[-6, -38], [-5, -22], [0, -6], [-2, 13], [1, 31], [0, 52], [-2, 66]],
+  // porto → centro → mercado. V1.3: o fim passava SOB a fachada do MERCADO
+  // (dívida 14); agora sobe na costura do bairro e termina ENTRE os lotes do
+  // MERCADO e da PADARIA, reto em z ≈ 31,6 (tests/rua-mercado.test.js).
+  [[-78, 28], [-61, 29], [-43, 27], [-24, 23], [-3, 20], [18, 21], [34, 24], [39.5, 30.5],
+    [46, 31.6], [52, 31.6], [58, 31.6]],
+  // centro → escola → parque/zoo
+  [[-2, 15], [5, 29], [0, 41], [-4, 54], [-3, 68], [7, 76], [20, 78]],
+  // saída para garagem
+  [[0, -4], [12, -7], [22, -12], [34, -16]],
+  // anel curto de serviços do centro
+  [[-34, 24], [-27, 17], [-18, 8], [-4, 3], [11, 6], [22, 15]],
+  // expansão Shopping (Fatia 1): bifurca antes da garagem e segue pela
+  // frente (+Z) do bairro SHOPPING, com saída livre para retorno.
+  [[20, -12], [21, -29], [34, -31], [47, -30], [54, -21], [58, -17], [66, -17], [74, -17], [84, -17]],
+  // expansão Sítio (Fatia 1): bifurca do eixo central em [0, -4] (espelho
+  // da garagem), contorna o poste [-12, -12] e as moedas pelo norte e chega
+  // diante da porteira (+Z) do SÍTIO, com saída livre para retorno.
+  [[0, -4], [-12, -5], [-22, -5], [-31, -7], [-37, -14], [-48, -18], [-60, -19], [-70, -19], [-78, -19]],
+]);
+
+export const TENSAO_RUA = 0.35;
+export const LARGURA_RUA = 6.5;
+export const LARGURA_RUA_BORDA = 7.6;
+
+// O ramal do Sítio termina com uma tampa redonda do mesmo raio da borda,
+// preservando o eixo e as folgas do traçado original.
+export const TAMPAS_ARREDONDADAS = Object.freeze([
+  Object.freeze({ caminho: 5, centro: Object.freeze(CAMINHOS[5][CAMINHOS[5].length - 1]), raio: LARGURA_RUA_BORDA / 2 }),
+  Object.freeze({ caminho: 6, centro: Object.freeze(CAMINHOS[6][CAMINHOS[6].length - 1]), raio: LARGURA_RUA_BORDA / 2 }),
+]);

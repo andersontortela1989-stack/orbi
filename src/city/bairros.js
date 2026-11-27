@@ -25,8 +25,7 @@
  *   bairro PORTO        🚗 spawn               bairro MERCADO
  *   (oeste)                                    (leste)
  *
- *                  [ ESTÁDIO ]                         ← bairro ESTÁDIO (sul,
- *                                                        Frente 6)
+ *                  [ ESTÁDIO ]              [ SHOPPING ] ← sul / sudeste
  *
  * Cada prédio:
  *   slug   — palavra do letreiro (CAIXA ALTA) E chave da missão de GPS
@@ -58,7 +57,7 @@ export const BAIRROS = [
     predios: [
       {
         slug: 'PIZZA',
-        pos: [-20, 15],
+        pos: [-12, 15],
         size: [12, 6, 12],
         cor: PALETA3D.predios.PIZZA,
         pedido: 'Que cheiro bom! O que é pizza? Me leva lá?',
@@ -154,7 +153,7 @@ export const BAIRROS = [
       },
       {
         slug: 'VET',
-        pos: [22, 62],
+        pos: [24, 56],
         size: [12, 7, 12],
         cor: PALETA3D.predios.VET,
         // Sem pedido/chegada próprios: as frases vêm do banco de animais
@@ -185,6 +184,42 @@ export const BAIRROS = [
         cor: PALETA3D.predios['ESTÁDIO'],
         pedido: 'O que é estádio? Me leva lá?',
         chegada: 'Uau! Então isso é um estádio! Aqui o mundo inteiro joga bola!',
+      },
+    ],
+  },
+
+  {
+    // Expansão Shopping (Fatia 1) — região sudeste conectada por estrada
+    // própria contornando o sul da Garagem até a fachada +Z do Shopping.
+    slug: 'SHOPPING',
+    corChao: PALETA3D.chaoShopping,
+    chao: { centro: [74, -30], tamanho: [40, 32] },
+    predios: [
+      {
+        slug: 'SHOPPING',
+        pos: [74, -34],
+        size: [18, 8, 14],
+        cor: PALETA3D.predios.SHOPPING,
+        pedido: 'O que é shopping? Vamos conhecer?',
+        chegada: 'Uau! Então isso é um shopping! Aqui tem várias lojas juntas!',
+      },
+    ],
+  },
+
+  {
+    // Expansão Sítio (Fatia 1) — espaço aberto rural no quadrante sudoeste,
+    // com porteira, pasto de cavalos e rio com peixinhos, ligado ao eixo sul.
+    slug: 'SÍTIO',
+    corChao: PALETA3D.chaoSitio,
+    chao: { centro: [-70, -32], tamanho: [44, 36] },
+    predios: [
+      {
+        slug: 'SÍTIO',
+        pos: [-70, -34],
+        size: [18, 5, 14],
+        cor: PALETA3D.predios['SÍTIO'],
+        pedido: 'O que é sítio? Vamos conhecer?',
+        chegada: 'Uau! Então isso é um sítio! Aqui tem cavalos no pasto e peixinhos no rio!',
       },
     ],
   },

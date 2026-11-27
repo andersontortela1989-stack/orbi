@@ -32,6 +32,15 @@ export const TINTAS = {
   blueDeep:  '#3997CC',
   blueSoft:  '#BEE5F8',
 
+  violet:     '#7657D6',
+  violetDeep: '#45318F',
+  violetSoft: '#CDBEF5',
+  magenta:    '#C567D7',
+  glow:       '#FFD978',
+  water:      '#55C9ED',
+  road:       '#545D91',
+  roadDeep:   '#2B345F',
+
   sky:       '#DDF1FA', // superfície principal (céu claro)
   skyDeep:   '#A7DCF0',
   skyHi:     '#F0FAFE',
@@ -49,23 +58,27 @@ export const PALETA3D = {
 
   // chão-base = as RUAS (o negativo entre os chãos coloridos dos bairros):
   // asfalto claro azulado, legível como "rua" contra os bairros
-  asfalto:   TINTAS.inkFaint,
+  asfalto:   TINTAS.roadDeep,
+  terreno:   '#554D7E',
+  terrenoCalmo: '#686485',
 
   // grade de referência de velocidade (fica até as faixas da Fatia C):
   // presente, não gritante
-  gradeLinha: TINTAS.line,
+  gradeLinha: TINTAS.violetSoft,
   gradeSecao: TINTAS.inkSoft,
 
   // lote/calçada sob cada prédio — "recheio de adesivo" branco
-  calcada:   TINTAS.white,
+  calcada:   '#E7E1F4',
 
   // chãos dos bairros — família -soft da marca + paper: distintos entre si,
   // calmos, e mantêm o papel da Fatia 7 (a cor do chão avisa o bairro)
-  chaoCentro:  TINTAS.paper,    // centro quente
-  chaoMercado: TINTAS.sunSoft,  // feira
-  chaoPorto:   TINTAS.blueSoft, // água
-  chaoParque:  TINTAS.grassSoft, // natureza
-  chaoEstadio: TINTAS.coralSoft, // festa/torcida (Frente 6)
+  chaoCentro:   '#B9B4C8',
+  chaoMercado:  '#C8AF72',
+  chaoPorto:    '#83B9CE',
+  chaoParque:   '#80B58B',
+  chaoEstadio:  '#C89891',
+  chaoShopping: '#B4A9D6',
+  chaoSitio:    '#A3C68C',
 
   // sticker dos prédios (Fatia B): contorno navy + placa branca de letreiro
   // com texto navy — TODO letreiro tem a mesma cara (previsibilidade TEA)
@@ -94,6 +107,8 @@ export const PALETA3D = {
     POSTO:    TINTAS.sunSoft,   // energia
     GARAGEM:  TINTAS.blueSoft,  // oficina calma (serviço, como o POSTO)
     'ESTÁDIO': TINTAS.skyDeep,  // arena céu (Frente 6 — única tinta inédita)
+    SHOPPING: TINTAS.violet,    // passeio/lojas (expansão Shopping Fatia 1)
+    'SÍTIO':  TINTAS.grassSoft, // campo/pasto (expansão Sítio Fatia 1)
   },
 
   // carro — avatar do Heitor: evolução pro coral oficial, não troca
@@ -107,6 +122,14 @@ export const PALETA3D = {
   // moeda coletável (frente "Moedas na rua") — âmbar do Sol da marca:
   // micro-celebração espalhada pelo asfalto, mesma família do destaque 2D
   moeda: TINTAS.sun,
+
+  // pães da PADARIA (A2.1) — casca de pão, NUNCA a família do âmbar da
+  // moeda (sun/sunDeep/sunSoft): pão na vitrine não pode parecer coletável.
+  // Tons de mundo próprios, fora de colors.css (como calcada e terreno).
+  pao: {
+    lateral: '#C98A4B', // caramelo
+    casca:   '#9A5B2C', // casca tostada
+  },
 
   // bichos do mundo (frente "Bichos no mundo") — fauna sticker; todo
   // slug existe no banco ANIMAIS dos quizzes (ponte mundo↔conteúdo).
@@ -125,12 +148,34 @@ export const PALETA3D = {
     crista:   TINTAS.coral,   // galinha
   },
 
+  // Sítio (expansão Sítio Fatia 1) — cores de campo/madeira/água próprias,
+  // fora do âmbar da moeda (sun) para não parecer coletável.
+  sitio: {
+    pasto:        '#84B974',
+    trilha:       '#D8C59A',
+    cerca:        '#A6754B',
+    madeira:      '#795132',
+    margem:       '#D6C296',
+    rio:          TINTAS.water,
+    rioFundo:     TINTAS.blueDeep,
+    cavaloMarrom: '#8E5A38',
+    cavaloCreme:  '#E7D6B7',
+    cavaloCanela: '#A86B43',
+    crina:        TINTAS.ink,
+    peixe:        TINTAS.coral,
+  },
+
   // props do cenário (Fatia C — decoração pura, ver Cenario.jsx)
   tronco:     TINTAS.inkSoft,
   copa:       TINTAS.grass,
   copaEscura: TINTAS.grassDeep,
   poste:      TINTAS.white,
   luminaria:  TINTAS.sun,
+  janela:     TINTAS.glow,
+  agua:       TINTAS.water,
+  rua:        TINTAS.road,
+  ruaBorda:   TINTAS.roadDeep,
+  linhaRua:   TINTAS.glow,
   faixa:      TINTAS.white,
 
   // DECORAÇÃO EXTRA (componente isolado DecoracaoExtra.jsx) — "cidade viva":
