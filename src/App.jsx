@@ -4,6 +4,7 @@ import { IntroChegada } from './components/IntroChegada.jsx';
 import { GameLoading } from './components/GameLoading.jsx';
 import { CargaSegura } from './ui/carga-segura.js';
 import { useGame } from './store/useGame.js';
+import { registrarEtapaFunil } from './perf/funil.js';
 
 // Fronteira de code splitting: Three.js, Rapier e a cidade não fazem parte do
 // carregamento inicial. A mesma função permite antecipar o download no clique.
@@ -20,6 +21,11 @@ export default function App() {
   const introVista = useGame((s) => s.introVista);
   const preferencias = useGame((s) => s.preferencias);
   const [fase, setFase] = useState('abertura'); // 'abertura' | 'intro' | 'jogo'
+
+  // Funil anônimo de etapas (/, /historia, /jogar) para o Vercel Analytics.
+  useEffect(() => {
+    registrarEtapaFunil(fase);
+  }, [fase]);
 
   // Tema cantado removido (decisão de produto): a intro volta a ser silenciosa
   // até o TTS. O tema novo virá como atualização futura — lança sem, adiciona
