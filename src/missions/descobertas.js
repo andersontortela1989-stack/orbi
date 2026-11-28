@@ -14,6 +14,7 @@
 import { ANIMAIS, ANIMAL_POR_SLUG } from './missoes-ciencias.js';
 import { FRUTAS, QUANTIDADES } from './chegadas-vivas.js';
 import { PAISES, PAIS_POR_SLUG } from './paises.js';
+import { CLUBES_BRASIL, CLUBE_POR_SLUG } from './clubes.js';
 import { TODOS_PREDIOS } from '../city/bairros.js';
 import { porExtenso } from './por-extenso.js';
 
@@ -55,6 +56,7 @@ export const CATEGORIAS_CADERNINHO = [
   { id: 'frutas',    titulo: 'FRUTAS',   possiveis: FRUTAS.map((f) => f.slug) },
   { id: 'contagens', titulo: 'NÚMEROS',  possiveis: QUANTIDADES.map(String) },
   { id: 'paises',    titulo: 'PAÍSES',   possiveis: PAISES.map((p) => p.slug) },
+  { id: 'clubes',    titulo: 'CLUBES DO BRASIL', possiveis: CLUBES_BRASIL.map((c) => c.slug) },
   { id: 'objetos',   titulo: 'OBJETOS',  possiveis: Object.keys(OBJETOS) },
 ];
 
@@ -99,6 +101,12 @@ export function conteudoDescoberta(categoria, id) {
       ? { bandeira: p.slug, rotulo: p.slug, fato: p.fatoVoz }
       : null;
   }
+  if (categoria === 'clubes') {
+    const c = CLUBE_POR_SLUG[id];
+    return c
+      ? { bandeira: c.slug, rotulo: c.slug, fato: c.fatoVoz }
+      : null;
+  }
   if (categoria === 'objetos') {
     return OBJETOS[id] ?? null;
   }
@@ -131,6 +139,10 @@ export function falaDescoberta(categoria, id) {
   if (categoria === 'paises') {
     const p = PAIS_POR_SLUG[id];
     return p ? `${p.nomeVoz}! ${c.fato}` : null;
+  }
+  if (categoria === 'clubes') {
+    const cl = CLUBE_POR_SLUG[id];
+    return cl ? `${cl.nomeVoz}! ${c.fato}` : null;
   }
   return c.fato;
 }
