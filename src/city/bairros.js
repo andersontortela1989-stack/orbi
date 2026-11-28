@@ -193,12 +193,12 @@ export const BAIRROS = [
     // própria contornando o sul da Garagem até a fachada +Z do Shopping.
     slug: 'SHOPPING',
     corChao: PALETA3D.chaoShopping,
-    chao: { centro: [74, -30], tamanho: [40, 32] },
+    chao: { centro: [83, -32], tamanho: [58, 36] },
     predios: [
       {
         slug: 'SHOPPING',
-        pos: [74, -34],
-        size: [18, 8, 14],
+        pos: [77, -35],
+        size: [24, 8, 16],
         cor: PALETA3D.predios.SHOPPING,
         pedido: 'O que é shopping? Vamos conhecer?',
         chegada: 'Uau! Então isso é um shopping! Aqui tem várias lojas juntas!',

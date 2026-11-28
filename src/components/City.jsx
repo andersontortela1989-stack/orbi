@@ -5,6 +5,7 @@ import { Building } from './Building.jsx';
 import { OpenPark } from './OpenPark.jsx';
 import { OpenSitio } from './OpenSitio.jsx';
 import { OpenEstadio } from './OpenEstadio.jsx';
+import { OpenShopping } from './OpenShopping.jsx';
 import { AderecosLugar } from './AderecosLugar.jsx';
 import { BAIRROS } from '../city/bairros.js';
 import { ADERECOS } from '../city/identidade.js';
@@ -84,6 +85,8 @@ export function City() {
               <OpenSitio key={p.slug} floorPos={p.pos} />
             ) : p.slug === 'ESTÁDIO' ? (
               <OpenEstadio key={p.slug} floorPos={p.pos} />
+            ) : p.slug === 'SHOPPING' ? (
+              <OpenShopping key={p.slug} floorPos={p.pos} />
             ) : estiloReal && SLUGS_ESQUINA.includes(p.slug) ? (
               // Piloto da esquina (`?estilo=real`): o desenho chega sob
               // demanda (EsquinaReal, montado pelo Game); aqui fica só o
