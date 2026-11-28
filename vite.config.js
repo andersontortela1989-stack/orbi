@@ -16,6 +16,9 @@ export default defineConfig({
         hoistTransitiveImports: false,
         manualChunks(id) {
           const norm = id.replace(/\\/g, '/');
+          if (norm.includes('vite/preload-helper') || norm.includes('commonjsHelpers')) {
+            return 'vendor-react';
+          }
           if (!norm.includes('/node_modules/')) return undefined;
           if (norm.includes('/@dimforge/rapier') || norm.includes('/@react-three/rapier')) {
             return 'vendor-rapier';
