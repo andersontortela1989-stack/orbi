@@ -1,5 +1,6 @@
 import { Children } from 'react';
 import { PAIS_POR_SLUG, EMBLEMA_CENTRAL } from '../missions/paises.js';
+import { CLUBE_POR_SLUG } from '../missions/clubes.js';
 
 /**
  * BANDEIRAS em SVG sticker (Frente 6 — ESTÁDIO). Por que SVG e não emoji:
@@ -163,6 +164,102 @@ const DESENHOS = {
       <circle cx="12" cy="10" r="3.4" fill="#FFE900" />
     </>
   ),
+  // --- CLUBES DO BRASIL (bandeiras geométricas com cores clássicas, sem escudos) ---
+  PALMEIRAS: (
+    <>
+      <rect width="30" height="20" fill="#006437" />
+      <rect y="7.5" width="30" height="5" fill="#FFFFFF" />
+      <polygon points={estrela(15, 10, 2.2)} fill="#006437" />
+    </>
+  ),
+  'SÃO PAULO': (
+    <>
+      <rect width="30" height="20" fill="#FFFFFF" />
+      <rect y="6" width="30" height="3.2" fill="#D40026" />
+      <rect y="10.8" width="30" height="3.2" fill="#111111" />
+    </>
+  ),
+  SANTOS: (
+    <>
+      <rect width="30" height="20" fill="#FFFFFF" />
+      <rect y="13.5" width="30" height="2.2" fill="#111111" />
+      <rect y="16.8" width="30" height="2.2" fill="#111111" />
+      <polygon points={estrela(15, 6.8, 2.3)} fill="#E5A91F" />
+    </>
+  ),
+  CORINTHIANS: (
+    <>
+      <rect width="30" height="20" fill="#111111" />
+      {[4, 12, 20, 26].map((x) => (
+        <rect key={x} x={x} width="3" height="20" fill="#FFFFFF" />
+      ))}
+    </>
+  ),
+  FLAMENGO: (
+    <>
+      <rect width="30" height="20" fill="#111111" />
+      {[0, 8, 16].map((y) => (
+        <rect key={y} y={y} width="30" height="4" fill="#C8102E" />
+      ))}
+    </>
+  ),
+  VASCO: (
+    <>
+      <rect width="30" height="20" fill="#111111" />
+      <polygon points="0,0 7,0 30,15.5 30,20 23,20 0,4.5" fill="#FFFFFF" />
+      <rect x="13.6" y="7.6" width="2.8" height="4.8" fill="#C8102E" />
+      <rect x="12.6" y="8.6" width="4.8" height="2.8" fill="#C8102E" />
+    </>
+  ),
+  CRUZEIRO: (
+    <>
+      <rect width="30" height="20" fill="#003DA5" />
+      <polygon points={estrela(15, 4.5, 1.5)} fill="#FFFFFF" />
+      <polygon points={estrela(15, 15.5, 1.5)} fill="#FFFFFF" />
+      <polygon points={estrela(10.5, 9.5, 1.5)} fill="#FFFFFF" />
+      <polygon points={estrela(19.5, 9.5, 1.5)} fill="#FFFFFF" />
+      <polygon points={estrela(17.2, 12.2, 1.1)} fill="#FFFFFF" />
+    </>
+  ),
+  BAHIA: (
+    <>
+      <rect width="30" height="6.7" fill="#0052A5" />
+      <rect y="6.7" width="30" height="6.6" fill="#FFFFFF" />
+      <rect y="13.3" width="30" height="6.7" fill="#E31B23" />
+    </>
+  ),
+  'GRÊMIO': (
+    <>
+      <rect width="30" height="20" fill="#0D80BF" />
+      <rect x="6" width="4.5" height="20" fill="#111111" />
+      <rect x="10.5" width="1.6" height="20" fill="#FFFFFF" />
+      <rect x="17.9" width="1.6" height="20" fill="#FFFFFF" />
+      <rect x="19.5" width="4.5" height="20" fill="#111111" />
+    </>
+  ),
+  INTERNACIONAL: (
+    <>
+      <rect width="30" height="20" fill="#D40026" />
+      <rect x="2" y="2" width="26" height="16" fill="none" stroke="#FFFFFF" strokeWidth="1.8" />
+      <circle cx="15" cy="10" r="3.4" fill="#FFFFFF" />
+    </>
+  ),
+  'GOIÁS': (
+    <>
+      <rect width="30" height="20" fill="#007A3D" />
+      {[5, 13, 21].map((x) => (
+        <rect key={x} x={x} width="4" height="20" fill="#FFFFFF" />
+      ))}
+    </>
+  ),
+  REMO: (
+    <>
+      <rect width="30" height="20" fill="#0B1F4D" />
+      <rect y="4.5" width="30" height="2.2" fill="#FFFFFF" />
+      <rect y="13.3" width="30" height="2.2" fill="#FFFFFF" />
+      <polygon points={estrela(15, 10, 2.0)} fill="#FFFFFF" />
+    </>
+  ),
 };
 
 /**
@@ -186,14 +283,14 @@ export function Bandeira({ slug, className }) {
 
 // Checagem DEV do contrato banco↔desenhos (mesmo padrão do Bichos.jsx).
 if (import.meta.env?.DEV) {
-  for (const slug of Object.keys(PAIS_POR_SLUG)) {
+  for (const slug of [...Object.keys(PAIS_POR_SLUG), ...Object.keys(CLUBE_POR_SLUG)]) {
     if (!DESENHOS[slug]) {
-      console.warn(`[Bandeira] país sem desenho: ${slug}`);
+      console.warn(`[Bandeira] item sem desenho: ${slug}`);
     }
   }
   for (const slug of Object.keys(DESENHOS)) {
-    if (!PAIS_POR_SLUG[slug]) {
-      console.warn(`[Bandeira] desenho sem país no banco: ${slug}`);
+    if (!PAIS_POR_SLUG[slug] && !CLUBE_POR_SLUG[slug]) {
+      console.warn(`[Bandeira] desenho sem item no banco: ${slug}`);
     }
   }
 }

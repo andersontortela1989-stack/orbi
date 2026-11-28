@@ -32,6 +32,7 @@
 import { ANIMAIS } from './missoes-ciencias.js';
 import { CANTEIRO } from '../city/canteiro.js';
 import { PAISES } from './paises.js';
+import { CLUBES_BRASIL } from './clubes.js';
 import { FEMININO, porExtenso } from './por-extenso.js';
 
 /** Lugar tem chegada viva? (MissionController decide abrir o painel.) */
@@ -308,6 +309,63 @@ function sortearPerguntaBandeira(lugar) {
   };
 }
 
+let ultimoClubePerguntado = null;
+let proximoEstadioClube = false;
+
+/** Pergunta de clube e região do Brasil: 1 certo + 2 distratores sem colisão. */
+export function sortearPerguntaClube(lugar = 'ESTÁDIO') {
+  const certo =
+    sortearItem(CLUBES_BRASIL.filter((c) => c.slug !== ultimoClubePerguntado)) ??
+    CLUBES_BRASIL[0];
+  ultimoClubePerguntado = certo.slug;
+
+  const candidatas = embaralhar(
+    CLUBES_BRASIL.filter((c) => c.slug !== certo.slug && !colide(c, certo))
+  );
+  let distratoras = null;
+  buscaClube: for (let i = 0; i < candidatas.length; i++) {
+    for (let j = i + 1; j < candidatas.length; j++) {
+      if (!colide(candidatas[i], candidatas[j])) {
+        distratoras = [candidatas[i], candidatas[j]];
+        break buscaClube;
+      }
+    }
+  }
+  if (!distratoras) distratoras = candidatas.slice(0, 2);
+
+  const opcoes = embaralhar([certo, ...distratoras]).map((c) => ({
+    valor: c.slug,
+    emoji: null,
+    bandeira: c.slug,
+    rotulo: null,
+    ariaLabel: c.slug,
+  }));
+
+  return {
+    lugar,
+    habilidade: 'geografia',
+    resposta: certo.slug,
+    tituloAntes: `QUAL BANDEIRA É ${certo.de.toUpperCase()}`,
+    tituloDestaque: certo.slug,
+    tituloDepois: '?',
+    mostra: null,
+    opcoes,
+    dica: `${certo.estado.toUpperCase()} · REGIÃO ${certo.regiao.toUpperCase()}`,
+    descoberta: { categoria: 'clubes', id: certo.slug },
+    frasePergunta: `Qual bandeira é ${certo.de} ${certo.nomeVoz}? Esse time é ${certo.doEstado}, na região ${certo.regiaoVoz}!`,
+    fraseAcerto: `Isso! ${capitalizar(certo.artigo)} ${certo.nomeVoz} é ${certo.cores}, ${certo.doEstado}, na região ${certo.regiaoVoz}!`,
+    fraseTenteDeNovo: `Hmm, vamos ver de novo? ${capitalizar(certo.nomeVoz)}, ${certo.doEstado}!`,
+    fraseRevela: `É essa! ${capitalizar(certo.artigo)} ${certo.nomeVoz} é ${certo.cores}, ${certo.doEstado}, na região ${certo.regiaoVoz}!`,
+  };
+}
+
+/** Alterna o ESTÁDIO entre Países do Mundo e Clubes e Regiões do Brasil. */
+function sortearPerguntaEstadio(lugar) {
+  const vezDoClube = proximoEstadioClube;
+  proximoEstadioClube = !proximoEstadioClube;
+  return vezDoClube ? sortearPerguntaClube(lugar) : sortearPerguntaBandeira(lugar);
+}
+
 // ============================ ESCOLA ===================================
 // Pergunta de referência das maçãs (2 + 3 = 5): dois agrupamentos separados
 // (2 de um lado, 3 do outro), cartas 4, 5 e 6, pista e revelação por extenso
@@ -506,7 +564,7 @@ const GERADORES = {
   MERCADO: sortearPerguntaCorFruta,
   PADARIA: sortearPerguntaPaes,
   PARQUE: sortearPerguntaArvores,
-  'ESTÁDIO': sortearPerguntaBandeira,
+  'ESTÁDIO': sortearPerguntaEstadio,
   ESCOLA: sortearPerguntaEscola,
   SHOPPING: sortearPerguntaShopping,
   'SÍTIO': sortearPerguntaSitio,
